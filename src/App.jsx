@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Outlet,Navigate } from "react-router-dom";
-
+import DoctorApp from "./Doctor/DoctorApp";
 import HomePage from "./Billing/Components/HomePage/Home";
 import TotalAppointment from "./Billing/Components/Total-Appointment/Total-appointment";
 import MyProfile from "./Billing/Components/MyProfile/Patient-Profile";
@@ -34,6 +34,7 @@ function App() {
             <Route path="/today-conf" element={<TodayConf />} />
             <Route path="/cancel" element={<CancelAppointment />} />
             <Route path="/collections" element={<Collections />} />
+             <Route path="/Doctor" element={<DoctorApp />} />
           </>
 
         )}
