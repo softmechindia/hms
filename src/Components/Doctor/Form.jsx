@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import SendLetterModal from "../../Doctor/Popup/Send-Letter-Popup";
+import SendLetterModal from "../../Components/Doctor/Popup/Send-Letter-Popup";
 function PatientForm() {
 
   

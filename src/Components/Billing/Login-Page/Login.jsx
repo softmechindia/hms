@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Mail, Lock, Eye } from "lucide-react";
-import logo from "../../assets/images/logo.png";
-import bgimage from "../../assets/images/bgimage.jpeg";
+import logo from "../../../assets/images/logo.png";
+import bgimage from "../../../assets/images/bgimage.jpeg";
 import { useNavigate } from "react-router-dom";
 
 const LoginPage = ({setAuth}) => {

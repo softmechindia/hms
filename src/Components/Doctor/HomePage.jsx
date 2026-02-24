@@ -1,20 +1,21 @@
 import React from "react";
-import Form from "../PatientForm/Form";
-import Patients from "../Patients/Patient";
+import Form from "./Form";
 
-function  Home() {
+import PatientList from "../../Components/Doctor/PatientsList";
+
+function  HomePage() {
   return (
    
 <div className="flex flex-col lg:flex-row flex-1 m-4 gap-4 ">
   {/* Left */}
  <div className="w-full lg:w-[85%]">
-  <Form />
+  <Form/>
 </div>
 
 
   {/* Right */}
-  <div className="w-full mt-4 lg:w-1/2">
-    <Patients />
+  <div className="">
+   <PatientList/>
   </div>
 </div>
 
@@ -22,6 +23,16 @@ function  Home() {
   );
 }
 
-export default Home;
+export default HomePage;
+
+
+
+
+
+
+
+
+
+
 
 
