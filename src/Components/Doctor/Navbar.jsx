@@ -20,8 +20,8 @@ const Navbar = () => {
 const navLinks = [
   { name: "Dashboard", icon: <LayoutDashboard size={20} />, path: "/doctor/dashboard" },
   { name: "Patients", icon: <Users size={20} />, path: "/doctor/patient" },
-  { name: "Upcoming", icon: <Calendar size={20} />, path: "/doctor/up-comming" },
-  { name: "Prescription", icon: <FileText size={20} />, path: "/prescription" },
+  { name: "Upcoming", icon: <Calendar size={20} />, path: "/doctor/upcoming" },
+{ name: "Prescription", icon: <FileText size={20} />, path: "/doctor/add-prescription" },
 ];
 
   return (

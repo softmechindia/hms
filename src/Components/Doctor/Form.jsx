@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import SendLetterModal from "../../Components/Doctor/Popup/Send-Letter-Popup";
-function PatientForm() {
+function Form() {
 
   
   const cities = [
@@ -521,4 +521,4 @@ function PatientForm() {
   );
 }
 
-export default PatientForm;
+export default Form;

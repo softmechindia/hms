@@ -1,26 +1,30 @@
-import React from 'react'
+// DoctorApp.js
+import React from "react";
 import { Routes, Route } from "react-router-dom";
-import Navbar from "../Doctor/Navbar";
-import DoctorHeader from "../Doctor/DoctorHeader";
+import Layout from "./Layout";
 import HomePage from "../Doctor/HomePage";
+import Dashboard from "../Doctor/Dashbaord"; 
+import Patients from "../Doctor/Patients";
 import Upcoming from "../Doctor/Upcoming";
 
-import Patients from '../Doctor/Patients';
-import Dashbaord from '../Doctor/Dashbaord';
 
 function DoctorApp() {
   return (
-    <>
-      <Navbar />
-      <DoctorHeader />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="dashboard" element={<Dashbaord/>} />
+    <Routes>
+      <Route element={<Layout />}>
+   
+        <Route index element={<HomePage />} />
+        
+     
+        <Route path="dashboard" element={<Dashboard />} />
         <Route path="patient" element={<Patients />} />
-        <Route path="up-comming" element={<Upcoming />} />
-      </Routes>
-    </>
-  )
+        <Route path="upcoming" element={<Upcoming />} />
+        
+
+        <Route path="add-prescription" element={<HomePage/>} />
+      </Route>
+    </Routes>
+  );
 }
 
 export default DoctorApp;
