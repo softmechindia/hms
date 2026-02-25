@@ -7,10 +7,7 @@ function App() {
   return (
     <Router>
       <Routes>
-       
         <Route path="/doctor/*" element={<DoctorApp />} />
-        
-
         <Route path="/*" element={<BillingApp />} />
       </Routes>
     </Router>

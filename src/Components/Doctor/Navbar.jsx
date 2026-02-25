@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
@@ -8,7 +9,7 @@ import {
   X,
   Search,
   ChevronDown,
-  Bell
+
 } from "lucide-react";
 import logo from "../../assets/images/logo.png";
 
@@ -16,12 +17,12 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [active, setActive] = useState("Dashboard");
 
-  const navLinks = [
-    { name: "Dashboard", icon: <LayoutDashboard size={20} /> },
-    { name: "Patients", icon: <Users size={20} /> },
-    { name: "Upcoming", icon: <Calendar size={20} /> },
-    { name: "Prescription", icon: <FileText size={20} /> },
-  ];
+const navLinks = [
+  { name: "Dashboard", icon: <LayoutDashboard size={20} />, path: "/doctor/dashboard" },
+  { name: "Patients", icon: <Users size={20} />, path: "/doctor/patient" },
+  { name: "Upcoming", icon: <Calendar size={20} />, path: "/doctor/up-comming" },
+  { name: "Prescription", icon: <FileText size={20} />, path: "/prescription" },
+];
 
   return (
     <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100 shadow-sm">
@@ -39,26 +40,26 @@ const Navbar = () => {
    
 {/* CENTER: Desktop Navigation */}
 <div className="hidden lg:flex items-center gap-6 h-full">
-  {navLinks.map((link) => (
-    <button
-      key={link.name}
-      onClick={() => setActive(link.name)}
-      className={`flex items-center gap-2 px-6 py-4 rounded-lg text-sm font-semibold transition-all duration-300 ${
-        active === link.name
-          ? "text-orange-500 bg-orange-50"
-          : ""
-      }`}
-    >
-      {link.icon}
-      {link.name}
-    </button>
-  ))}
+{navLinks.map((link) => (
+  <NavLink
+    key={link.name}
+    to={link.path}
+    onClick={() => setIsOpen(false)}
+    className={({ isActive }) =>
+      `w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition ${
+        isActive
+          ? "bg-orange-50 text-orange-600"
+          : "text-slate-600 hover:bg-slate-50"
+      }`
+    }
+  >
+    {link.icon}
+    {link.name}
+  </NavLink>
+))}
 </div>
 
-
-
-        {/* RIGHT: Actions */}
-        <div className="flex items-center gap-2 sm:gap-4">
+<div className="flex items-center gap-2 sm:gap-4">
 {/* Search */}
 <div className="hidden xl:flex items-center bg-white border border-slate-200 rounded-md  shadow-sm px-5 py-3 transition-all duration-200 focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-100">
 
