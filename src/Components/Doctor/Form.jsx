@@ -233,7 +233,7 @@ function Form() {
         <td className="py-2">
 
           {/* Buttons */}
-          <div className="flex flex-wrap gap-2 mb-3">
+          <div className="flex flex-wrap gap-1 mb-3">
             {specialInstructions.map((item, index) => (
               <button
                 key={index}

@@ -12,12 +12,28 @@ const LoginPage = ({setAuth}) => {
 // login function
  const handleSubmit = (e) => {
     e.preventDefault();
+  
+
+
+  const emailRegeix = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if(!emailRegeix.test(email)){
+    alert("Please Enter Valid email address")
+    return;
   }
 
-  if(email !== "" & password !== "" ) {
+  if(password=== ""){
+    alert("Please Enter Your passowrd");
+    return;
+  };
+
+  if(password.length<6) {
+      alert("Password must be at least 6 characters long");
+      return;
+
+  }
     setAuth(true);
     navigate("/");
-  }
+};
 
   return (
    <div

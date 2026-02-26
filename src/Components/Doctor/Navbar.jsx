@@ -9,6 +9,7 @@ import {
   X,
   Search,
   ChevronDown,
+  
 
 } from "lucide-react";
 import logo from "../../assets/images/logo.png";
@@ -46,10 +47,10 @@ const navLinks = [
     to={link.path}
     onClick={() => setIsOpen(false)}
     className={({ isActive }) =>
-      `w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition ${
+      `w-full flex items-center gap-3 mx-2 px-4 py-3 rounded-md text-sm font-semibold transition ${
         isActive
-          ? "bg-orange-50 text-orange-600"
-          : "text-slate-600 hover:bg-slate-50"
+          ? "bg-orange-500 text-white"
+          : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-100"
       }`
     }
   >

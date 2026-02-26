@@ -13,7 +13,7 @@ function  Home() {
 
 
   {/* Right */}
-  <div className="w-full mt-4 lg:w-1/2">
+  <div className="w-full mt-2 lg:w-1/2">
     <Patients />
   </div>
 </div>
