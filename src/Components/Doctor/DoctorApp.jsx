@@ -12,10 +12,7 @@ function DoctorApp() {
   return (
     <Routes>
       <Route element={<Layout />}>
-   
         <Route index element={<HomePage />} />
-        
-     
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="patient" element={<Patients />} />
         <Route path="upcoming" element={<Upcoming />} />

@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-
+import logo from "../../../assets/images/logo.png";
 import { Calendar, FileText, LayoutDashboard, LogOut, Users } from "lucide-react";
 
 
@@ -19,8 +19,15 @@ function Sidebar() {
 
   return (
     <div className="w-64 min-h-screen bg-gradient-to-b from-[#4F6EEA] to-[#6FA8FF] text-white p-4 flex flex-col">
+            <div className="flex mx justify-center items-center gap-3">
+                <img
+                  src={logo}
+                  alt="HMS Logo"
+                  className="h-9 w-auto hover:opacity-80 transition cursor-pointer"
+                />
+              </div>
     
-      <div className="flex flex-col items-center mb-3">
+      <div className="flex flex-col items-center mt-6">
         <div className="relative mb-2">
           <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-orange-500 to-amber-300 p-0.5">
             <div className="w-full h-full rounded-full bg-[#111827] flex items-center justify-center">

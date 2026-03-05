@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation,Link } from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
@@ -7,8 +7,7 @@ import {
   FileText,
   Menu,
   X,
-  Search,
-  ChevronDown,
+ChevronDown,
   
 
 } from "lucide-react";
@@ -17,6 +16,10 @@ import logo from "../../assets/images/logo.png";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [active, setActive] = useState("Dashboard");
+  
+  const location = useLocation();
+
+const showLogo = location.pathname.includes("prescription");
 
 const navLinks = [
   { name: "Dashboard", icon: <LayoutDashboard size={20} />, path: "/doctor/dashboard" },
@@ -26,21 +29,26 @@ const navLinks = [
 ];
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100 shadow-sm">
-      <div className="max-w-[1800px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+<nav className="sticky top-0  max-w-[1800px] w-full bg-white/80 backdrop-blur-xl border-b border-slate-100 shadow-sm">    
+  <div className="max-w-[1900px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         
-        {/* LEFT: Logo */}
-        <div className="flex items-center gap-3">
-          <img
-            src={logo}
-            alt="HMS Logo"
-            className="h-9 w-auto hover:opacity-80 transition cursor-pointer"
-          />
+ 
+      <div className="w-48">
+       
+          {showLogo && (
+            <div className="flex items-center gap-3">
+              <img
+                src={logo}
+                alt="HMS Logo"
+                className="h-9 w-auto hover:opacity-80 transition cursor-pointer"
+              />
+            </div>
+          )}
         </div>
 
    
 {/* CENTER: Desktop Navigation */}
-<div className="hidden lg:flex items-center gap-6 h-full">
+<div className="hidden lg:flex items-center gap-4 justify-center">
 {navLinks.map((link) => (
   <NavLink
     key={link.name}
@@ -59,28 +67,7 @@ const navLinks = [
   </NavLink>
 ))}
 </div>
-
-<div className="flex items-center gap-2 sm:gap-4">
-{/* Search */}
-<div className="hidden xl:flex items-center bg-white border border-slate-200 rounded-md  shadow-sm px-5 py-3 transition-all duration-200 focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-100">
-
-
-
-  {/* Input */}
-  <div className="flex items-center">
-    <Search size={18} className="text-slate-400 mr-8" />
-    <input
-      type="text"
-      placeholder="Search Patient  ID or Mobile..."
-      className="bg-transparent outline-none text-sm w-48 text-slate-700 placeholder:text-slate-400 font-medium"
-    />
-  </div>
-</div>
-
-
-  
-
-          {/* Profile */}
+  {/* Profile */}
           <div className="flex items-center gap-2 bg-slate-50 px-2 py-1.5 rounded-full border border-slate-100 hover:border-orange-200 cursor-pointer transition group">
             <img
               src="https://ui-avatars.com/api/?name=Doc+User&background=334155&color=fff"
@@ -109,7 +96,7 @@ const navLinks = [
             {isOpen ? <X size={26} /> : <Menu size={26} />}
           </button>
         </div>
-      </div>
+  
 
       {/* Mobile Drawer */}
       {isOpen && (

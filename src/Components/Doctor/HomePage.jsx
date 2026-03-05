@@ -1,38 +1,31 @@
 import React from "react";
 import Form from "./Form";
-
+import DoctorHeader from "../Doctor/DoctorHeader";
 import PatientList from "../../Components/Doctor/PatientsList";
 
-function  HomePage() {
+function HomePage() {
   return (
-   
-<div className="flex flex-col lg:flex-row flex-1 m-4 gap-4 ">
-  {/* Left */}
- <div className="w-full lg:w-[85%]">
-  <Form/>
-</div>
+
+    <div className="min-h-full max-w-[1920px] mx-auto bg-gray-700 overflow-x-hidden shadow-lg">
+
+      <DoctorHeader />
 
 
-  {/* Right */}
-  <div className="">
-   <PatientList/>
-  </div>
-</div>
+      <div className="px-6 py-6 ">
+        <div className="flex flex-col lg:flex-row gap-6">
 
+          <div className="w-full lg:w-[78%]">
+            <Form />
+          </div>
 
+          <div className="w-full lg:flex-1">
+            <PatientList />
+          </div>
+
+        </div>
+      </div>
+    </div>
   );
 }
 
 export default HomePage;
-
-
-
-
-
-
-
-
-
-
-
-

@@ -8,7 +8,7 @@ export default function Layouts() {
   const isDashboard = location.pathname === "/";
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen">
 
       {isDashboard ? (
         <>

@@ -63,11 +63,11 @@ const columns = [
   { name: "Doctor", selector: row => row.doctor, sortable: true },
 ];
 
-function PatientSearch() {
+function UpComing() {
   const [filteredData, setFilteredData] = useState(initialData);
 
   return (
-    <div className="p-4 md:p-8 m-4 bg-gray-50 min-h-screen">
+    <div className="  min-h-full max-w-[1920px] mx-auto bg-gray-700 overflow-x-hidden shadow-lg">
       {/* Header */}
       <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <h1 className="text-3xl font-extrabold tracking-tight text-slate-800">
@@ -154,4 +154,4 @@ function PatientSearch() {
   );
 }
 
-export default PatientSearch;
+export default UpComing;

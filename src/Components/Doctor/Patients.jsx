@@ -71,9 +71,9 @@ function PatientSearch() {
   const [filteredData, setFilteredData] = useState(initialData);
 
   return (
-     <div className="p-4 md:p-8 m-4 bg-gray-50 min-h-screen">
+     <div className="min-h-full max-w-[1920px] mx-auto bg-gray-700 overflow-x-hidden shadow-lg p-2 ">
       <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <h1 className="text-3xl font-extrabold tracking-tight text-slate-800">
+        <h1 className="text-3xl font-extrabold tracking-tight text-white">
           Patient Details
         </h1>
       </div>

@@ -96,13 +96,13 @@ function Dashboard() {
   const [filteredData, setFilteredData] = useState(initialData);
 
   return (
-     <div className="p-4 md:p-8 m-4 bg-gray-50 min-h-screen">
+     <div className="min-h-full p-2 max-w-[1920px] mx-auto bg-gray-700 overflow-x-hidden shadow-lg">
      <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-slate-800">
+          <h1 className="text-3xl font-extrabold tracking-tight text-white">
             Clinic Overview
           </h1>
-          <p className="text-slate-500">
+          <p className="text-white">
             Welcome back! Here is what's happening today.
           </p>
         </div>

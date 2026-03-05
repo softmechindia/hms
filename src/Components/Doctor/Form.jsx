@@ -66,7 +66,7 @@ function Form() {
 
   return (
 
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto ">
 
      <div className="bg-[#fdfdf7] p-3 border-t border-l border-r border-gray-300 text-sm space-y-3 rounded-t-sm">
 
