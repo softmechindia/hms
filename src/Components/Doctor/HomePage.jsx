@@ -2,12 +2,18 @@ import React from "react";
 import Form from "./Form";
 import DoctorHeader from "../Doctor/DoctorHeader";
 import PatientList from "../../Components/Doctor/PatientsList";
+import Navbar from "./Navbar";
 
 function HomePage() {
   return (
 
-    <div className="min-h-full max-w-[1920px] mx-auto bg-gray-700 overflow-x-hidden shadow-lg">
+<div className="min-h-full max-w-[1920px] mx-auto bg-gray-100 overflow-x-hidden shadow-lg">
 
+
+
+    <div className="min-h-full max-w-[1920px] mx-auto bg-gray-100 overflow-x-hidden shadow-lg">
+      <Navbar/>
+      
       <DoctorHeader />
 
 
@@ -25,6 +31,7 @@ function HomePage() {
         </div>
       </div>
     </div>
+        </div>
   );
 }
 

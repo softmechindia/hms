@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import DataTable from "react-data-table-component";
-import { Users, Calendar, CheckCircle, Clock, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { Users, Calendar, CheckCircle, Clock, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, LayoutDashboard,FileText } from "lucide-react";
 
 // Custom Styles for DataTable
 const customStyles = {
@@ -96,17 +96,28 @@ function Dashboard() {
   const [filteredData, setFilteredData] = useState(initialData);
 
   return (
-     <div className="min-h-full p-2 max-w-[1920px] mx-auto bg-gray-700 overflow-x-hidden shadow-lg">
-     <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white">
-            Clinic Overview
-          </h1>
-          <p className="text-white">
-            Welcome back! Here is what's happening today.
-          </p>
-        </div>
-      </div>
+     <div className="min-h-full p-2 max-w-[1920px] mx-auto bg-gray-100 overflow-x-hidden shadow-lg">
+
+<div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+  <div className="flex items-center gap-4">
+
+    <div className="bg-orange-500 p-3 rounded-2xl shadow-lg shadow-orange-500/30">
+      <LayoutDashboard className="text-white" size={28} />
+    </div>
+
+    <div className="mt-4 p-4">
+      <h1 className="text-3xl font-black tracking-tight text-black leading-tight">
+        Clinic Overview
+      </h1>
+      <p className="font-medium flex items-center gap-2">
+        <span className="w-2 h-2 rounded-full text-black"></span>
+        Welcome back! Here is what's happening today.
+      </p>
+    </div>
+  </div>
+
+
+</div>
     <div className="h-auto p-6 rounded-md m-4 bg-white font-sans text-slate-900">
  
  

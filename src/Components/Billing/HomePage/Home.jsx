@@ -1,9 +1,13 @@
 import React from "react";
 import Form from "../PatientForm/Form";
 import Patients from "../Patients/Patient";
-
+import Navbar from "../../Billing/Navbar";
 function  Home() {
   return (
+  <div className="min-h-full max-w-[1920px] mx-auto bg-gray-200 overflow-x-hidden shadow-lg">
+
+    <Navbar/>
+ 
    
 <div className="flex flex-col lg:flex-row flex-1 m-4 gap-4 ">
   {/* Left */}
@@ -17,7 +21,7 @@ function  Home() {
     <Patients />
   </div>
 </div>
-
+   </div>
 
   );
 }

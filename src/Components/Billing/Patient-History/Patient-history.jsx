@@ -8,13 +8,16 @@ function PatientsHistory() {
     { date: "01 Jan 2026", ApppId: "12278955", Doctr: "Dr.Prashnt Singh", status: "Cancel" },
     { date: "28 Dec 2025", ApppId: "12278955", Doctr: "Dr.Prashnt Singh", status: "Cancel" },
     { date: "25 Dec 2025", ApppId: "12278955", Doctr: "Dr.Prashnt Singh", status: "Cancel" },
+    { date: "01 Jan 2026", ApppId: "12278955", Doctr: "Dr.Prashnt Singh", status: "Cancel" },
+    { date: "28 Dec 2025", ApppId: "12278955", Doctr: "Dr.Prashnt Singh", status: "Cancel" },
+    { date: "25 Dec 2025", ApppId: "12278955", Doctr: "Dr.Prashnt Singh", status: "Cancel" },
   ];
 
   const [data, setData] = useState(initialData);
-  const visibleData = data.slice(0, 5); // Show only 5 rows
+  const visibleData = data.slice(0, 7);
 
   const handleCancel = (index) => {
-    // Example: Update status to "Cancelled"
+   
     const newData = [...data];
     newData[index].status = "Cancelled";
     setData(newData);
@@ -22,21 +25,21 @@ function PatientsHistory() {
   };
 
   return (
-    <div className=" max-w-4xl ">
-    
+    <div>
 
-      {/* ================= DESKTOP TABLE ================= */}
-      <div className="hidden md:block bg-white shadow  border border-gray-100">
-          {/* Header */}
-  <h1
-  className="text-sm font-bold text-white text-center py-1 shadow-sm
+
+
+      <div className="hidden items-center  md:block bg-white shadow  border border-gray-100">
+        {/* Header */}
+        <h1
+          className="text-sm font-bold text-white text-center py-1 shadow-sm
              bg-gradient-to-r from-[#4F6EEA] to-[#6FA8FF]"
->
-  Patient History
-</h1>
+        >
+          Patient History
+        </h1>
 
         <table className="w-full text-sm text-left  ">
-          <thead className="bg-gray-100 ">
+          <thead className="bg-gray-200 ">
             <tr>
               <th className="px-1 py-1">S. No</th>
               <th className="px-1 py-1">Date/Time</th>
@@ -47,7 +50,12 @@ function PatientsHistory() {
           </thead>
           <tbody>
             {visibleData.map((item, index) => (
-              <tr key={index} className="hover:bg-gray-50 transition cursor-pointer ">
+
+             <tr 
+                key={index} 
+               
+                className={`transition cursor-pointer ${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'} hover:bg-blue-100`}
+              >
                 <td className="px-3 py-1">{index + 1}</td>
                 <td className="px-3 py-1">{item.date}</td>
                 <td className="px-3 py-1">{item.ApppId}</td>
@@ -72,7 +80,6 @@ function PatientsHistory() {
         </table>
       </div>
 
-      {/* ================= MOBILE CARDS ================= */}
       <div className="md:hidden space-y-2 ">
         {visibleData.map((item, index) => (
           <div

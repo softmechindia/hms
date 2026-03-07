@@ -8,19 +8,20 @@ export default function Layouts() {
   const isDashboard = location.pathname === "/";
 
   return (
-    <div className="min-h-screen">
-
+  
+   <div className="min-h-full max-w-[1920px] mx-auto bg-gray-100 overflow-x-hidden shadow-lg">
       {isDashboard ? (
-        <>
-          <Navbar/>
+        <div className="max-w-[1920px] mx-auto shadow-lg">
           <main className="p-1">
             <Outlet />
           </main>
-        </>
+        </div>
       ) : (
         <div className="flex">
-          <Sidebar/>
-          <div className="flex-1">
+
+          <Sidebar /> 
+          
+          <div className="flex-1 max-w-[1920px] mx-auto shadow-lg">
             <Navbar />
             <main className="p-1">
               <Outlet />
@@ -28,7 +29,6 @@ export default function Layouts() {
           </div>
         </div>
       )}
-
     </div>
   );
 }

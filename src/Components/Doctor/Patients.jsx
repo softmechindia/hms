@@ -7,6 +7,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
   Clock,
+  UserSearch,
 } from "lucide-react";
 
 // Custom styles for DataTable
@@ -17,7 +18,7 @@ const customStyles = {
       fontWeight: "800",
       fontSize: "12px",
       color: "#ffffff",
-      borderRadius: "0.375rem", // Tailwind rounded-md
+     
     },
   },
   pagination: {
@@ -71,12 +72,27 @@ function PatientSearch() {
   const [filteredData, setFilteredData] = useState(initialData);
 
   return (
-     <div className="min-h-full max-w-[1920px] mx-auto bg-gray-700 overflow-x-hidden shadow-lg p-2 ">
-      <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <h1 className="text-3xl font-extrabold tracking-tight text-white">
-          Patient Details
-        </h1>
-      </div>
+     <div className="min-h-full max-w-[1920px] mx-auto bg-gray-100 overflow-x-hidden shadow-lg p-2 ">
+{/* Header Section */}
+<div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+  <div className="flex items-center gap-4">
+
+    <div className="bg-orange-500 p-3 rounded-2xl shadow-lg shadow-orange-500/30">
+      <UserSearch className="text-white" size={28} />
+    </div>
+    
+    <div className="mt-4 p-4">
+      <h1 className="text-3xl font-black tracking-tight text-black">
+        Patient Details
+      </h1>
+      <p className="text-black font-medium">
+        Search and manage patient medical records.
+      </p>
+    </div>
+  </div>
+
+
+</div>
 
       {/* Search & Filter */}
       <div className="p-4 mb-6 bg-white rounded-lg shadow-sm border border-gray-100 flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-4">

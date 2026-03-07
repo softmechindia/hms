@@ -29,8 +29,8 @@ const navLinks = [
 ];
 
   return (
-<nav className="sticky top-0  max-w-[1800px] w-full bg-white/80 backdrop-blur-xl border-b border-slate-100 shadow-sm">    
-  <div className="max-w-[1900px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+<nav className="sticky top-0  max-w-[1920px] w-full bg-white/80 backdrop-blur-xl border-b border-slate-100 shadow-sm">    
+  <div className="mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         
  
       <div className="w-48">

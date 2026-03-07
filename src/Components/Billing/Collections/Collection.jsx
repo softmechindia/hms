@@ -112,7 +112,7 @@ function Collections() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+     <div className="min-h-full max-w-[1920px] mx-auto bg-gray-100 overflow-x-hidden shadow-lg p-2 ">
       <main className="flex-1 p-4 md:p-8">
         <h1 className="text-xl font-black text-gray-800 mb-6">Collections</h1>
 

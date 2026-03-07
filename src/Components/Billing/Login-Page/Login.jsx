@@ -26,8 +26,8 @@ const LoginPage = ({setAuth}) => {
     return;
   };
 
-  if(password.length<6) {
-      alert("Password must be at least 6 characters long");
+  if(password.length<0) {
+      alert("Password must be at least 0 characters long");
       return;
 
   }
