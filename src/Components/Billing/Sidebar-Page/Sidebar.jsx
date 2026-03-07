@@ -4,14 +4,14 @@ import {
   LayoutGrid, CalendarDays, Hourglass, CheckCircle,
   XCircle, Wallet, User, LogOut, Menu, X
 } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation,NavLink } from "react-router-dom";
+import { FaUser } from "react-icons/fa";
 
 export default function Sidebar() {
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
-  const menu = [
+  const menu = [  
     { label: "Dashboard", icon: LayoutGrid, path: "/" },
     { label: "Total Appointments", icon: CalendarDays, path: "/total-app" },
     { label: "Pending Appointments", icon: Hourglass, path: "/pending" },
@@ -22,108 +22,55 @@ export default function Sidebar() {
     { label: "Logout", icon: LogOut, path: "/Logout" },
   ];
 
-  const NavItem = ({ item, mobile = false }) => {
-    const isActive = location.pathname === item.path;
-    return (
-      <button
-        onClick={() => {
-          navigate(item.path);
-          if (mobile) setIsMobileOpen(false);
-        }}
-        className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-sm transition-all duration-200
-        ${isActive
-            ? "bg-gradient-to-r from-[#4F6EEA] to-[#6FA8FF] text-white shadow-md"
-            : "text-white"
-          }`}
-      >
-        <item.icon
-          size={18}
-          className={isActive ? "text-white" : "text-white"}
-        />
-        <span className="text-sm font-medium">{item.label}</span>
-      </button>
-    );
-  };
 
   return (
-    <>
-
-      <style>{`
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-      `}</style>
-
-      <nav className="lg:hidden fixed top-0 w-full h-16 bg-[#0B0F1A] border-b border-white/[0.08] flex items-center justify-between px-6 z-[100]">
-        <div className="flex items-center">
-          <img src={logo} alt="Logo" className="h-8 object-contain" />
+   <div className="w-64 min-h-screen bg-gradient-to-b from-[#4F6EEA] to-[#6FA8FF] text-white p-4 flex flex-col">
+            <div className="flex mx justify-center items-center gap-3">
+                <img
+                  src={logo}
+                  alt="HMS Logo"
+                  className="h-9 w-auto hover:opacity-80 transition cursor-pointer"
+                />
+              </div>
+    
+      <div className="flex flex-col items-center mt-6">
+        <div className="relative mb-2">
+          <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-orange-500 to-amber-300 p-0.5">
+            <div className="w-full h-full rounded-full bg-[#111827] flex items-center justify-center">
+              <FaUser size={24} className="text-orange-500" />
+            </div>
+          </div>
         </div>
-        <button
-          onClick={() => setIsMobileOpen(!isMobileOpen)}
-          className="text-gray-400 p-1.5 border border-white/20 rounded-md hover:text-white transition-colors"
-        >
-          {isMobileOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </nav>
-
-      <div className={`lg:hidden fixed inset-0 z-[90] transition-all duration-300 ${isMobileOpen ? "visible" : "invisible"}`}>
-
-        <div
-          className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${isMobileOpen ? "opacity-100" : "opacity-0"}`}
-          onClick={() => setIsMobileOpen(false)}
-        />
-
-        <aside className={`relative w-72 h-full bg-[#0F172A] border-r border-white/[0.08] flex flex-col transform transition-transform duration-300 ease-in-out ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
-
-          <div className="p-6 border-b border-white/[0.05] flex justify-between items-center">
-            <img src={logo} alt="Logo" className="h-7 object-contain" />
-            <button onClick={() => setIsMobileOpen(false)} className="text-gray-400 border border-white/10 rounded p-1">
-              <X size={20} />
-            </button>
-          </div>
-
-          <div className="flex-1 px-4 py-4 space-y-1 overflow-y-auto no-scrollbar">
-            {menu.map(item => <NavItem key={item.label} item={item} mobile />)}
-          </div>
-        </aside>
+        <span className="text-white font-semibold">Dr. John Doe</span>
+        <span className="text-white/70 text-sm">Cardiologist</span>
       </div>
 
-      <aside
-        className="hidden lg:flex fixed inset-y-0 left-0 w-64  bg-gradient-to-b from-[#4F6EEA] to-[#6FA8FF] border-r border-white/10 flex-col z-50 overflow-y-auto no-scrollbar"
-        style={{ boxShadow: "0 10px 25px rgba(0, 0, 0, 0.08)" }}
+      <nav className="flex-1 mt-4">
+  {menu.map((item) => {
+
+    const Icon = item.icon; 
+
+    return (
+      <NavLink
+        key={item.path}
+        to={item.path}
+        className={({ isActive }) =>
+          `flex items-center gap-3 p-2 rounded-md mb-2 transition-colors ${
+            isActive 
+              ? "bg-gradient-to-r from-[#4F6EEA] to-[#6FA8FF] text-white shadow-md" 
+              : "text-white hover:bg-white/10"
+          }`
+        }
       >
-        <div className="p-4 flex flex-col gap-4">
-          <div className="flex justify-center">
-            <img src={logo} alt="Logo" className="h-9 object-contain" />
-          </div>
-
-
-          <div className="flex flex-col items-center mb-6">
-            <div className="relative mb-3">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-orange-500 to-amber-300 p-0.5">
-                  <div className="w-full h-full rounded-full bg-[#111827] flex items-center justify-center">
-                  <User size={24} className="text-orange-500" />
-                </div>
-
-              </div>
-            </div>
-            <h3 className="text-sm font-bold text-white tracking-wide">Admin User</h3>
-            <p className="text-[10px] text- uppercase font-bold text-white tracking-tighter mt-1">Super Admin</p>         </div>
-        </div>
-
-        <nav className="flex-1 px-3 space-y-0.5 overflow-y-auto no-scrollbar">
-          {menu.map(item => <NavItem key={item.label} item={item} />)}
-        </nav>
-
-
-        <div className="p-4 border-t border-white/5">
-          <p className="text-[9px] text-gray-600 text-center uppercase tracking-tighter">© 2024 Admin Dashboard</p>
-        </div>
-      </aside>
-
-
-      <main className="lg:pl-64 pt-16 lg:pt-0 min-h-screen bg-[#EEF1FA]">
-
-      </main>
-    </>
+   
+        <Icon size={20} /> 
+        
+        <span>{item.label}</span>
+      </NavLink>
+    );
+  })}
+</nav>
+    </div>
+     
   );
 }
