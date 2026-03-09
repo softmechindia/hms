@@ -77,19 +77,14 @@ function PatientSearch() {
 <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
   <div className="flex items-center gap-4">
 
-    <div className="bg-orange-500 p-3 rounded-2xl shadow-lg shadow-orange-500/30">
-      <UserSearch className="text-white" size={28} />
-    </div>
-    
-    <div className="mt-4 p-4">
+  
+  
       <h1 className="text-3xl font-black tracking-tight text-black">
         Patient Details
       </h1>
-      <p className="text-black font-medium">
-        Search and manage patient medical records.
-      </p>
+    
     </div>
-  </div>
+
 
 
 </div>

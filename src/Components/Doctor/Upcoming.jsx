@@ -55,9 +55,7 @@ function UpComing() {
         
         {/* Title Section */}
         <div className="flex items-center gap-3 mb-8 mt-4">
-          <div className="bg-orange-500 p-2 rounded-lg shadow-lg shadow-orange-500/30">
-            <CalendarIcon className="text-white" size={24} />
-          </div>
+         
           <h1 className="text-3xl font-black text-black tracking-tight">
             Upcoming Appointments
           </h1>

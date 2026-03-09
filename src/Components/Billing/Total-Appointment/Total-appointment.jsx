@@ -91,7 +91,7 @@ function Pending() {
  
       
       <main className="flex-1 p-4 md:p-8">
-        <h1 className="text-xl font-black text-gray-800 mb-6  tracking-tight">Total Appointments</h1>
+        <h1 >Total Appointments</h1>
 
         {/* Filters */}
         <div className="bg-white p-5 rounded-sm shadow-sm border border-gray-100 flex flex-col md:flex-row gap-4 mb-8">

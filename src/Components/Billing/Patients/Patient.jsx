@@ -17,18 +17,28 @@ function Patients() {
       name: "Dr. Jain",
       image: "https://t4.ftcdn.net/jpg/02/60/04/09/360_F_260040900_o7K6S72VKLMnSLMW8Oknlxp9Pdxz874y.jpg",
       patients: [
-        { id: 1, name: "Saloni Verma ", patientId: "1119064", apptTime: "01:55 PM" },
-        { id: 2, name: "Khusi Singh", patientId: "1119064", apptTime: "11:30 AM" },
-        { id: 3, name: "Saloni Sharma", patientId: "1119064", apptTime: "12:44 PM" },
-        { id: 4, name: "Khusi Mishra", patientId: "1119064", apptTime: "11:30 AM" },
+        { id: 1, name: "Muskan Verma ", patientId: "1119062", apptTime: "01:55 PM" },
+        { id: 2, name: "Nish Singh", patientId: "1119064", apptTime: "11:30 AM" },
+        { id: 3, name: "Saniya Sharma", patientId: "1119764", apptTime: "12:44 PM" },
+        { id: 4, name: "Ishani Mishra", patientId: "1114064", apptTime: "11:30 AM" },
       ]
     },
+    
+    
   ];
 
   return (
-      <div className="bg-white rounded-md shadow-xl overflow-hidden border border-slate-200 scroll-auto">
 
-        <div className="bg-gradient-to-r from-[#4F6EEA] to-[#6FA8FF] p-4 flex justify-between items-center text-white">
+
+
+
+   <div 
+        className={`bg-white rounded-md shadow-xl border border-slate-200 overflow-hidden transition-all duration-300 ${
+          doctors.length > 2 ? "max-h-[650px] overflow-y-auto" : "h-auto"
+        }`}
+      >
+
+        <div className="bg-gradient-to-r from-[#4F6EEA] to-[#6FA8FF] p-3 flex justify-between items-center text-white">
           <div className="flex items-center gap-2 text-sm font-semibold">
             <User size={16} fill="white" />
             My Patient Queue
@@ -39,7 +49,7 @@ function Patients() {
           {doctors.map((doctor, idx) => (
             <div key={idx} className="bg-white border border-slate-100 rounded-md shadow-sm p-3 flex flex-col gap-3">
               
-          
+             <div className="bg-gray-100 hover:bg-gray-300 p-2">
               <div className="flex gap-4">
                 <img 
                   src={doctor.image} 
@@ -51,20 +61,21 @@ function Patients() {
               
                 </div>
               </div>
+                    </div>
 
        
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="border-b border-slate-100">
-                      <th className="py-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Patient Name</th>
+                    <tr className="border-b border-slate-300">
+                      <th className="py-2 text-[11px]  font-bold text-slate-400 uppercase tracking-wider">Patient Name</th>
                       <th className="py-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Patient.Id</th>
                       <th className="py-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider text-right"> Appt.Time</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-50">
+                  <tbody className="divide-y divide-slate-50 ">
                     {doctor.patients.map((p, pIdx) => (
-                      <tr key={pIdx} className="hover:bg-slate-50/50 transition-colors">
+                      <tr key={pIdx} className="hover:bg-slate-50/50 transition-colors border-slate-300">
                         <td className="py-2">
                           <span className=" py-2 text-xs font-semibold text-slate-600 ">
                             {p.name}
@@ -86,7 +97,7 @@ function Patients() {
           ))}
         </div>
       </div>
-   
+
   );
 }
 

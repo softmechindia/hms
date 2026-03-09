@@ -101,19 +101,12 @@ function Dashboard() {
 <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
   <div className="flex items-center gap-4">
 
-    <div className="bg-orange-500 p-3 rounded-2xl shadow-lg shadow-orange-500/30">
-      <LayoutDashboard className="text-white" size={28} />
-    </div>
+ 
 
-    <div className="mt-4 p-4">
       <h1 className="text-3xl font-black tracking-tight text-black leading-tight">
         Clinic Overview
       </h1>
-      <p className="font-medium flex items-center gap-2">
-        <span className="w-2 h-2 rounded-full text-black"></span>
-        Welcome back! Here is what's happening today.
-      </p>
-    </div>
+ 
   </div>
 
 

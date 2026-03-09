@@ -32,7 +32,7 @@ function PatientsHistory() {
       <div className="hidden items-center  md:block bg-white shadow  border border-gray-100">
         {/* Header */}
         <h1
-          className="text-sm font-bold text-white text-center py-1 shadow-sm
+          className="text-sm font-bold text-white text-center px-2 py-3 shadow-sm
              bg-gradient-to-r from-[#4F6EEA] to-[#6FA8FF]"
         >
           Patient History
@@ -41,7 +41,7 @@ function PatientsHistory() {
         <table className="w-full text-sm text-left  ">
           <thead className="bg-gray-200 ">
             <tr>
-              <th className="px-1 py-1">S. No</th>
+              <th className="px-2 py-2">S. No</th>
               <th className="px-1 py-1">Date/Time</th>
               <th className="px-1 py-1">App.ID</th>
               <th className="px-1 py-1">Doctor</th>
