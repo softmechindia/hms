@@ -1,6 +1,7 @@
 import { AlignJustify, Search, User } from "lucide-react";
 import React from "react";
 
+import { FaUser } from "react-icons/fa6";
 function Patients() {
 
   const doctors = [
@@ -26,7 +27,8 @@ function Patients() {
         { id: 3, name: "Saniya Sharma", patientId: "1119764", apptDate: "12/04/2-26", apptTime: "12:44 PM" },
       ],
     },
-    {
+    
+        {
       name: "Dr. Sharma",
       image:
         "https://t4.ftcdn.net/jpg/02/60/04/09/360_F_260040900_o7K6S72VKLMnSLMW8Oknlxp9Pdxz874y.jpg",
@@ -37,14 +39,15 @@ function Patients() {
         { id: 3, name: "Saniya Sharma", patientId: "1119764", apptDate: "12/04/2-26", apptTime: "12:44 PM" },
       ],
     },
+    
   ];
 
   return (
 
-    <div className="bg-white rounded-md shadow-xl border border-slate-200 h-[780px] overflow-y-auto transition-all duration-300">
+    <div className="bg-white  rounded-md shadow-xl border border-slate-200 h-[100vh] overflow-y-auto transition-all duration-300">
 
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#4F6EEA] to-[#6FA8FF] p-3 flex justify-between items-center text-white">
+      <div className="bg-gradient-to-r from-[#4F6EEA] to-[#6FA8FF] p-3  flex justify-between items-center text-white">
         <div className="flex items-center gap-2 text-sm font-semibold">
           My Patient
         </div>
@@ -60,23 +63,38 @@ function Patients() {
           >
 
             {/* Doctor Info */}
-            <div className="bg-gray-100 hover:bg-gray-300 p-2 rounded">
-              <div className="flex gap-4 items-center">
+            <div className="bg-gray-200 p-2 rounded-md ">
+          
+  <div className="flex gap-4 items-center">
+    {/* Doctor Image */}
+    <img
+      src={doctor.image}
+      alt={doctor.name}
+      className="w-[70px] h-[70px]  rounded-md  object-cover shadow-md border-2 border-white"
+    />
 
-                <img
-                  src={doctor.image}
-                  alt={doctor.name}
-                  className="w-[75px] h-[75px] rounded-lg object-cover shadow-sm border border-slate-50"
-                />
+    <div className="flex-1 flex justify-between items-center">
+      <div>
+        {/* Doctor Name */}
+        <h3 className="font-bold text-slate-800 text-[17px] leading-tight">
+          {doctor.name}
+        </h3>
+        {/* Specialization - Aap hardcode ya data se le sakte hain */}
+        <p className="text-[12px] text-blue-600 font-medium uppercase tracking-wide">
+          Cardiologist
+        </p>
+      </div>
 
-                <div className="flex-1 flex justify-between items-center">
-                  <h3 className="font-bold text-slate-700 text-[16px]">
-                    {doctor.name}
-                  </h3>
-                </div>
-
-              </div>
-            </div>
+      {/* Patient Count Badge */}
+      <div className="text-right">
+        <span className="bg-[#4F6EEA] text-white text-[11px] px-3 py-1 rounded-full font-bold shadow-sm">
+          {doctor.patients.length} Patients
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+          
 
             {/* Patient Table */}
             <div className="overflow-x-auto">
@@ -84,55 +102,60 @@ function Patients() {
               <table className="w-full text-left border-collapse">
 
                 <thead>
-                  <tr className="border-b border-slate-300">
+                  <tr className="border-b border-slate-300 ">
 
-                    <th className="py-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                    <th className="py-2 text-[11px] font-bold text-black uppercase tracking-wider ">
                       Patient Name
-                    </th>
+                    </th> 
 
-                    <th className="py-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                    <th className="py-2 text-[11px] font-bold text-black  uppercase tracking-wider">
                       Patient Id
                     </th>
 
-                    <th className="py-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider text-right">
+                    <th className="py-2 text-[11px] font-bold text-black uppercase tracking-wider text-right">
                       Appt. Date
                     </th>
 
-                    <th className="py-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider text-right">
+                    <th className="py-2 text-[11px] font-bold text-black uppercase tracking-wider text-right">
                       Appt. Time
                     </th>
 
                   </tr>
                 </thead>
 
-                <tbody className="divide-y divide-slate-50">
+                <tbody className="divide-y divide-slate-50  ">
 
-                  {doctor.patients.map((p, pIdx) => (
+          {doctor.patients.map((p, pIdx) => (
+  <tr
+    key={pIdx}
+    className="even:bg-gray-100 hover:bg-blue-50 transition cursor-pointer"
+  >
+    {/* Patient Name Column with Icon */}
+    <td className="py-3 px-2 text-md md:text-sm text-black">
+      <div className="flex items-center gap-2">
+        <FaUser className="w-4 h-4 text-blue-500" /> 
+        <span className="font-medium">{p.name}</span>
+      </div>
+    </td>
 
-                    <tr
-                      key={pIdx}
-                      className="even:bg-gray-50 hover:bg-blue-50 transition cursor-pointer"
-                    >
+    {/* Patient ID */}
+    <td className="py-3 px-2 text-md md:text-sm text-slate-600 font-mono">
+      {p.patientId}
+    </td>
 
-                      <td className="py-3 px-2 text-xs md:text-sm font-semibold text-slate-700">
-                        {p.name}
-                      </td>
+    {/* Appt. Date */}
+    <td className="py-3 px-2 text-md md:text-sm text-black text-right">
+      {p.apptDate}
+    </td>
 
-                      <td className="py-3 px-2 text-xs md:text-sm text-slate-600">
-                        {p.patientId}
-                      </td>
+    {/* Appt. Time */}
+    <td className="py-3 px-2 text-md md:text-sm text-black text-right">
 
-                      <td className="py-3 px-2 text-xs md:text-sm text-right text-slate-600">
-                        {p.apptDate}
-                      </td>
-
-                      <td className="py-3 px-2 text-xs md:text-sm text-right font-semibold text-slate-700">
-                        {p.apptTime}
-                      </td>
-
-                    </tr>
-
-                  ))}
+        {p.apptTime}
+     
+    </td>
+  </tr>
+))}
 
                 </tbody>
 

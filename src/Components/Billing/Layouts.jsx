@@ -23,7 +23,7 @@ export default function Layouts() {
           
           <div className="flex-1 max-w-[1920px] mx-auto shadow-lg">
             <Navbar />
-            <main className="p-1">
+            <main >
               <Outlet />
             </main>
           </div>

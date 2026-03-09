@@ -60,6 +60,7 @@ function Form() {
       doctor: "",
       consultancy: "",
       appointmentDate: new Date().toISOString().split("T")[0],
+      birthYear: "",
       dob: "",
       age: "",
       gender: "Male",
@@ -112,7 +113,7 @@ function Form() {
 
   return (
 
-    <div className="p-2 flex justify-center ">
+    <div className="flex justify-center h-[100vh] ">
       <div className="w-full max-w-6xl bg-white shadow-xl rounded-md overflow-hidden border border-gray-200">
         <div className="flex items-center justify-between 
                 flex-nowrap 
@@ -159,14 +160,14 @@ function Form() {
         </div>
 
         <div className="bg-gray-100 p-2">
-          <div className="flex items-center gap-2 w-full px-4">
+          <div className="flex items-center gap-2 w-full px-1">
             <input
               type="text"
               name="search"
               value={formData.patientId}
               placeholder="Search patientId Name MobileNo"
               className="w-full flex-1 min-w-0 
-             h-10 px-4 border border-gray-400
+             h-10 px-2 border border-gray-400
              focus:ring-2 focus:ring-orange-400 
              outline-none transition rounded"
               onChange={(e) =>
@@ -186,25 +187,25 @@ function Form() {
           </div>
         </div>
 
-        <form className="px-6 pt-4 pb-2 space-y-4" onSubmit={(e) => e.preventDefault()}>
+        <form className="px-2 pt-4 pb-2 space-y-4" onSubmit={(e) => e.preventDefault()}>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
 
-            <div className="relative flex items-center border border-gray-300 rounded overflow-hidden">
-              <div className="pl-3 text-gray-400"><User size={18} /></div>
-              <input name="fullName" value={formData.fullName} onChange={handleInputChange} placeholder="Full Name" className="w-full px-3 py-2 text-sm outline-none" />
+            <div className="relative flex items-center border border-gray-300 rounded overflow-hidden ">
+              <div className="pl-3 text-gray-400"><User size={15} /></div>
+              <input name="fullName" value={formData.fullName} onChange={handleInputChange} placeholder="Full Name" className="w-full px-2 py-1 text-sm outline-none" />
             </div>
             <div className="relative flex items-center border border-gray-300 rounded overflow-hidden">
-              <div className="pl-3 text-gray-400"><Phone size={18} /></div>
-              <input name="mobileNumber" placeholder="10 Digit Mobile" className="w-full px-3 py-2 text-sm outline-none" />
+              <div className="pl-3 text-gray-400"><Phone size={15} /></div>
+              <input name="mobileNumber" placeholder="10 Digit Mobile" className="w-full px-2 py-1 text-sm outline-none" />
             </div>
             <div className="relative flex items-center border border-gray-300 rounded overflow-hidden">
-              <div className="pl-3 text-gray-400"><UserCheck size={18} /></div>
-              <select name="patientType" className="w-full px-3 py-2 text-sm outline-none bg-white">
+              <div className="pl-3 text-gray-400"><UserCheck size={15} /></div>
+              <select name="patientType" className="w-full px-2 py-1 text-sm outline-none bg-white">
                 <option>New Patient</option>
                 <option>Old Patient</option>
               </select>
             </div>
-            <SelectField name="doctor" placeholder=" Select Doctor" value={formData.doctor} onChange={handleInputChange} options={["Dr. Bharti Aggarwal", "Dr. Ritesh", "Dr. S. Sharma"]} />
+            <SelectField name="doctor"    placeholder=" Select Doctor" value={formData.doctor} onChange={handleInputChange} options={["Dr. Bharti Aggarwal", "Dr. Ritesh", "Dr. S. Sharma"]} />
             <SelectField name="consultancy" placeholder=" Select Consultancy" value={formData.consultancy} onChange={handleInputChange} options={["Dr. Bharti Aggarwal", "Dr. Ritesh", "Dr. S. Sharma"]} />
 
 
@@ -213,7 +214,7 @@ function Form() {
                 type="date"
                 name="appointmentDate"
                 min={new Date().toISOString().split('T')[0]} // today
-                className="w-1/2 px-3 py-1.5 text-sm outline-none"
+                className="w-1/2 px-2 py-1 text-sm outline-none"
                 value={formData.appointmentDate}
                 onChange={handleInputChange}
               />
@@ -222,7 +223,7 @@ function Form() {
               <div className="relative w-1/2" ref={dropdownRef}>
                 <div
                   onClick={() => setIsTimeOpen(!isTimeOpen)}
-                  className="px-3 py-1.5 text-sm cursor-pointer flex justify-between items-center text-gray-600"
+                  className="px-2 py-1 text-sm cursor-pointer flex justify-between items-center text-gray-600"
                 >
                   {formData.appointmentTime || "Select Time"}
                   <ChevronDown size={14} />
@@ -248,17 +249,19 @@ function Form() {
               </div>
             </div>
 
-            {/* DOB + Age + Gender one line (mobile optimized) */}
+
             <div className="flex gap-1 col-span-1 md:col-span-2 lg:col-span-3">
 
 
               <div className="flex-1">
                 <input
-                  type="date"
-                  name="dob"
-                  value={formData.dob}
-                  onChange={handleDobChange}
-                  className="w-full h-9 px-2 text-xs border border-gray-300 outline-none"
+                  type="Number"
+                  name="Birth of Year"
+                  value={formData.birthYear}
+                  placeholder="Birth of Year"
+
+                  className="w-full px-2 py-1 text-sm border border-gray-300 bg-gray-100 text-black"
+
                 />
               </div>
 
@@ -270,7 +273,7 @@ function Form() {
                   value={formData.age}
                   readOnly
                   placeholder="Age"
-                  className="w-full h-9 px-2 text-xs border border-gray-300 bg-gray-100"
+                  className="w-full px-2 py-1 text-sm border border-gray-300 bg-gray-100 text-black"
                 />
               </div>
 
@@ -280,7 +283,7 @@ function Form() {
                   name="gender"
                   value={formData.gender}
                   onChange={handleInputChange}
-                  className="w-full h-9 px-1 text-xs border border-gray-300 bg-white outline-none"
+                  className="w-full px-2 py-1 text-sm border border-gray-300 bg-white outline-none"
                 >
                   <option value="" disabled selected>Gender</option>
                   <option value="Male">Male</option>
@@ -292,7 +295,7 @@ function Form() {
             </div>
 
 
-
+ 
 
             {[
               { name: "occupation", value: formData.occupation, placeholder: "Select Occupation", options: ["Student", "Private Job", "Housewife", "Other"] },
@@ -300,12 +303,12 @@ function Form() {
               { name: "education", value: formData.education, placeholder: "Select Education", options: ["Primary", "Graduate", "Other"] },
               { name: "city", value: formData.city, placeholder: "Select City", options: ["Mumbai", "Delhi", "Pune"] }
             ].map((field) => (
-              <div key={field.name} className="relative flex items-center border border-gray-300">
+              <div key={field.name} className="relative  flex items-center border border-gray-300">
                 <select
                   name={field.name}
                   value={field.value}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-1.5 text-sm outline-none bg-white cursor-pointer appearance-none"
+                  className="w-full px-2 py-1 text-sm   outline-none bg-white cursor-pointer appearance-none"
                 >
                   <option value="">{field.placeholder}</option>
                   {field.options.map((o) => <option key={o} value={o}>{o}</option>)}
@@ -318,7 +321,7 @@ function Form() {
             ))}
           </div>
 
-          <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-2 pt-2">
+          <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-2 ">
 
             <div className="flex-grow">
               <textarea
@@ -326,7 +329,7 @@ function Form() {
                 value={formData.address}
                 onChange={handleInputChange}
                 rows={1}
-                className="w-full px-3 py-2 border border-gray-300 text-sm outline-none resize-none focus:ring-1 focus:ring-blue-400 h-[34px] sm:h-10 flex items-center"
+                className="w-full px-2 py-1 text-sm border border-gray-300   outline-none resize-none focus:ring-1 focus:ring-blue-400  flex items-center"
                 placeholder="Full Address"
               />
             </div>
@@ -338,23 +341,23 @@ function Form() {
 
               {/* Reserved / Review */}
               <div className="flex items-center gap-2 sm:gap-4 bg-gray-50 px-2 sm:px-4 
-                  h-[34px] sm:h-10 border border-gray-200 rounded-sm">
+                  px-2 py-1 border border-gray-200 rounded-sm">
 
-                <label className="flex items-center gap-1 text-[11px] sm:text-sm 
+                <label className="flex items-center gap-1 text-xs
                       font-bold text-gray-700 whitespace-nowrap">
                   <input
                     type="checkbox"
                     name="reserved"
                     checked={formData.reserved}
                     onChange={handleInputChange}
-                    className="w-3 h-3 sm:w-4 sm:h-4 accent-blue-600"
+                    className="w-3 h-3 sm:w-4 sm:h-4  accent-blue-600"
                   />
                   Reserved
                 </label>
 
                 <div className="w-[1px] h-4 sm:h-5 bg-gray-300"></div>
 
-                <label className="flex items-center gap-1 text-[11px] sm:text-sm 
+                <label className="flex items-center gap-1 text-xs 
                       font-bold text-gray-700 whitespace-nowrap">
                   <input
                     type="checkbox"
@@ -370,8 +373,8 @@ function Form() {
               {/* Button */}
               <button
                 type="button"
-                className="bg-[#22C55E] text-white px-3 sm:px-6 
-               h-[34px] sm:h-10 text-[11px] sm:text-sm 
+                className="bg-[#22C55E] text-white px-2 py-1
+                text-[11px] sm:text-sm 
                font-bold rounded-sm whitespace-nowrap 
                flex items-center justify-center">
                 Save & Print
@@ -417,12 +420,12 @@ const InputField = ({ label, name, value, onChange, type = "text", readOnly = fa
 // SelectField component
 const SelectField = ({ label, name, value, onChange, options, placeholder }) => (
   <div className="flex flex-col">
-    {label && <label className="text-sm font-semibold text-gray-600 mb-1">{label}</label>}
+    {label && <label className="font-semibold text-gray-600 mb-1">{label}</label>}
     <select
       name={name}
       value={value}
       onChange={onChange}
-      className="px-4 py-2 border border-gray-300 text-sm text-gray-500 focus:ring-2 focus:ring-blue-400 outline-none bg-white cursor-pointer"
+      className="px-4 py-2 border border-gray-300  text-gray-500 focus:ring-2 focus:ring-blue-400 outline-none bg-white cursor-pointer"
     >
       <option value="" disabled hidden>
         {placeholder || `Select ${label || "Option"}`}

@@ -70,8 +70,8 @@ const Nav = () => {
   }, []);
 
   return (
-    <nav className="w-full bg-white  sticky top-0 z-50">
-      <div className="max-w-[1440px] mx-auto px-4 h-16 flex items-center justify-between">
+    <nav className="w-full bg-white  sticky top-0 z-50  max-w-[1920px]">
+      <div className="mx-auto px-4 h-16 flex items-center justify-between">
         
         {/* LOGO — ONLY DASHBOARD */}
         {location.pathname === "/" && (
