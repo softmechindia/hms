@@ -159,7 +159,7 @@ function Form() {
         </div>
 
         <div className="bg-gray-100 p-2">
-          <div className="flex items-center gap-2 w-full">
+          <div className="flex items-center gap-2 w-full px-4">
             <input
               type="text"
               name="search"
@@ -203,10 +203,11 @@ function Form() {
                 <option>New Patient</option>
                 <option>Old Patient</option>
               </select>
-            </div>            <SelectField name="doctor" value={formData.doctor} onChange={handleInputChange} options={["Dr. Bharti Aggarwal", "Dr. Ritesh", "Dr. S. Sharma"]} />
-            <SelectField name="consultancy" value={formData.consultancy} onChange={handleInputChange} options={["General", "Emergency", "Follow-up"]} />
+            </div>
+            <SelectField name="doctor" placeholder=" Select Doctor" value={formData.doctor} onChange={handleInputChange} options={["Dr. Bharti Aggarwal", "Dr. Ritesh", "Dr. S. Sharma"]} />
+            <SelectField name="consultancy" placeholder=" Select Consultancy" value={formData.consultancy} onChange={handleInputChange} options={["Dr. Bharti Aggarwal", "Dr. Ritesh", "Dr. S. Sharma"]} />
 
-            {/* Date & Scrollable Time Selection */}
+
             <div className="flex items-center border border-gray-300 bg-white">
               <input
                 type="date"
@@ -251,7 +252,7 @@ function Form() {
             <div className="flex gap-1 col-span-1 md:col-span-2 lg:col-span-3">
 
 
-              <div className="w-[45%]">
+              <div className="flex-1">
                 <input
                   type="date"
                   name="dob"
@@ -262,7 +263,7 @@ function Form() {
               </div>
 
               {/* Age smaller */}
-              <div className="w-[25%]">
+              <div className="flex-1">
                 <input
                   type="text"
                   name="age"
@@ -274,24 +275,28 @@ function Form() {
               </div>
 
               {/* Gender */}
-              <div className="w-[30%]">
+              <div className="flex-1">
                 <select
                   name="gender"
                   value={formData.gender}
                   onChange={handleInputChange}
-                  className="w-full h-9 px-1 text-xs border border-gray-300 bg-white"
+                  className="w-full h-9 px-1 text-xs border border-gray-300 bg-white outline-none"
                 >
-                  <option>Male</option>
-                  <option>Female</option>
-                  <option>Other</option>
+                  <option value="" disabled selected>Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
                 </select>
               </div>
 
             </div>
 
+
+
+
             {[
               { name: "occupation", value: formData.occupation, placeholder: "Select Occupation", options: ["Student", "Private Job", "Housewife", "Other"] },
-              
+
               { name: "education", value: formData.education, placeholder: "Select Education", options: ["Primary", "Graduate", "Other"] },
               { name: "city", value: formData.city, placeholder: "Select City", options: ["Mumbai", "Delhi", "Pune"] }
             ].map((field) => (
