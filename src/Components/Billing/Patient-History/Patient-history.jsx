@@ -12,17 +12,16 @@ function PatientsHistory() {
 
     { date: "28 Dec 2025", ApppId: "12278955", Doctr: "Dr.Prashnt Singh", status: "Pending" },
 
-    { date: "01 Jan 2026", ApppId: "12278955", Doctr: "Dr.Prashnt Singh", status: "Confirmed" },
   ];
 
-  // State for status
+
   const [statusData, setStatusData] = useState(initialData);
 
-  // State for action buttons (to handle independent actions)
+
   const [actionData, setActionData] = useState(initialData.map(() => ({ cancelled: false })));
 
   const handleCancel = (index) => {
-    // Update action only
+  
     const newActionData = [...actionData];
     newActionData[index].cancelled = true;
     setActionData(newActionData);
@@ -32,16 +31,16 @@ function PatientsHistory() {
   return (
     <div>
 
-      {/* Desktop Table */}
-      <div className="hidden md:block bg-white shadow border border-gray-100">
-        <h1 className="text-md text-white text-center py-2 shadow-sm bg-gradient-to-r from-[#4F6EEA] to-[#6FA8FF]">
+ 
+      <div className="hidden  md:block bg-white shadow border border-gray-100 ">
+        <h1 className="text-md text-white text-center rounded-t-md py-3 shadow-sm bg-gradient-to-r from-[#4F6EEA] to-[#6FA8FF]">
           Patient History
         </h1>
 
         <table className="w-full text-sm">
           <thead className="bg-gray-200">
             <tr>
-              <th className="px-2 py-1 text-center">S. No</th>
+              <th className="px-2 py-2 text-center">S. No</th>
               <th className="px-2 py-1  text-center">Date/Time</th>
               <th className="px-2 py-1  text-center">App.ID</th>
               <th className="px-2 py-1  text-center">Doctor</th>

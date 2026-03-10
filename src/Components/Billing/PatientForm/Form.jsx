@@ -165,11 +165,11 @@ function Form() {
               type="text"
               name="search"
               value={formData.patientId}
-              placeholder="Search patientId Name MobileNo"
+              placeholder="Search PatientId, Name, MobileNo"
               className="w-full flex-1 min-w-0 
              h-10 px-2 border border-gray-400
              focus:ring-2 focus:ring-orange-400 
-             outline-none transition rounded"
+             outline-none transition rounded placeholder-black" 
               onChange={(e) =>
                 setFormData((p) => ({ ...p, patientId: e.target.value }))
               }
@@ -188,28 +188,59 @@ function Form() {
         </div>
 
         <form className="px-2 pt-4 pb-2 space-y-4" onSubmit={(e) => e.preventDefault()}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 ">
 
-            <div className="relative flex items-center border border-gray-300 rounded overflow-hidden ">
-              <div className="pl-3 text-gray-400"><User size={15} /></div>
-              <input name="fullName" value={formData.fullName} onChange={handleInputChange} placeholder="Full Name" className="w-full px-2 py-1 text-sm outline-none" />
+            <div className="relative flex items-center text-black border border-gray-300 rounded overflow-hidden ">
+              <div className="pl-3 text-black"><User size={15} /></div>
+              <input name="fullName" value={formData.fullName} onChange={handleInputChange} 
+              placeholder="Full Name" className="w-full px-2 py-1 placeholder-black  text-sm outline-none" />
             </div>
             <div className="relative flex items-center border border-gray-300 rounded overflow-hidden">
-              <div className="pl-3 text-gray-400"><Phone size={15} /></div>
-              <input name="mobileNumber" placeholder="10 Digit Mobile" className="w-full px-2 py-1 text-sm outline-none" />
+              <div className="pl-3 text-black"><Phone size={15} /></div>
+              <input name="mobileNumber" placeholder="10 Digit Mobile " className="placeholder-black w-full px-2 py-1 text-sm outline-none" />
             </div>
             <div className="relative flex items-center border border-gray-300 rounded overflow-hidden">
-              <div className="pl-3 text-gray-400"><UserCheck size={15} /></div>
+              <div className="pl-3 text-black"><UserCheck size={15} /></div>
               <select name="patientType" className="w-full px-2 py-1 text-sm outline-none bg-white">
                 <option>New Patient</option>
                 <option>Old Patient</option>
               </select>
             </div>
-            <SelectField name="doctor"    placeholder=" Select Doctor" value={formData.doctor} onChange={handleInputChange} options={["Dr. Bharti Aggarwal", "Dr. Ritesh", "Dr. S. Sharma"]} />
-            <SelectField name="consultancy" placeholder=" Select Consultancy" value={formData.consultancy} onChange={handleInputChange} options={["Dr. Bharti Aggarwal", "Dr. Ritesh", "Dr. S. Sharma"]} />
+                  <div className="relative flex items-center border border-gray-300 rounded overflow-hidden">
+              <select
+                name="doctor"
+                value={formData.doctor}
+                onChange={handleInputChange}
+                className="w-full px-2 py-1 text-sm outline-none bg-white"
+              >
+                <option value="" disabled>Select Doctor</option>
+                <option value="Dr. Bharti Aggarwal">Dr. Bharti Aggarwal</option>
+                <option value="Dr. Ritesh">Dr. Ritesh</option>
+                <option value="Dr. S. Sharma">Dr. S. Sharma</option>
+              </select>
+            </div>
+
+            <div className="relative flex items-center border border-gray-300 rounded overflow-hidden">
 
 
-            <div className="flex items-center border border-gray-300 bg-white">
+
+              <select
+                name="doctor"
+                value={formData.doctor}
+                onChange={handleInputChange}
+                className="w-full px-2 py-1 text-sm outline-none bg-white"
+              >
+                <option value="" disabled>Select Consultancy</option>
+                <option value="Dr. Bhartil">Dr. Bharti Aggarwal</option>
+                <option value="Dr. Ritesh">Dr. Ritesh</option>
+                <option value="Dr. S. Sharma">Dr. S. Sharma</option>
+              </select>
+            </div>
+
+
+
+
+             <div className="flex items-center border border-gray-300 bg-white">
               <input
                 type="date"
                 name="appointmentDate"
@@ -223,7 +254,7 @@ function Form() {
               <div className="relative w-1/2" ref={dropdownRef}>
                 <div
                   onClick={() => setIsTimeOpen(!isTimeOpen)}
-                  className="px-2 py-1 text-sm cursor-pointer flex justify-between items-center text-gray-600"
+                  className="px-2 py-1 text-sm cursor-pointer flex justify-between items-center placeholder-black"
                 >
                   {formData.appointmentTime || "Select Time"}
                   <ChevronDown size={14} />
@@ -247,7 +278,7 @@ function Form() {
                   </div>
                 )}
               </div>
-            </div>
+            </div> 
 
 
             <div className="flex gap-1 col-span-1 md:col-span-2 lg:col-span-3">
@@ -260,7 +291,7 @@ function Form() {
                   value={formData.birthYear}
                   placeholder="Birth of Year"
 
-                  className="w-full px-2 py-1 text-sm border border-gray-300 bg-gray-100 text-black"
+                  className="w-full  placeholder-black px-2 py-1 text-sm border border-gray-300 bg-white text-black"
 
                 />
               </div>
@@ -273,7 +304,7 @@ function Form() {
                   value={formData.age}
                   readOnly
                   placeholder="Age"
-                  className="w-full px-2 py-1 text-sm border border-gray-300 bg-gray-100 text-black"
+                  className="w-full px-2 placeholder-black py-1 text-sm border border-gray-300 bg-gray-100 text-black"
                 />
               </div>
 
@@ -321,7 +352,7 @@ function Form() {
             ))}
           </div>
 
-          <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-2 ">
+          <div className="flex text-black flex-col lg:flex-row items-stretch lg:items-center gap-2 ">
 
             <div className="flex-grow">
               <textarea
@@ -329,8 +360,7 @@ function Form() {
                 value={formData.address}
                 onChange={handleInputChange}
                 rows={1}
-                className="w-full px-2 py-1 text-sm border border-gray-300   outline-none resize-none focus:ring-1 focus:ring-blue-400  flex items-center"
-                placeholder="Full Address"
+className="w-full px-2 py-1 text-sm border border-gray-300 rounded outline-none resize-none focus:ring-1 focus:ring-blue-400 flex items-center min-h-[32px] placeholder-black placeholder-opacity-100"                placeholder="Full Address"
               />
             </div>
 
@@ -385,7 +415,7 @@ function Form() {
 
           </div>
 
-          <div className="mt-4">
+          <div className="mt-6">
             <PatientsHistory />
           </div>
         </form>
