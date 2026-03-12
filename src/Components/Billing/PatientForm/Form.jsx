@@ -412,7 +412,7 @@ className="w-full px-2 py-1 text-sm border border-gray-300 rounded outline-none 
 
           </div>
 
-          <div>
+          <div className="mt-10">
             <PatientsHistory />
           </div>
         </form>
