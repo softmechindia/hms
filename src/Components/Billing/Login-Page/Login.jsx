@@ -29,7 +29,7 @@ function Login({ setAuth }) {
     return;
   };
 
-    if (password< 6) {
+    if (password< 0) {
       alert("Password must be at least 6 characters");
       return;
     }

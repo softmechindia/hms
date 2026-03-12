@@ -44,16 +44,16 @@ function Patients() {
 
   return (
 
-    <div className="bg-white  rounded-md shadow-xl border border-slate-200 h-[100vh] overflow-y-auto transition-all duration-300">
+    <div className={`bg-white  rounded-md shadow-xl border border-slate-200 h-[100vh] overflow-y-auto transition-all duration-300
+     ${doctors.length > 1 ? "overflow-y-auto" : "overflow-hidden"}`}>
 
-      {/* Header */}
+
       <div className="bg-gradient-to-r from-[#4F6EEA] to-[#6FA8FF] p-3  flex justify-between items-center text-white">
         <div className="flex items-center gap-2 text-sm font-semibold">
           My Patient
         </div>
       </div>
 
-      {/* Doctor Cards */}
       <div className="p-2 space-y-3">
 
         {doctors.map((doctor, idx) => (
@@ -62,11 +62,11 @@ function Patients() {
             className="bg-white border border-slate-100 rounded-md shadow-sm p-3 flex flex-col gap-3"
           >
 
-            {/* Doctor Info */}
+ 
             <div className="bg-gray-200 p-2 rounded-md ">
           
   <div className="flex gap-4 items-center">
-    {/* Doctor Image */}
+
     <img
       src={doctor.image}
       alt={doctor.name}
@@ -75,17 +75,16 @@ function Patients() {
 
     <div className="flex-1 flex justify-between items-center">
       <div>
-        {/* Doctor Name */}
+  
         <h3 className="font-bold text-slate-800 text-[17px] leading-tight">
           {doctor.name}
         </h3>
-        {/* Specialization - Aap hardcode ya data se le sakte hain */}
+    
         <p className="text-[12px] text-blue-600 font-medium uppercase tracking-wide">
           Cardiologist
         </p>
       </div>
 
-      {/* Patient Count Badge */}
       <div className="text-right">
         <span className="bg-[#4F6EEA] text-white text-[11px] px-3 py-1 rounded-full font-bold shadow-sm">
           {doctor.patients.length} Patients
@@ -96,7 +95,6 @@ function Patients() {
 </div>
           
 
-            {/* Patient Table */}
             <div className="overflow-x-auto">
 
               <table className="w-full text-left border-collapse">
@@ -124,38 +122,35 @@ function Patients() {
                 </thead>
 
                 <tbody className="divide-y divide-slate-50  ">
+             {doctor.patients.map((p, pIdx) => (
+                    <tr
+                      key={pIdx}
+                      className="even:bg-gray-100 hover:bg-blue-50 transition cursor-pointer"
+                    >
 
-          {doctor.patients.map((p, pIdx) => (
-  <tr
-    key={pIdx}
-    className="even:bg-gray-100 hover:bg-blue-50 transition cursor-pointer"
-  >
-    {/* Patient Name Column with Icon */}
-    <td className="py-3 px-2 text-md md:text-sm text-black">
-      <div className="flex items-center gap-2">
-        <FaUser className="w-4 h-4 text-blue-500" /> 
-        <span className="font-medium">{p.name}</span>
-      </div>
-    </td>
+                      <td className="py-1.5 px-2 text-[13px] whitespace-nowrap text-black">
+                        <div className="flex items-center gap-2">
+                          <FaUser className="h-3 text-blue-500 flex-shrink-0" />
+                          <span className="font-medium truncate max-w-[120px]">
+                            {p.name}
+                          </span>
+                        </div>
+                      </td>
 
-    {/* Patient ID */}
-    <td className="py-3 px-2 text-md md:text-sm text-slate-600 font-mono">
-      {p.patientId}
-    </td>
+                      <td className="py-1.5 px-2 text-[11px] text-black whitespace-nowrap">
+                        {p.patientId}
+                      </td>
 
-    {/* Appt. Date */}
-    <td className="py-3 px-2 text-md md:text-sm text-black text-right">
-      {p.apptDate}
-    </td>
+                      <td className="py-1.5 px-2 text-[11px] text-black whitespace-nowrap text-right">
+                        {p.apptDate}
+                      </td>
 
-    {/* Appt. Time */}
-    <td className="py-3 px-2 text-md md:text-sm text-black text-right">
+                      <td className="py-1.5 px-2 text-[11px] text-black whitespace-nowrap text-right">
+                        {p.apptTime}
+                      </td>
 
-        {p.apptTime}
-     
-    </td>
-  </tr>
-))}
+                    </tr>
+                  ))}
 
                 </tbody>
 

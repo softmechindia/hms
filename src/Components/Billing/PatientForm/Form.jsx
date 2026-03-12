@@ -115,50 +115,47 @@ function Form() {
 
     <div className="flex justify-center h-[100vh] ">
       <div className="w-full max-w-6xl bg-white shadow-xl rounded-md overflow-hidden border border-gray-200">
-        <div className="flex items-center justify-between 
-                flex-nowrap 
-                px-2 sm:px-4 py-2 
+        
+      <div className="flex items-center justify-between flex-nowrap
+                px-3 py-2 
                 bg-gradient-to-r from-[#4F6EEA] to-[#6FA8FF] 
                 shadow-sm overflow-hidden">
 
-          {/* Left */}
-          <div className="flex items-center gap-1 sm:gap-2 
-                  text-white font-medium 
-                  whitespace-nowrap min-w-0">
-            <FaUser className="text-white text-sm sm:text-lg font-bold flex-shrink-0" />
-            <span className="text-[11px] sm:text-base truncate">
-              Search Patient
-            </span>
-          </div>
+  {/* Left */}
+  <div className="flex items-center gap-1 text-white font-medium whitespace-nowrap min-w-0">
+    <FaUser className="text-white text-lg font-bold flex-shrink-0" />
+    <span className="text-[14px] truncate">
+      Search Patient
+    </span>
+  </div>
 
-          {/* Right */}
-          <div className="flex items-center gap-1 sm:gap-2 flex-nowrap">
+  {/* Right */}
+  <div className="flex items-center gap-2 flex-nowrap">
 
-            <button
-              type="button"
-              onClick={() => window.print()}
-              className="flex items-center gap-0.5
+    <button
+      type="button"
+      onClick={() => window.print()}
+      className="flex items-center gap-1
                  bg-white text-blue-700
-                 px-1.5 sm:px-3 py-1
-                 text-[10px] sm:text-sm
+                 px-3 py-2
+                 text-sm
                  rounded whitespace-nowrap">
-              🖨️ Re-Print
-            </button>
+      🖨️ Re-Print
+    </button>
 
-            <button
-              type="button"
-              onClick={handleRefresh}
-              className="flex items-center gap-0.5
+    <button
+      type="button"
+      onClick={handleRefresh}
+      className="flex items-center gap-1
                  bg-white text-gray-700
-                 px-1.5 sm:px-3 py-1
-                 text-[10px] sm:text-sm
+                 px-3 py-2
+                 text-sm
                  rounded whitespace-nowrap">
-              🔄 Reset
-            </button>
+      🔄 Reset
+    </button>
 
-          </div>
-        </div>
-
+  </div>
+</div>
         <div className="bg-gray-100 p-2">
           <div className="flex items-center gap-2 w-full px-1">
             <input
@@ -304,7 +301,7 @@ function Form() {
                   value={formData.age}
                   readOnly
                   placeholder="Age"
-                  className="w-full px-2 placeholder-black py-1 text-sm border border-gray-300 bg-gray-100 text-black"
+                  className="w-full  placeholder-black px-2 py-1 text-sm border border-gray-300 bg-white text-black"
                 />
               </div>
 
@@ -415,7 +412,7 @@ className="w-full px-2 py-1 text-sm border border-gray-300 rounded outline-none 
 
           </div>
 
-          <div className="mt-6">
+          <div>
             <PatientsHistory />
           </div>
         </form>
