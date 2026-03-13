@@ -307,7 +307,7 @@ function Form() {
 
               {/* Gender */}
               <div className="flex-1">
-                <input
+                <select
                   name="gender"
                   value={formData.gender}
                   onChange={handleInputChange}
@@ -317,7 +317,7 @@ function Form() {
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
                   <option value="Other">Other</option>
-                </input>
+                </select>
               </div>
 
             </div>
