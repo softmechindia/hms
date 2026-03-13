@@ -307,17 +307,17 @@ function Form() {
 
               {/* Gender */}
               <div className="flex-1">
-                <select
+                <input
                   name="gender"
                   value={formData.gender}
                   onChange={handleInputChange}
-                  className="w-full px-2 py-1 text-sm border border-gray-300 bg-white outline-none"
+                  className="w-full  placeholder-black px-2 py-1 text-sm border border-gray-300 bg-white text-black"
                 >
                   <option value="" disabled selected>Gender</option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
                   <option value="Other">Other</option>
-                </select>
+                </input>
               </div>
 
             </div>
