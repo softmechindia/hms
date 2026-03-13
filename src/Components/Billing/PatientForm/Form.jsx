@@ -112,8 +112,8 @@ function Form() {
   });
 
   return (
-
-    <div className="flex justify-center h-[100vh] ">
+       <div className=" rounded-md h-fit  bg-white">
+    <div className="flex flex-col items-center  gap-4">
       <div className="w-full max-w-6xl bg-white shadow-xl rounded-md overflow-hidden border border-gray-200">
         
       <div className="flex items-center justify-between flex-nowrap
@@ -412,11 +412,13 @@ className="w-full px-2 py-1 text-sm border border-gray-300 rounded outline-none 
 
           </div>
 
-          <div className="mt-10">
-            <PatientsHistory />
-          </div>
+    
         </form>
       </div>
+
+        <div className="w-full mb-3 max-w-6xl">
+        <PatientsHistory />
+      </div>  
       {showAddOccupations && <AddOccupationPopup onClose={() => setShowAddOccupations(false)} />}
       {showEditOccupations && <EditOccupationPopup onClose={() => setShowEditOccupations(false)} />}
       {showAddEducations && <AddEducationPopup onClose={() => setShowAddEducations(false)} />}
@@ -424,8 +426,13 @@ className="w-full px-2 py-1 text-sm border border-gray-300 rounded outline-none 
       {showAddCities && <AddCityPopup onClose={() => setShowAddCities(false)} />}
       {showEditCities && <EditCityPopup onClose={() => setShowEditCities(false)} />}
     </div>
+    </div>
+
+       
   );
 }
+
+
 
 
 // InputField component

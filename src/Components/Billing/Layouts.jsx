@@ -9,7 +9,7 @@ export default function Layouts() {
 
   return (
   
-   <div className="min-h-full max-w-[1920px] mx-auto bg-gray-100 overflow-x-hidden shadow-lg">
+   <div className=" min-h-screen max-w-[1920px] mx-auto bg-gray-100 overflow-x-hidden shadow-lg">
       {isDashboard ? (
         <div className="max-w-[1920px] mx-auto shadow-lg">
           <main className="p-1">

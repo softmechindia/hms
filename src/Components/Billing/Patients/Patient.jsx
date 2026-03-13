@@ -44,10 +44,10 @@ function Patients() {
 
   return (
 
-    <div className={`bg-white  rounded-md shadow-xl border border-slate-200 h-[100vh] overflow-y-auto transition-all duration-300
+    <div className={`bg-white  rounded-md shadow-xl border border-slate-200 h-[673px] mb-3  overflow-y-auto transition-all duration-300
      ${doctors.length > 1 ? "overflow-y-auto" : "overflow-hidden"}`}>
 
-
+      {/* Header */}
       <div className="bg-gradient-to-r from-[#4F6EEA] to-[#6FA8FF] p-3  flex justify-between items-center text-white">
         <div className="flex items-center gap-2 text-sm font-semibold">
           My Patient
