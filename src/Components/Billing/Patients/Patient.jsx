@@ -27,6 +27,28 @@ function Patients() {
         { id: 3, name: "Saniya Sharma", patientId: "1119764", apptDate: "12/04/2-26", apptTime: "12:44 PM" },
       ],
     },
+        {
+      name: "Dr. Sharma",
+      image:
+        "https://t4.ftcdn.net/jpg/02/60/04/09/360_F_260040900_o7K6S72VKLMnSLMW8Oknlxp9Pdxz874y.jpg",
+      patients: [
+        { id: 1, name: "Muskan Verma ", patientId: "1119062", apptDate: "12/04/2-26", apptTime: "01:55 PM" },
+        { id: 2, name: "Nish Singh", patientId: "1119064", apptDate: "12/04/2-26", apptTime: "11:30 AM" },
+        { id: 3, name: "Saniya Sharma", patientId: "1119764", apptDate: "12/04/2-26", apptTime: "12:44 PM" },
+        { id: 3, name: "Saniya Sharma", patientId: "1119764", apptDate: "12/04/2-26", apptTime: "12:44 PM" },
+      ],
+    },
+        {
+      name: "Dr. Sharma",
+      image:
+        "https://t4.ftcdn.net/jpg/02/60/04/09/360_F_260040900_o7K6S72VKLMnSLMW8Oknlxp9Pdxz874y.jpg",
+      patients: [
+        { id: 1, name: "Muskan Verma ", patientId: "1119062", apptDate: "12/04/2-26", apptTime: "01:55 PM" },
+        { id: 2, name: "Nish Singh", patientId: "1119064", apptDate: "12/04/2-26", apptTime: "11:30 AM" },
+        { id: 3, name: "Saniya Sharma", patientId: "1119764", apptDate: "12/04/2-26", apptTime: "12:44 PM" },
+        { id: 3, name: "Saniya Sharma", patientId: "1119764", apptDate: "12/04/2-26", apptTime: "12:44 PM" },
+      ],
+    },
     
         {
       name: "Dr. Sharma",
