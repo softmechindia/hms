@@ -124,14 +124,31 @@ const Nav = () => {
             </button>
 
             {profileOpen && (
-              <div className="absolute right-0 mt-3 w-48 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
-                <p
-                  className="px-4 py-3 text-sm hover:bg-orange-50 cursor-pointer"
-                  onClick={() => navigate("/my-profile")}
-                >
-                  My Profile
-                </p>
-              </div>
+     <div className="absolute right-0 mt-3 w-48 bg-white rounded-md shadow-xl border border-gray-100 overflow-hidden">
+    
+    {/* My Profile */}
+    <p
+      className="px-3 py-2 text-sm hover:bg-orange-50 cursor-pointer"
+      onClick={() => {
+        navigate("/my-profile");
+        setProfileOpen(false);
+      }}
+    >
+      My Profile
+    </p>
+
+    {/* Logout */}
+    <p
+      className="px-3 py-2 text-sm hover:bg-orange-50 cursor-pointer"
+      onClick={() => {
+        setProfileOpen(false);
+        console.log("Logout clicked");
+      }}
+    >
+      Logout
+    </p>
+
+  </div>
             )}
           </div>
 
