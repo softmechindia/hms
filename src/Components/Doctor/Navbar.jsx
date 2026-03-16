@@ -19,7 +19,8 @@ const Navbar = () => {
   
   const location = useLocation();
 
-const showLogo = location.pathname.includes("prescription");
+  const hideLogoPaths =["/doctor/dashboard", "/doctor/patient", "/doctor/upcoming"];
+  const showLogo = !hideLogoPaths.includes(location.pathname);
 
 const navLinks = [
   { name: "Dashboard", icon: <LayoutDashboard size={20} />, path: "/doctor/dashboard" },
