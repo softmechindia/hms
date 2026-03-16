@@ -25,6 +25,9 @@ const Nav = () => {
   const profileRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
+  
+const isDashboard = location.pathname === "/";
+  
 
   const menuItems = [
     {
@@ -70,7 +73,12 @@ const Nav = () => {
   }, []);
 
   return (
-    <nav className="w-full bg-white  sticky top-0 z-50  max-w-[1920px]">
+    <nav className={`
+      w-full bg-white sticky top-0 z-50 shadow-sm    max-w-[1920px]"
+      ${isDashboard ? "block" : "hidden lg:block"}
+    `}>
+
+ 
       <div className="mx-auto px-4 h-16 flex items-center justify-between">
         
         {/* LOGO — ONLY DASHBOARD */}
@@ -183,6 +191,7 @@ const Nav = () => {
           ))}
         </div>
       )}
+          
     </nav>
   );
 };
