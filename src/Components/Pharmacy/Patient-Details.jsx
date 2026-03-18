@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function PatientList() {
+function PatientDetails() {
   // Note: Changed IDs to be unique so keys work properly
   const [patients, setPatients] = useState([
     { id: 1, name: "Rohit Sharma", patientid: "1119054", patientDate: "22/04/2026" },
@@ -32,8 +32,8 @@ function PatientList() {
   };
 
   const Table = () => (
-<div className="bg-white shadow-sm h-[100vh] border border-gray-200 overflow-hidden">
-      <div className="bg-gradient-to-r from-[#4F6EEA] to-[#6FA8FF] text-white px-4 py-2 rounded-t">
+<div className="bg-white shadow-sm h-[100vh] border border-gray-200 overflow-hidden rounded-t">
+      <div className="bg-gradient-to-r from-[#4F6EEA] to-[#6FA8FF] text-white px-4 py-2 ">
         <h3 className="text-sm font-bold uppercase tracking-wider flex items-center justify-center">
           Patients Details
         </h3>
@@ -67,13 +67,13 @@ function PatientList() {
   );
 
   return (
-    <div className="p-2">
+ 
 
       <div className="overflow-x-auto">
         <Table />
       </div>
-    </div>
+
   );
 }
 
-export default PatientList;
+export default PatientDetails;

@@ -27,13 +27,13 @@ function Header() {
   }, []);
 
   return (
-    <header className="bg-white h-16 border-b border-gray-100 shadow-sm px-6">
-      <div className="h-full flex items-center justify-between">
+<header className="bg-white h-16 border-b border-gray-100 shadow-sm px-6 w-full flex-shrink-0">    
+    <div className="flex items-center justify-between">
         
         {/* LEFT SIDE */}
      <div className="flex-1 flex items-center">
   <button 
-    onClick={() => console.log("Toggle Sidebar")} // Replace with your sidebar toggle logic
+    onClick={() => console.log("Toggle Sidebar")} 
     className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-orange-600 transition-colors focus:outline-none"
     aria-label="Open Sidebar"
   >
