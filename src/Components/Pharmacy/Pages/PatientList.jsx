@@ -5,7 +5,7 @@ const PatientListTable = () => {
   const [entries, setEntries] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Table Columns Definition
+
   const columns = [
     { label: 'R/n', key: 'rn' },
     { label: 'Patient ID', key: 'id' },
@@ -18,9 +18,9 @@ const PatientListTable = () => {
   ];
 
   return (
-    <div className="bg-[#e9ecef] min-h-screen p-6 font-sans">
+    <div className="h-[100vh]">
       
-      {/* --- Breadcrumb Section --- */}
+    
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-xl font-bold text-gray-700 uppercase tracking-tight">Patients List</h1>
         <div className="flex items-center text-sm text-gray-500 gap-2">
@@ -32,13 +32,12 @@ const PatientListTable = () => {
         </div>
       </div>
 
-      {/* --- Main Card Container --- */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
         <div className="p-6">
           
           <h2 className="text-lg font-semibold text-gray-800 mb-4">Patient Details</h2>
 
-          {/* --- Filters & Search Section --- */}
+          
           <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
             <div className="flex items-center text-sm text-gray-600">
               <span>Show</span>
@@ -65,10 +64,10 @@ const PatientListTable = () => {
             </div>
           </div>
 
-          {/* --- Responsive Table Section --- */}
+        
           <div className="overflow-x-auto border rounded-md border-gray-100">
             <table className="w-full text-left border-collapse">
-              <thead className="bg-[#f8f9fa] border-b">
+              <thead className="bg-[#f8f9fa] border-b border-gray-200">
                 <tr>
                   {columns.map((col, index) => (
                     <th key={index} className="px-4 py-3 text-[13px] font-bold text-gray-700 border-r last:border-r-0 border-gray-200 group cursor-pointer hover:bg-gray-100 transition">
@@ -84,8 +83,8 @@ const PatientListTable = () => {
                 </tr>
               </thead>
               <tbody>
-                {/* --- Empty State --- */}
-                <tr className="border-b">
+                
+                <tr className="border-b border-gray-200">
                   <td colSpan="8" className="py-6 text-center text-sm text-gray-500 italic">
                     No data available in table
                   </td>
