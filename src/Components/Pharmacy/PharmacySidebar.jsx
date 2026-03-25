@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
+
 import logo from "../../assets/images/logo.png";
 import {
   LayoutDashboard,
@@ -27,7 +28,7 @@ import { FaUser } from 'react-icons/fa';
 const Sidebar = ({ isCollapsed }) => {
   const [openMenus, setOpenMenus] = useState(null);
   const [isMobileOpen, setMobileOpen] = useState(false);
-  
+
 
   const location = useLocation();
 
@@ -55,7 +56,7 @@ const Sidebar = ({ isCollapsed }) => {
       type: 'dropdown',
       subItems: [
         { name: 'Patient List', path: '/Pharmacy/patient-list', icon: <Users size={20} /> },
-        { name: 'Medicine Bought', path: '/Pharmacy/medicine-bought', icon: <ShoppingBagIcon size={20} /> }
+        { name: 'Medicine Bought', path: '/Pharmacy/', icon: <ShoppingBagIcon size={20} /> }
       ]
     },
 
@@ -113,7 +114,7 @@ const Sidebar = ({ isCollapsed }) => {
     const getHighlightClass = (isActive, itemTitle) => {
     const baseClass = "flex items-center gap-3 p-3 rounded-md transition-all duration-200 w-full ";
     return isActive 
-      ? baseClass + "bg-white/20 text-white shadow-md font-bold" 
+      ? baseClass + "bg-white/20 text-white shadow-md font-bold  hover:bg-gradient-to-b from-[#4F6EEA] to-[#6FA8FF] text-white" 
       : baseClass + "text-white/80 hover:bg-white/10";
   };
 
@@ -121,17 +122,9 @@ const Sidebar = ({ isCollapsed }) => {
     <>
       {/* MOBILE TOP BAR */}
 <div className={`fixed lg:sticky top-0 left-0 z-[60] h-screen bg-[#5B82F7] text-white flex flex-col transition-all duration-300 ease-in-out ${isCollapsed ? "w-20" : "w-64"}`}>        <div className="flex items-center gap-3">
-         
-      
-      
-        </div>
+   </div>
     
-   
-
-      {/* SIDEBAR */}
-
-
-        {/* LOGO */}
+     {/* LOGO */}
       <div className="p-3 flex justify-center items-center overflow-hidden h-20">
           <img
             src={logo}
@@ -189,7 +182,7 @@ const Sidebar = ({ isCollapsed }) => {
                           key={sub.name}
                           to={sub.path}
                           className={({ isActive }) =>
-                            `flex items-center gap-3 p-2 rounded-md text-xs transition-all ${isActive ? "bg-white/20 text-white font-bold" : "text-white/70 hover:text-white"}`
+                            `flex items-center gap-3 p-2 rounded-md text-xs transition-all ${isActive ? " text-white font-bold" : "text-white/70 hover:text-white"}`
                           }
                         >
                           <span className="whitespace-nowrap">{sub.name}</span>
@@ -202,6 +195,8 @@ const Sidebar = ({ isCollapsed }) => {
             </div>
           ))}
         </nav>
+
+
         
       </div>
 
@@ -212,6 +207,8 @@ const Sidebar = ({ isCollapsed }) => {
           onClick={() => setMobileOpen(false)}
         />
       )}
+
+      
     </>
   );
 };

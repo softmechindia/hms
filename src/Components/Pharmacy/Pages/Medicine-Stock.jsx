@@ -9,8 +9,8 @@ const MedicineStock = () => {
   ];
 
   return (
-    <div className="h-[100vh]">
-      <div className="max-w-6xl mx-auto bg-white rounded-md shadow-sm border border-gray-200 p-6">
+       <div className="w-full h-[100vh]    overflow-hidden ">
+      <div className=" bg-white rounded-md shadow-sm border border-gray-200 p-6">
         
         <h2 className="text-lg font-bold uppercase tracking-tight mb-6 text-slate-700">
           Medicine Stock

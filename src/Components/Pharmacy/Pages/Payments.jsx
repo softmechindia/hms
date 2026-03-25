@@ -1,28 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Plus, Pencil, X } from 'lucide-react';
-
+import SupplierPaymentPopup from '../PharmacyPopup/Supplier-Payment-Popup';
 const SupplierPayment = () => {
+ const [paymentPopup, setPaymentPopup] = useState(false);
   const payments = [
-    { 
-      sl: 1, 
-      supplierName: 'Test', 
-      paymentMode: 'cash', 
-      amount: '5000', 
-      paidBy: 'Surjit', 
-      date: '2020-12-17 18:56:12' 
+    {
+      sl: 1,
+      supplierName: 'Test',
+      paymentMode: 'cash',
+      amount: '5000',
+      paidBy: 'Surjit',
+      date: '2020-12-17 18:56:12'
     }
   ];
 
   return (
     <div className="min-h-screen ">
       <div className="max-w-7xl mx-auto bg-white rounded-md shadow-sm border border-gray-200 p-6">
-        
+
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
           <h2 className="text-lg font-bold uppercase tracking-tight text-slate-700">
             Supplier Payment
           </h2>
-          <button className="bg-[#26c281] hover:bg-[#21a870] text-white px-5 py-2 rounded-full flex items-center gap-2 text-sm font-medium transition-all shadow-sm">
+          <button onClick={() => setPaymentPopup(true)} className="bg-[#26c281] hover:bg-[#21a870] text-white px-5 py-2 rounded-full flex items-center gap-2 text-sm font-medium transition-all shadow-sm">
             <Plus size={18} strokeWidth={3} /> Add Supplier Payment
           </button>
         </div>
@@ -38,9 +39,9 @@ const SupplierPayment = () => {
           </div>
           <div className="flex items-center gap-2">
             <span>Search:</span>
-            <input 
-              type="text" 
-              className="border border-gray-300 rounded px-2 py-1 outline-none w-full md:w-64" 
+            <input
+              type="text"
+              className="border border-gray-300 rounded px-2 py-1 outline-none w-full md:w-64"
             />
           </div>
         </div>
@@ -110,6 +111,13 @@ const SupplierPayment = () => {
           </nav>
         </div>
       </div>
+
+  <SupplierPaymentPopup
+        isOpen={paymentPopup}
+        onClose={() => setPaymentPopup(false)}
+        onSubmit={() => setPaymentPopup()
+        }
+      />
     </div>
   );
 };

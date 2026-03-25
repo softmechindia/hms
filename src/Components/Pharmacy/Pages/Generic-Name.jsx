@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Plus, Pencil, X } from 'lucide-react';
-
+import AddMedicineGenericPopup from '../PharmacyPopup/Add-Medicine-Generic-Popup';
 const MedicineGenericName = () => {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
   const generics = [
     { sn: 1, name: 'ACECLOFENAC+CHLORZOXAZONE+PCM', status: 'Active' },
     { sn: 2, name: 'ACECLOFENAC+PARACETAMOL', status: 'Active' },
@@ -16,15 +18,15 @@ const MedicineGenericName = () => {
   ];
 
   return (
-    <div className="min-h-screen ">
-      <div className="max-w-[1600px] mx-auto bg-white rounded-md shadow-sm border border-gray-200 p-6">
-        
+      <div className="w-full h-[100vh]    overflow-hidden ">
+      <div className=" bg-white rounded-md shadow-sm border border-gray-200 p-6">
+
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
           <h2 className="text-lg font-bold uppercase tracking-tight text-slate-700">
             Medicine Generic Name
           </h2>
-          <button className="bg-[#26c281] hover:bg-[#21a870] text-white px-5 py-2 rounded-full flex items-center gap-2 text-sm font-medium transition-all shadow-sm">
+          <button onClick={() => setIsPopupOpen(true)} className="bg-[#26c281] hover:bg-[#21a870] text-white px-5 py-2 rounded-full flex items-center gap-2 text-sm font-medium transition-all shadow-sm">
             <Plus size={18} strokeWidth={3} /> Add Medicine Generic Name
           </button>
         </div>
@@ -105,6 +107,15 @@ const MedicineGenericName = () => {
           </nav>
         </div>
       </div>
+
+      <AddMedicineGenericPopup
+        isOpen={isPopupOpen}
+        onClose={() => setIsPopupOpen(false)}
+        onSave={() => {
+          
+          setIsPopupOpen(false);
+        }}
+      />
     </div>
   );
 };
