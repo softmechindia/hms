@@ -83,8 +83,8 @@ function Pending() {
 
   return (
 
-<div className="min-h-screen bg-gray-100 p-4 md:p-8 flex flex-col items-center">
-<main className="w-full max-w-6xl bg-white rounded-md shadow-sm border border-gray-100 overflow-hidden">        
+    <div className="w-full h-[100vh]    overflow-hidden ">
+       <div className=" bg-white rounded-md shadow-sm border border-gray-200 p-6">   
         <div className="p-6 md:p-8">
       <h1 className="text-xl font-black text-gray-800 mb-6 tracking-tight uppercase text-center md:text-left">
           Pending Appointments
@@ -151,7 +151,7 @@ function Pending() {
             />
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

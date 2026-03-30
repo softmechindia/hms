@@ -30,7 +30,7 @@ const navLinks = [
 ];
 
   return (
-<nav className="sticky top-0  max-w-[1920px] w-full bg-white/80 backdrop-blur-xl border-b border-slate-100 shadow-sm">    
+<nav className="sticky top-0   w-full bg-white/80 backdrop-blur-xl border-b border-slate-100 shadow-sm">    
   <div className="mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         
  
@@ -100,27 +100,30 @@ const navLinks = [
   
 
       {/* Mobile Drawer */}
-      {isOpen && (
-        <div className="lg:hidden bg-white border-t border-slate-100 shadow-xl px-4 py-4 space-y-2">
-          {navLinks.map((link) => (
-            <button
-              key={link.name}
-              onClick={() => {
-                setActive(link.name);
-                setIsOpen(false);
-              }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition ${
-                active === link.name
-                  ? "bg-orange-50 text-orange-600"
-                  : "text-slate-600 hover:bg-slate-50"
-              }`}
-            >
-              {link.icon}
-              {link.name}
-            </button>
-          ))}
-        </div>
-      )}
+      {/* Mobile Drawer */}
+{isOpen && (
+  <div className="lg:hidden bg-white border-t border-slate-100 shadow-xl px-4 py-4 space-y-2">
+    {navLinks.map((link) => (
+      <NavLink
+        key={link.name}
+        to={link.path}
+        onClick={() => setIsOpen(false)} // Click hote hi drawer close ho jaye
+        className={({ isActive }) =>
+          `w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition ${
+            isActive
+              ? "bg-orange-50 text-orange-600"
+              : "text-slate-600 hover:bg-slate-50"
+          }`
+        }
+      >
+        {link.icon}
+        {link.name}
+      </NavLink>
+    ))}
+  </div>
+)}
+ 
+
     </nav>
   );
 };

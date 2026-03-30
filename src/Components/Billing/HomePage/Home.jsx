@@ -4,7 +4,7 @@ import Patients from "../Patients/Patient";
 import Navbar from "../../Billing/Navbar";
 function  Home() {
   return (
-  <div className="min-h-screen max-w-[1920px] mx-auto bg-gray-200 overflow-x-hidden shadow-lg">
+  <div className="h-[100vh] w-full  bg-gray-200 overflow-x-hidden shadow-lg">
 <div>
  <Navbar/>
 </div>

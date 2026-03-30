@@ -114,7 +114,7 @@ function Form() {
   return (
        <div className=" rounded-md h-fit  bg-white">
     <div className="flex flex-col items-center  gap-4">
-      <div className="w-full max-w-6xl bg-white shadow-xl rounded-md overflow-hidden border border-gray-200">
+      <div className="w-full  bg-white shadow-xl rounded-md overflow-hidden border border-gray-200">
         
       <div className="flex items-center justify-between flex-nowrap
                 px-3 py-2 
@@ -416,7 +416,7 @@ className="w-full px-2 py-1 text-sm border border-gray-300 rounded outline-none 
         </form>
       </div>
 
-        <div className="w-full mb-3 max-w-6xl">
+    <div className="w-full mt-1">
         <PatientsHistory />
       </div>  
       {showAddOccupations && <AddOccupationPopup onClose={() => setShowAddOccupations(false)} />}

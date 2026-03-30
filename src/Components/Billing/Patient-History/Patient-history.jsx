@@ -22,7 +22,7 @@ function PatientsHistory() {
   const mobileData = initialData.slice(0, 5);
 
   return (
-    <div className="w-full max-w-4xl mx-auto rounded-md bg-white border border-gray-100 shadow-sm">
+   <div className="w-full rounded-md bg-white border border-gray-300 shadow-sm overflow-hidden">
       <h1 className="text-[10px] font-bold text-white text-center py-4 bg-[#4F6EEA] uppercase tracking-wider">
         Patient History
       </h1>

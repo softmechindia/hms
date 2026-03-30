@@ -75,12 +75,11 @@ function PatientList() {
   );
 
   return (
-    <>
-      {/* Table container */}
-      <div className="bg-white rounded-md shadow-sm overflow-x-auto">
+    <div className="p-4"> 
+   
         <Table />
-      </div>
-    </>
+ 
+    </div>
 
   );
 }

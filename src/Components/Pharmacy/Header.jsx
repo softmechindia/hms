@@ -15,7 +15,8 @@ function Header({ onToggleSidebar }) {
   const profileRef = useRef(null);
   const navigate = useNavigate();
 
-  // Close dropdown when clicking outside
+
+  //Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (profileRef.current && !profileRef.current.contains(event.target)) {

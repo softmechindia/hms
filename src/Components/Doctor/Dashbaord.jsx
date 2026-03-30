@@ -96,28 +96,15 @@ function Dashboard() {
   const [filteredData, setFilteredData] = useState(initialData);
 
   return (
-     <div className="min-h-full p-2 max-w-[1920px] mx-auto bg-gray-100 overflow-x-hidden shadow-lg">
+        <div className="flex-1 min-h-screen bg-[#f8fafc] w-full overflow-x-hidden">
 
-<div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-  <div className="flex items-center gap-4">
-
- 
-
-      <h1 className="text-3xl font-black tracking-tight text-black leading-tight">
+          
+        <h1 className="text-3xl font-black tracking-tight text-black leading-tight mt-4 mx-4">
         Clinic Overview
       </h1>
+<div className="h-auto p-6 rounded-md m-4 bg-white font-sans text-slate-900">
  
-  </div>
-
-
-</div>
-    <div className="h-auto p-6 rounded-md m-4 bg-white font-sans text-slate-900">
- 
- 
- 
-
-
-      {/* Stats Cards */}
+ {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <StatCard count={12} label="Total Appointments" icon={<Calendar className="text-indigo-600" />} color="bg-indigo-50" />
         <StatCard count={8} label="Confirmed" icon={<CheckCircle className="text-emerald-600" />} color="bg-emerald-50" />
@@ -126,8 +113,8 @@ function Dashboard() {
       
 
       {/* Table Section */}
-      <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
-        <div className="flex items-center justify-between p-5 border-b border-slate-100">
+      <div className="bg-white rounded-t-md shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+        <div className="flex items-center justify-between p-4 border-b border-slate-100">
           <h2 className="text-lg font-bold text-slate-800">Today's Schedule</h2>
           <button className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors">
             View All

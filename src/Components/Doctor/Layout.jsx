@@ -13,15 +13,15 @@ export default function Layouts() {
   const showSidebar = sidebarRoutes.includes(location.pathname);
 
   return (
-    <div className="min-h-full max-w-[1920px] mx-auto bg-gray-200 overflow-x-hidden shadow-lg">
-      <div className="min-h-screen">
+      <div className=" w-full overflow-y-auto gap-2 h-[100vh] bg-gray-100">
+      <div className="">
         {showSidebar ? (
        
           <div className="flex">
-            <Sidebar />
+            <Sidebar /> 
             <div className="flex-1">
               <Navbar />
-              <main className="p-1">
+              <main className=" ">
                 <Outlet />
               </main>
             </div>

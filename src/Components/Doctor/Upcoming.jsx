@@ -50,8 +50,8 @@ function UpComing() {
   const [selectedDate, setSelectedDate] = useState("2026-02-25");
 
   return (
-     <div className="min-h-full p-2 max-w-[1920px] mx-auto bg-gray-100 overflow-x-hidden shadow-lg">
-      <div className="max-w-7xl mx-auto">
+      <div className="w-full h-[100vh]    overflow-hidden ">
+       <div className=" bg-white rounded-md shadow-sm border border-gray-200 p-6">  
         
         {/* Title Section */}
         <div className="flex items-center gap-3 mb-8 mt-4">

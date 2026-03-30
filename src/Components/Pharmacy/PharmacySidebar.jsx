@@ -42,10 +42,10 @@ const Sidebar = ({ isCollapsed }) => {
   };
 
  // 2. Logic Functions
-  const toggleMenu = (menuTitle) => {
-    if (isCollapsed) return; 
-    setOpenMenus((prev) => (prev === menuTitle ? null : menuTitle));
-  };
+const toggleMenu = (title) => {
+    if (isCollapsed) return; // Collapsed mode mein dropdown nahi khulega
+    setOpenMenus(openMenus === title ? null : title);
+  }
 
   const menuItems = [
     { title: 'Dashboard', icon: <LayoutDashboard size={20} />, type: 'link', path: '/Pharmacy/' },

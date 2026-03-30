@@ -72,24 +72,13 @@ function PatientSearch() {
   const [filteredData, setFilteredData] = useState(initialData);
 
   return (
-     <div className="min-h-full max-w-[1920px] mx-auto bg-gray-100 overflow-x-hidden shadow-lg p-2 ">
-{/* Header Section */}
-<div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-  <div className="flex items-center gap-4">
-
-  
-  
-      <h1 className="text-3xl font-black tracking-tight text-black">
+      <div className="w-full h-[100vh]    overflow-hidden ">
+       <div className=" bg-white rounded-md shadow-sm border border-gray-200 p-6">  
+        <h1 className="text-3xl font-black tracking-tight text-black leading-tight mt-4 mx-4">
         Patient Details
       </h1>
     
-    </div>
-
-
-
-</div>
-
-      {/* Search & Filter */}
+    {/* Search & Filter */}
       <div className="p-4 mb-6 bg-white rounded-lg shadow-sm border border-gray-100 flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-4">
         <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center w-full sm:w-auto">
           <label className="font-bold text-gray-800">Search</label>
@@ -121,8 +110,8 @@ function PatientSearch() {
         <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded flex items-center gap-2 transition-colors font-medium">
           <Search size={18} /> Search
         </button>
-      </div>
-
+   </div>
+         </div>
       {/* Desktop DataTable */}
       <div className="hidden md:block">
         <DataTable
