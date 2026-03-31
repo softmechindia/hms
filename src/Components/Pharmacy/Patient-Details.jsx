@@ -32,7 +32,7 @@ function PatientDetails() {
   };
 
   const Table = () => (
-<div className="bg-white shadow-sm h-[100vh] border border-gray-200 overflow-hidden rounded-t">
+<div className="bg-white shadow-sm h-[100vh] border border-gray-200 overflow-hidden rounded-t md:h-auto">
       <div className="bg-gradient-to-r from-[#4F6EEA] to-[#6FA8FF] text-white px-4 py-2 ">
         <h3 className="text-sm font-bold uppercase tracking-wider flex items-center justify-center">
           Patients Details

@@ -11,7 +11,7 @@ const MedicineNotification = () => {
   ]);
 
   return (
-    <div className="w-full h-[100vh]    overflow-hidden ">
+    <div className="w-full h-[100vh]    overflow-hidden  md:h-auto ">
        <div className=" bg-white rounded-md shadow-sm border border-gray-200 p-6">
         
         {/* Header Section */}

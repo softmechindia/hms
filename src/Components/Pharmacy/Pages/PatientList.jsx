@@ -21,7 +21,7 @@ const PatientListTable = () => {
     <div className="h-[100vh]">
       
     
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6  md:h-auto">
         <h1 className="text-xl font-bold text-gray-700 uppercase tracking-tight">Patients List</h1>
         <div className="flex items-center text-sm text-gray-500 gap-2">
           <Home size={14} className="text-gray-600" />

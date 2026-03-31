@@ -66,7 +66,7 @@ function Form() {
 
   return (
 
-      <div className="w-full  max-w-full mx-auto flex flex-col gap-1  p-4">
+      <div className="w-full h-[100vh] md:h-auto  max-w-full mx-auto flex flex-col gap-1  p-4">
   
 
      <div className="bg-[#fdfdf7] p-3 border-t border-l border-r border-gray-300 text-sm space-y-3 rounded-t-sm">

@@ -10,7 +10,7 @@ const InvoiceForm = () => {
   const gridLayout = "grid grid-cols-[1fr_80px_120px_80px_90px_100px_110px]";
 
   return (
-<div className="w-full h-[100vh] bg-white shadow-sm rounded-md overflow-hidden border border-gray-200">        
+<div className="w-full h-[100vh] bg-white shadow-sm rounded-md overflow-hidden border border-gray-200 md:h-auto">        
 
         <div className="p-4 border-b bg-white flex items-center gap-4">
           <label className="text-sm font-semibold whitespace-nowrap">Patient Id/Name/Mobile</label>

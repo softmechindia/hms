@@ -15,8 +15,8 @@ const SupplierPayment = () => {
   ];
 
   return (
-    <div className="min-h-screen ">
-      <div className="max-w-7xl mx-auto bg-white rounded-md shadow-sm border border-gray-200 p-6">
+     <div className="w-full h-[100vh]    overflow-hidden  md:h-auto ">
+      <div className="mx-auto bg-white rounded-md shadow-sm border border-gray-200 p-6">
 
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">

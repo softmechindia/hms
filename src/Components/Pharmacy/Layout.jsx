@@ -6,13 +6,21 @@ import Header from "./Header";
 
 function Layout() {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
+    if(window.innerWidth >= 1024) {
+      setIsCollapsed(!isCollapsed)
+    }else {
+      setIsMobileOpen(!isMobileOpen)
+    }
   };
   return (
 
     <div className="flex h-screen w-full overflow-hidden bg-white">
-      <PharmacySidebar isCollapsed={isCollapsed} />
+      <PharmacySidebar
+       isCollapsed={isCollapsed} 
+       isMobileOpen={isMobileOpen}
+       setIsMobileOpen={setIsMobileOpen}/>
       
       <div className="flex flex-col flex-1 h-full overflow-hidden">
         <Header onToggleSidebar={toggleSidebar} />
