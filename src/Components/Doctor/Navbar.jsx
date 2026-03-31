@@ -28,10 +28,7 @@ const Navbar = () => {
     { name: "Prescription", icon: <FileText size={20} />, path: "/doctor/add-prescription" },
   ];
 
-  /* Condition: 
-    - If it is NOT the Prescription page AND it is NOT a Large screen, 
-      we hide the entire navbar content.
-  */
+
   const responsiveVisibility = !isPrescriptionPage ? "hidden lg:flex" : "flex";
 
   return (
@@ -73,7 +70,7 @@ const Navbar = () => {
     <div className="flex-1 flex items-center justify-end gap-3">
 
 
-        {/* PROFILE: Hidden on Mobile/Tab unless it's Prescription page */}
+       
         <div className={`${responsiveVisibility} ite items-center gap-2 bg-slate-50 px-2 py-1.5 rounded-full border border-slate-100 hover:border-orange-200 cursor-pointer transition group`}>
           <img
             src="https://ui-avatars.com/api/?name=Doc+User&background=334155&color=fff"
@@ -88,7 +85,7 @@ const Navbar = () => {
         </div>
             </div>
 
-        {/* MOBILE MENU BUTTON: Only shows if it's the Prescription page */}
+    
         {isPrescriptionPage && (
           <button
             onClick={() => setIsOpen(!isOpen)}
