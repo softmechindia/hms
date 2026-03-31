@@ -38,7 +38,7 @@ const Navbar = () => {
     <nav className="sticky top-0 w-full bg-white/80 backdrop-blur-xl border-b border-slate-100 shadow-sm">
       <div className="mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         
-        {/* LOGO SECTION: Hidden on Mobile/Tab unless it's Prescription page */}
+   
         <div className={`w-48 ${responsiveVisibility} items-center`}>
           {showLogo && (
             <div className="flex items-center gap-3">
@@ -70,9 +70,11 @@ const Navbar = () => {
             </NavLink>
           ))}
         </div>
+    <div className="flex-1 flex items-center justify-end gap-3">
+
 
         {/* PROFILE: Hidden on Mobile/Tab unless it's Prescription page */}
-        <div className={`${responsiveVisibility} items-center gap-2 bg-slate-50 px-2 py-1.5 rounded-full border border-slate-100 hover:border-orange-200 cursor-pointer transition group`}>
+        <div className={`${responsiveVisibility} ite items-center gap-2 bg-slate-50 px-2 py-1.5 rounded-full border border-slate-100 hover:border-orange-200 cursor-pointer transition group`}>
           <img
             src="https://ui-avatars.com/api/?name=Doc+User&background=334155&color=fff"
             alt="Avatar"
@@ -84,6 +86,7 @@ const Navbar = () => {
           </div>
           <ChevronDown size={14} className="text-slate-400 group-hover:text-orange-500" />
         </div>
+            </div>
 
         {/* MOBILE MENU BUTTON: Only shows if it's the Prescription page */}
         {isPrescriptionPage && (
