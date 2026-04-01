@@ -9,21 +9,15 @@ import TodayConf from "../Billing/Today-Conf/Today-conf";
 import CancelAppointment from "../Billing/Cancel-Appointment/Cancelled";
 import Collections from "../Billing/Collections/Collection";
 import Layouts from "../Billing/Layouts";
-import LoginPage from "../Billing/Login-Page/Login";
+
 
 function BillingApp() {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
 
     return (
         <Routes>
-            <Route path="/" element={!isAuthenticated ? (
-                <LoginPage setAuth={setIsAuthenticated} />
-            ) : (
-                <Layouts><Outlet /></Layouts>
-            )}
-            >
-                {isAuthenticated && (
-                    <>
+    
+                         <Route element={<Layouts />}>
                         <Route index element={<HomePage />} />
                         <Route path="my-profile" element={<MyProfile />} />
                         <Route path="total-app" element={<TotalAppointment />} />
@@ -31,10 +25,9 @@ function BillingApp() {
                         <Route path="today-conf" element={<TodayConf />} />
                         <Route path="cancel" element={<CancelAppointment     />} />
                         <Route path="collections" element={<Collections />} />
-                    </>
+                        </Route>
 
-                )}
-            </Route>
+
             <Route path="*" element={<Navigate to="/" />} />
 
 
