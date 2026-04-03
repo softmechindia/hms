@@ -63,7 +63,7 @@ export default function Sidebar() {
 <p className="text-white/60 text-xs tracking-widest uppercase">Cardiologist</p>
         </div>
 
-        <nav className="px-4 space-y-2">
+        <nav className="px-1 space-y-2">
           {menu.map((item) => {
 
             const Icon = item.icon;
@@ -74,8 +74,8 @@ export default function Sidebar() {
                 to={item.path}
                 onClick={() => setIsOpen(false)}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 p-2 rounded-md mb-2 transition-colors ${isActive
-                    ? "bg-gradient-to-r from-[#4F6EEA] to-[#6FA8FF] text-white shadow-md"
+                  `flex items-center gap-3 p-3 rounded-md transition-all ${isActive
+                    ? "bg-white text-[#4F6EEA] shadow-md border-l-4 border-white"
                     : "text-white hover:bg-white/10"
                   }`
                 }

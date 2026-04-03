@@ -3,8 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import logo from "../../assets/images/logo.png";
 import {
   LayoutDashboard, Users, Bell, Package, Truck, Wallet,
-  ChevronDown, ChevronUp, List, CreditCard, ClipboardList,
-  Wallet2, Tag, Type, Dna, ShoppingBagIcon, History, X
+  ChevronDown, ChevronUp,  X
 } from 'lucide-react';
 import { FaUser } from 'react-icons/fa';
 
@@ -81,13 +80,13 @@ const Sidebar = ({ isCollapsed, isMobileOpen, setIsMobileOpen }) => {
   const getHighlightClass = (isActive) => {
     const baseClass = "flex items-center gap-3 p-3 rounded-md transition-all duration-300 w-full mb-1 ";
     return isActive 
-      ? baseClass + "bg-white/20 text-white shadow-lg font-bold" 
-      : baseClass + "text-white/80 hover:bg-white/10 hover:text-white";
+      ? baseClass + "bg-white text-[#4F6EEA] shadow-md border-l-4 border-white" 
+      : baseClass + "text-white hover:bg-white/10";
   };
 
   return (
     <>
-      {/* 1. MOBILE OVERLAY - Jab mobile par sidebar khulega tab background dark hoga */}
+    
       {isMobileOpen && (
         <div 
           className="fixed inset-0 bg-black/50 z-[65] lg:hidden animate-in fade-in duration-300"
@@ -119,7 +118,7 @@ const Sidebar = ({ isCollapsed, isMobileOpen, setIsMobileOpen }) => {
           />
         </div>
 
-        {/* PROFILE SECTION - image_8a3403.png se inspired */}
+  
         <div className={`transition-all duration-500 overflow-hidden ${isCollapsed ? "h-0 opacity-0 mb-0" : "h-auto opacity-100 my-6 px-4"}`}>
           <div className="flex flex-col items-center">
             <div className="w-16 h-16 rounded-full border-2 border-orange-500 flex items-center justify-center bg-[#111827] mb-2 shadow-xl">

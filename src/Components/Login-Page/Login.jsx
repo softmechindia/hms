@@ -26,7 +26,7 @@ import { useNavigate } from "react-router-dom";
     return;
   };
 
-    if (password.length < 6) {
+    if (password.length < 1) {
       alert("Password must be at least 6 characters");
       return;
     }
