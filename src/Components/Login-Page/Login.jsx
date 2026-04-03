@@ -3,10 +3,7 @@ import logo from "../../assets/images/logo.png";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-
-
-
-function Login({ setAuth }) {
+  function Login({ setAuth }) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false);
@@ -29,12 +26,20 @@ function Login({ setAuth }) {
     return;
   };
 
-    if (password< 0) {
+    if (password.length < 6) {
       alert("Password must be at least 6 characters");
       return;
     }
-    setAuth(true);
-    navigate("/");
+   setAuth(true);
+
+   // --- REDIRECT LOGIC ---
+   if(lowerEmail.includes("doctor")){
+    navigate("/Doctor");
+   } else if(lowerEmail.includes("pharmacy")){
+    navigate("/Pharmacy")
+   }else {
+    navigate("/")
+   }
 
   }
   return (
