@@ -35,23 +35,29 @@ if (password !== "123456") {
         if (response.data && response.data.token) {
           localStorage.setItem("token", response.data.token);
         }
-        const id = userID.toUpperCase();
-        if (id.startsWith("ST0002")) {
-          navigate("/Pharmacy");
-        } else if (id.startsWith("ST0001")) {
+        if (userID === "ST0001") {
           navigate("/Billing");
-        } else if (id.startsWith("DR0001")) {
-          navigate("/Doctor");
-        } else {
-          navigate("/"); // Default
         }
-      } else {
-        console.warn("Login Failed:", response.message);
-        alert(response.message || "Invalid Credentials");
-      }
+        else if(userID === "DR0001") {
+          navigate("/Doctor")
+        }
+        else if(userID === "ST0002") {
+          navigate("/Doctor")
+        }
+        else  {
+         alert("Login Failed! This User ID does not have access permissions.");
+        setAuth(false);
+        }
+        } else {
+    
+      alert("Login Failed! Invalid User ID or Password.");
+    }
+
+      
+      
     } catch (error) {
-      console.error("Technical Error (Catch Block):", error);
-      alert("Something went wrong. Please check console.")
+      console.error("Technical Error:", error);
+      alert("Login Failed! Please Try Again.")
     } finally {
       setLoading(false)
     }
