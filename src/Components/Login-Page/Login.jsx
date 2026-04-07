@@ -16,7 +16,10 @@ function Login({ setAuth }) {
 
     if (!userID) { alert("Please Enter userId"); return; }
     if (!password) { alert("Please Enter Your Password"); return; }
-    if (password.length < 6) { alert("Password must be at least 6 characters"); return; }
+if (password !== "123456") {
+  alert("Incorrect Password! Please enter the correct 6-digit code.");
+  return;
+}
 
     setLoading(true);
 
