@@ -27,7 +27,7 @@ const Sidebar = ({ isCollapsed, isMobileOpen, setIsMobileOpen }) => {
       path: '/Pharmacy/patients', // Base path for active state
       subItems: [
         { name: 'Patient List', path: '/Pharmacy/patient-list' },
-        { name: 'Medicine Bought', path: '/Pharmacy/medicine-bought' }
+        { name: 'Medicine Bought', path: '/Pharmacy/' }
       ]
     },
     { title: 'Notification', icon: <Bell size={20} />, type: 'link', path: '/Pharmacy/notifications' },
@@ -96,7 +96,7 @@ const Sidebar = ({ isCollapsed, isMobileOpen, setIsMobileOpen }) => {
 
       {/* 2. SIDEBAR MAIN CONTAINER */}
       <aside className={`
-        fixed lg:sticky top-0 left-0 h-screen bg-[#5B82F7] text-white z-[70] transition-all duration-300 ease-in-out flex flex-col
+        fixed lg:sticky top-0 left-0 h-screen  bg-sidebar-gradient  text-white z-[70] transition-all duration-300 ease-in-out flex flex-col
         ${isMobileOpen ? "translate-x-0 w-[280px]" : "-translate-x-full lg:translate-x-0"}
         ${isCollapsed ? "lg:w-20" : "lg:w-64"}
       `}>

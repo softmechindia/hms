@@ -79,7 +79,7 @@ function CancelAppointment() {
   const customStyles = {
     headRow: {
       style: {
-        background: "linear-gradient(90deg, #5B7CFA, #7DA0FA)",
+        background: "var(--bg-brand-gradient)",
         color: "#ffffff",
         fontWeight: "800",
         fontSize: "12px",
@@ -101,7 +101,7 @@ function CancelAppointment() {
        <div className=" bg-white rounded-md shadow-sm border border-gray-200 mt-6">  
         
         <div className="p-1 md:p-12">
-          <h1 className="text-xl font-black text-gray-800 mb-6 tracking-tight uppercase text-center md:text-left">
+      <h1 className="text-xl font-black font-roboto text-gray-800 mb-6 tracking-tight uppercase text-center md:text-left">
             Cancelled Appointments
           </h1>
 

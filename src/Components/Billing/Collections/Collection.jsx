@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from "react";
 import DataTable from "react-data-table-component";
-import { 
-  Search, User, ChevronRight, 
-  ChevronLeft, ChevronsLeft, ChevronsRight, Clock 
+import {
+  Search, User, ChevronRight,
+  ChevronLeft, ChevronsLeft, ChevronsRight, Clock
 } from "lucide-react";
 
 function Collections() {
@@ -32,11 +32,11 @@ function Collections() {
   };
 
   const columns = [
-    { 
-      name: "SNO.", 
-      selector: (row) => row.sno, 
-      width: "70px", 
-      cell: (row) => <span className="font-bold text-gray-500">{row.sno}.</span> 
+    {
+      name: "SNO.",
+      selector: (row) => row.sno,
+      width: "70px",
+      cell: (row) => <span className="font-bold text-gray-500">{row.sno}.</span>
     },
     {
       name: "PATIENT DETAILS",
@@ -91,7 +91,7 @@ function Collections() {
   const customStyles = {
     headRow: {
       style: {
-        background: "linear-gradient(90deg, #5B7CFA, #7DA0FA)",
+        background: "var(--bg-brand-gradient)",
         color: "#ffffff",
         fontWeight: "800",
         fontSize: "12px",
@@ -110,14 +110,14 @@ function Collections() {
 
   return (
     <div className="w-full h-[100vh]    overflow-hidden ">
-       <div className=" bg-white rounded-md shadow-sm border border-gray-200 mt-6">  
-        
+      <div className=" bg-white rounded-md shadow-sm border border-gray-200 mt-6">
+
         <div className="p-1 md:p-12">
-          <h1 className="text-xl font-black text-gray-800 mb-6 tracking-tight uppercase text-center md:text-left">
-            Collections
+          <h1 className="text-xl font-black font-roboto text-gray-800 mb-6 tracking-tight uppercase text-center md:text-left">
+           Collections
           </h1>
 
-     
+
           <div className="bg-gray-50 p-4 md:p-5 rounded-md border border-gray-100 flex flex-col md:flex-row gap-4 mb-8 items-center">
             <div className="w-full md:flex-[2] relative">
               <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -141,8 +141,8 @@ function Collections() {
               </select>
             </div>
 
-            <button 
-              onClick={handleSearch} 
+            <button
+              onClick={handleSearch}
               className="w-full md:w-auto bg-orange-500 hover:bg-orange-600 text-white px-10 py-2.5 rounded-md font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-orange-100 transition-all active:scale-95"
             >
               <Search size={18} /> Search
@@ -175,7 +175,7 @@ function Collections() {
                   </div>
                 </div>
                 <button className="w-full py-3 bg-orange-50 text-orange-600 rounded-md font-bold text-sm flex items-center justify-center gap-2 active:bg-orange-100">
-                  View Receipt <ChevronRight size={16}/>
+                  View Receipt <ChevronRight size={16} />
                 </button>
               </div>
             ))}
@@ -189,7 +189,7 @@ function Collections() {
               customStyles={customStyles}
               pagination
               paginationPerPage={5}
-              paginationComponentOptions={{ 
+              paginationComponentOptions={{
                 noRowsPerPage: true,
                 rangeSeparatorText: 'of',
               }}
@@ -201,8 +201,8 @@ function Collections() {
               responsive
               noDataComponent={
                 <div className="py-20 text-center text-gray-300">
-                   <Clock size={48} className="mx-auto mb-3 opacity-20" />
-                   <p className="font-medium">No records found</p>
+                  <Clock size={48} className="mx-auto mb-3 opacity-20" />
+                  <p className="font-medium">No records found</p>
                 </div>
               }
             />

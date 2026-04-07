@@ -23,7 +23,7 @@ const MedicineGenericName = () => {
 
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-          <h2 className="text-lg font-bold uppercase tracking-tight text-slate-700">
+          <h2 className="text-lg font-roboto font-bold uppercase tracking-tight text-slate-700">
             Medicine Generic Name
           </h2>
           <button onClick={() => setIsPopupOpen(true)} className="bg-[#26c281] hover:bg-[#21a870] text-white px-5 py-2 rounded-full flex items-center gap-2 text-sm font-medium transition-all shadow-sm">

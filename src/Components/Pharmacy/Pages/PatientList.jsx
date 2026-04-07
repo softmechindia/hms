@@ -18,11 +18,9 @@ const PatientListTable = () => {
   ];
 
   return (
-    <div className="h-[100vh]">
-      
-    
-      <div className="flex justify-between items-center mb-6  md:h-auto">
-        <h1 className="text-xl font-bold text-gray-700 uppercase tracking-tight">Patients List</h1>
+    <div className="w-full h-[100vh]  md:h-auto    overflow-hidden ">
+   <div className="flex justify-between items-center mb-6  md:h-auto">
+        <h1 className="text-xl font-bold text-gray-700 uppercase tracking-tight"></h1>
         <div className="flex items-center text-sm text-gray-500 gap-2">
           <Home size={14} className="text-gray-600" />
           <span>/</span>
@@ -34,14 +32,14 @@ const PatientListTable = () => {
 
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
         <div className="p-6">
-          
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Patient Details</h2>
 
-          
+          <h2 className="text-lg font-semibold text-gray-800 mb-4">Patients List</h2>
+
+
           <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
             <div className="flex items-center text-sm text-gray-600">
               <span>Show</span>
-              <select 
+              <select
                 className="mx-2 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-400"
                 value={entries}
                 onChange={(e) => setEntries(e.target.value)}
@@ -55,8 +53,8 @@ const PatientListTable = () => {
 
             <div className="flex items-center text-sm text-gray-600">
               <span className="mr-2">Search:</span>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 className="border border-gray-300 rounded px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-400"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -64,7 +62,7 @@ const PatientListTable = () => {
             </div>
           </div>
 
-        
+
           <div className="overflow-x-auto border rounded-md border-gray-100">
             <table className="w-full text-left border-collapse">
               <thead className="bg-[#f8f9fa] border-b border-gray-200">
@@ -83,7 +81,7 @@ const PatientListTable = () => {
                 </tr>
               </thead>
               <tbody>
-                
+
                 <tr className="border-b border-gray-200">
                   <td colSpan="8" className="py-6 text-center text-sm text-gray-500 italic">
                     No data available in table

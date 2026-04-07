@@ -23,7 +23,7 @@ function Sidebar({ isOpen, setIsOpen }) {
   return (
     <>
       {/* --- MOBILE TOP BAR --- */}
-      <div className="lg:hidden fixed top-0 right-0 left-0 h-16 bg-[#4F6EEA] flex items-center justify-between px-4 z-[50] shadow-md">
+      <div className="lg:hidden fixed top-0 right-0 left-0 h-16  flex items-center justify-between px-4 z-[50] shadow-md">
         <div className="flex items-center gap-3">
           <button 
             onClick={() => setIsOpen(true)} 
@@ -41,7 +41,7 @@ function Sidebar({ isOpen, setIsOpen }) {
       {/* --- SIDEBAR MAIN --- */}
       <div className={`
         fixed lg:static inset-y-0 left-0 z-[60]
-        w-64 min-h-screen bg-gradient-to-b from-[#4F6EEA] to-[#6FA8FF] text-white p-4 flex flex-col
+        w-64 min-h-screen bg-sidebar-gradient text-white p-4 flex flex-col
         transition-transform duration-300 ease-in-out
         ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
       `}>

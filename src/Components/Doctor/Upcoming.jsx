@@ -51,12 +51,13 @@ function UpComing() {
 
   return (
       <div className="w-full h-[100vh]    overflow-hidden ">
-       <div className=" bg-white rounded-md shadow-sm border border-gray-200 p-6">  
+       <div className=" bg-white rounded-md shadow-sm border border-gray-200 p-4">  
         
         {/* Title Section */}
         <div className="flex items-center gap-3 mb-8 mt-4">
          
-          <h1 className="text-3xl font-black text-black tracking-tight">
+             <h1 className="text-xl font-black font-roboto text-gray-800 mb-6 tracking-tight uppercase text-center md:text-left">
+
             Upcoming Appointments
           </h1>
         </div>

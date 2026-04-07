@@ -1,63 +1,84 @@
 import React, { useState } from "react";
 import logo from "../../assets/images/logo.png";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Lock, Eye, EyeOff, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
-  function Login({ setAuth }) {
-  const [email, setEmail] = useState("")
+import { loginUser } from "../../api/endpoints/authApi";
+function Login({ setAuth }) {
+  const [userID, setuserID] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false);
-
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-// login function
-  const handleSubmit = (e) => {
+  // login function
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-  const emailRegeix = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if(!emailRegeix.test(email)){
-    alert("Please Enter Valid email address")
-    return;
-  }
+    if (!userID) { alert("Please Enter userId"); return; }
+    if (!password) { alert("Please Enter Your Password"); return; }
+    if (password.length < 6) { alert("Password must be at least 6 characters"); return; }
 
+    setLoading(true);
 
-    if(password=== ""){
-    alert("Please Enter Your passowrd");
-    return;
-  };
+    try {
+      const response = await loginUser(userID, password);
 
-    if (password.length < 1) {
-      alert("Password must be at least 6 characters");
-      return;
+      console.log("API Response", response);
+
+      if (response.status) {
+        console.log("Login Success! Token and Data:", response.data);
+        setAuth(true);
+
+        if (response.data && response.data.token) {
+          localStorage.setItem("token", response.data.token);
+        }
+        const id = userID.toUpperCase();
+        if (id.startsWith("ST0002")) {
+          navigate("/Pharmacy");
+        } else if (id.startsWith("ST0001")) {
+          navigate("/Billing");
+        } else if (id.startsWith("DR0001")) {
+          navigate("/Doctor");
+        } else {
+          navigate("/"); // Default
+        }
+      } else {
+        console.warn("Login Failed:", response.message);
+        alert(response.message || "Invalid Credentials");
+      }
+    } catch (error) {
+      console.error("Technical Error (Catch Block):", error);
+      alert("Something went wrong. Please check console.")
+    } finally {
+      setLoading(false)
     }
-   setAuth(true);
-
-   // --- REDIRECT LOGIC ---
-   if(lowerEmail.includes("doctor")){
-    navigate("/Doctor");
-   } else if(lowerEmail.includes("pharmacy")){
-    navigate("/Pharmacy")
-   }else {
-    navigate("/")
-   }
-
-  }
+};
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F2F3F5] font-sans p-4">
+    <div className="min-h-screen flex items-center justify-center font-sans"
+      style={{
+        backgroundColor: "#fdfbff",
+        backgroundImage: `
+      radial-gradient(at 0% 0%, #e2e8f0 0px, transparent 50%), 
+      radial-gradient(at 100% 0%, #ffdfc4 0px, transparent 50%), 
+      radial-gradient(at 100% 100%, #ffe8d6 0px, transparent 50%), 
+      radial-gradient(at 0% 100%, #dbeafe 0px, transparent 50%),
+      radial-gradient(at 13% 45%, #d8d6ff 0px, transparent 40%)
+    `,
+      }}>
 
-      <div className="bg-white w-full max-w-md rounded-2xl p-8 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
+      <div className="bg-white w-[400px] max-w-md rounded-2xl p-6 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
 
 
 
-        <div className="flex flex-col items-center mb-6">
+        <div className="flex flex-col items-center mb-6 ">
           <img src={logo} alt="logo" className="h-12 mb-3" />
 
-          <h2 className="text-3xl font-bold text-[#2C2F33]">
-            Welcome Back!
+          <h2 className="text-2xl font-bold text-[#2C2F33] font-roboto">
+            Hospital Management System
           </h2>
 
-          <p className="text-[#7A7F87] text-sm mt-1">
-            Sign in to your account to continue
+          <p className="text-[#7A7F87] text-sm mt-1 font-poppins">
+            Login to manage employees, attendance & operations
           </p>
 
         </div>
@@ -66,18 +87,18 @@ import { useNavigate } from "react-router-dom";
 
           {/* Email */}
           <div className="relative">
-            <Mail className=" absolute left-4 top-1/2 -translate-y-1/2 text-[#8C94A3]" size={18} />
+            <User className=" absolute left-4 top-1/2 -translate-y-1/2 text-[#8C94A3]" size={18} />
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email Address"
+              type="userID"
+              value={userID}
+              onChange={(e) => setuserID(e.target.value)}
+              placeholder="User ID"
 
               className="w-full bg-white border border-gray-200 pl-12 pr-4 py-3 rounded-lg text-sm outline-none" />
           </div>
           {/* Password */}
           <div className="relative">
-                        <Lock className=" absolute left-4 top-1/2 -translate-y-1/2 text-[#8C94A3]" size={18} />
+            <Lock className=" absolute left-4 top-1/2 -translate-y-1/2 text-[#8C94A3]" size={18} />
 
             <input type={showPassword ? "text" : "password"}
               value={password}
@@ -102,13 +123,13 @@ import { useNavigate } from "react-router-dom";
               type="checkbox"
               className="w-4 h-4 accent-[#2F6CE5]"
             />
-            <span className="text-sm text-[#2C2F33]">
+            <span className="text-sm text-[#2C2F33] font-poppins">
               Remember Me
             </span>
 
           </div>
 
-          <button type="submit" className="w-full py-3 rounded-lg text-white font-semibold shadow-md bg-gradient-to-r from-[#FF7A00] to-[#FF9F2E]
+          <button type="submit" className="w-full font-poppins py-3  rounded-lg text-white font-semibold shadow-md bg-gradient-to-r from-[#FF7A00] to-[#FF9F2E]
           hover:opacity-90 transition active:scale-[0.98]">
             Sign In </button>
           {/* Forgot */}
@@ -117,7 +138,7 @@ import { useNavigate } from "react-router-dom";
             <button type="button" className="text-[12]  font-normal text-gray-800 font-sans  hover:text-orange-500">Forgot Password?</button>
           </div>
           {/* Footer */}
-          <p className="text-center text-[11px] text-gray-500 mt-6 font-bold tracking-widest">
+          <p className="text-center font-poppins text-[11px] text-gray-500 mt-6 font-bold tracking-widest">
             © 2024 SOFTMECH INDIA, All RIGHTS RESERVED.
           </p>
 

@@ -29,7 +29,7 @@ const SupplierList = () => {
         
         {/* Top Header */}
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-sm font-bold text-slate-600 uppercase tracking-wider">
+          <h2 className="text-lg font-roboto font-bold uppercase tracking-tight text-slate-700">
             Supplier List
           </h2>
           <button onClick={() => setIsSupplierOpen(true)} className="bg-[#26c281] hover:bg-[#21a870] text-white px-4 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-semibold transition-all shadow-sm">

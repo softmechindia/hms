@@ -61,9 +61,9 @@ function Totalapp() {
   const customStyles = {
     headRow: {
       style: {
-        background: "linear-gradient(90deg, #5B7CFA, #7DA0FA)",
+        background: "var(--bg-brand-gradient)",
         color: "#ffffff",
-        fontWeight: "800",
+        fontWeight: "800",  
         fontSize: "12px",
         borderTopLeftRadius: "12px",
         borderTopRightRadius: "12px",
@@ -83,10 +83,10 @@ function Totalapp() {
 
   return (
 
-    <div className="w-full h-[100vh]    overflow-hidden ">
+    <div className="w-full h-[100vh]  overflow-hidden ">
        <main className=" bg-white rounded-md shadow-sm border border-gray-200 mt-6">      
         <div className="p-1 md:p-12">
-      <h1 className="text-xl font-black text-gray-800 mb-6 tracking-tight uppercase text-center md:text-left">
+      <h1 className="text-xl font-black font-roboto text-gray-800 mb-6 tracking-tight uppercase text-center md:text-left">
           Total Appointments
         </h1>
 

@@ -96,13 +96,13 @@ function Dashboard() {
   const [filteredData, setFilteredData] = useState(initialData);
 
   return (
-        <div className="flex-1 min-h-screen bg-[#f8fafc] w-full overflow-x-hidden">
+  <div className="flex-1 min-h-screen">
 
-          
-        <h1 className="text-3xl font-black tracking-tight text-black leading-tight mt-4 mx-4">
+   <div className="h-auto p-6 rounded-md m-4 bg-white font-sans text-slate-900">
+            <h1 className="text-xl font-black font-roboto text-gray-800 mb-6 tracking-tight uppercase text-center md:text-left">
+
         Clinic Overview
       </h1>
-<div className="h-auto p-6 rounded-md m-4 bg-white font-sans text-slate-900">
  
  {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">

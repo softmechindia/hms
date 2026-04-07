@@ -18,7 +18,7 @@ const StockHistory = () => {
 
         {/* Header with Action Buttons */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-          <h2 className="text-lg font-bold uppercase tracking-tight text-slate-700">
+          <h2 className="text-lg font-roboto   font-bold uppercase tracking-tight text-slate-700">
             Stock History
           </h2>
           <div className="flex gap-2">

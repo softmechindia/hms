@@ -12,7 +12,7 @@ const MedicineStock = () => {
        <div className="w-full h-[100vh]  md:h-auto   overflow-hidden ">
       <div className=" bg-white rounded-md shadow-sm border border-gray-200 p-6 ">
         
-        <h2 className="text-lg font-bold uppercase tracking-tight mb-6 text-slate-700">
+        <h2 className="text-lg font-roboto font-bold uppercase tracking-tight mb-6 text-slate-700">
           Medicine Stock
         </h2>
 

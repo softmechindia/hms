@@ -74,12 +74,13 @@ function PatientSearch() {
   return (
       <div className="w-full h-[100vh]    overflow-hidden ">
        <div className=" bg-white rounded-md shadow-sm border border-gray-200 p-6">  
-        <h1 className="text-3xl font-black tracking-tight text-black leading-tight mt-4 mx-4">
+      <h1 className="text-xl font-black font-roboto text-gray-800 mb-6 tracking-tight uppercase text-center md:text-left">
+
         Patient Details
       </h1>
     
     {/* Search & Filter */}
-      <div className="p-4 mb-6 bg-white rounded-lg shadow-sm border border-gray-100 flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-4">
+      <div className="p-4 mb-6 bg-white  shadow-sm border border-gray-100 flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-4">
         <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center w-full sm:w-auto">
           <label className="font-bold text-gray-800">Search</label>
           <input
@@ -150,7 +151,7 @@ function PatientSearch() {
           filteredData.map((item, index) => (
             <div
               key={item.id}
-              className="bg-white p-4 rounded-lg shadow-sm border border-gray-100"
+              className="bg-white p-4 rounded-t-md shadow-sm border border-gray-100"
             >
               <div className="flex justify-between mb-2">
                 <span className="font-bold text-gray-800">#{index + 1}</span>
