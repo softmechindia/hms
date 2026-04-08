@@ -116,7 +116,7 @@ const isDashboard = location.pathname === "/";
         {/* RIGHT SIDE */}
         <div className="flex items-center gap-4"> 
           {/* PROFILE */}
-          <div className="hidden md:block relative" ref={profileRef}>
+          <div className="relative" ref={profileRef}>
             <button
               onClick={() => setProfileOpen(!profileOpen)}
               className="flex items-center gap-3 focus:outline-none"

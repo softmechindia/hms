@@ -98,7 +98,7 @@ if (password !== "123456") {
           <div className="relative">
             <User className=" absolute left-4 top-1/2 -translate-y-1/2 text-[#8C94A3]" size={18} />
             <input
-              type="userID"
+              type="text"
               value={userID}
               onChange={(e) => setuserID(e.target.value)}
               placeholder="User ID"

@@ -12,9 +12,7 @@ API.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
     if (token) {
-      config.headers.Authorization = token.startsWith("Bearer ") 
-        ? token 
-        : `Bearer ${token}`;
+      config.headers.Authorization = token.startsWith("Bearer ") ? token : `Bearer ${token}`;
     }
     return config;
   },
@@ -30,9 +28,9 @@ export async function proxyApiRequest(endpoint, method = 'POST', body = null) {
     });
 
     return {
-      status: true,
+      status: response.data?.status ?? true,
       message: response.data?.message || "Success",
-      data: response.data?.data || response.data,
+      fullData: response.data,
     };
   } catch (err) {
     console.error("Axios Error Details:", err);
