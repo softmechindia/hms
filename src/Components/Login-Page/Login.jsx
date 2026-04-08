@@ -10,57 +10,42 @@ function Login({ setAuth }) {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // login function
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-    if (!userID) { alert("Please Enter userId"); return; }
-    if (!password) { alert("Please Enter Your Password"); return; }
-if (password !== "123456") {
-  alert("Incorrect Password! Please enter the correct 6-digit code.");
-  return;
-}
+  try {
+    const response = await loginUser(userID, password);
+    const apiData = response.fullData; 
 
-    setLoading(true);
+    console.log("API DATA",response);
 
-    try {
-      const response = await loginUser(userID, password);
-
-      console.log("API Response", response);
-
-      if (response.status) {
-        console.log("Login Success! Token and Data:", response.data);
-        setAuth(true);
-
-        if (response.data && response.data.token) {
-          localStorage.setItem("token", response.data.token);
-        }
-        if (userID === "ST0001") {
-          navigate("/Billing");
-        }
-        else if(userID === "DR0001") {
-          navigate("/Doctor")
-        }
-        else if(userID === "ST0002") {
-          navigate("/Doctor")
-        }
-        else  {
-         alert("Login Failed! This User ID does not have access permissions.");
-        setAuth(false);
-        }
-        } else {
     
-      alert("Login Failed! Invalid User ID or Password.");
-    }
+
+    if (apiData && apiData.success === 1) {
+   
+      const user = apiData.user_data[0];
+      setAuth(true);
 
       
-      
-    } catch (error) {
-      console.error("Technical Error:", error);
-      alert("Login Failed! Please Try Again.")
-    } finally {
-      setLoading(false)
+      const role = user.user_type.toLowerCase(); 
+
+      if (role === "doctor") {
+        navigate("/Doctor");
+      } else if (role === "billing") {
+        navigate("/Billing");
+      } else if (role === "pharmacy") {
+        navigate("/Pharmacy");
+      }
+    } else {
+      // Agar server mana kare (success: 0)
+      alert(apiData?.message || "Login Failed");
     }
+  } catch (error) {
+    alert("Server error!");
+  } finally {
+    setLoading(false);
+  }
 };
   return (
     <div className="min-h-screen flex items-center justify-center font-sans"

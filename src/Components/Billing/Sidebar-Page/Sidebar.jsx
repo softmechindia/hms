@@ -28,13 +28,13 @@ export default function Sidebar() {
 
   return (
     <>
-      <div className="lg:hidden fixed top-0 right-0 left-0 h-16 flex items-center justify-between px-4 z-[50] shadow-md">
+      <div className="lg:hidden fixed top-0 right-0 left-0 h-16 bg-[#4F6EEA] flex items-center justify-between px-4 z-[50] shadow-md">
         <div className="flex items-center gap-3">
-          <button onClick={() => setIsOpen(true)} className=" text-white bg-white/10 rounded-lg">
+          <button onClick={() => setIsOpen(true)} className=" text-white bg-white/10">
             <Menu size={24} />
           </button>
           <span className="text-white font-bold">{currentPage}</span></div>
-          <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center border border-white/30">
+          <div className="w-9 h-9  bg-white/20 flex items-center justify-center border border-white/30">
            <FaUser size={16} className="text-white" />
         </div></div>
          <div className={`

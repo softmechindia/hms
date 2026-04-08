@@ -9,8 +9,8 @@
 
     export const loginUser = async (UserID, Password) => {
         const loginData = {
-            UserID: UserID,
-            Password: Password
+            user_id: UserID,
+            password: Password
         };
 
         return proxyApiRequest("/login", "POST", loginData)
