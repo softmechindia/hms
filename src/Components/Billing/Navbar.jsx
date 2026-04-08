@@ -10,11 +10,21 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import { User } from "lucide-react";
+import axios from "axios";
 
 const Nav = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-    
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
   const [counts, setCounts] = useState({
     total: 0,
     pending: 0,
@@ -26,9 +36,9 @@ const Nav = () => {
   const profileRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
-  
-const isDashboard = location.pathname === "/";
-  
+
+  const isDashboard = location.pathname === "/";
+
 
   const menuItems = [
     {
@@ -79,24 +89,24 @@ const isDashboard = location.pathname === "/";
       ${isDashboard ? "block" : "hidden lg:block"}
     `}>
 
- 
-      <div className="mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex justify-baseline gap-2">
-                    {/* LOGO — ONLY DASHBOARD */}
-        {location.pathname === "/" && (
-          <NavLink to="/" className="flex items-center">
-            <img src={logo} alt="Logo" className="h-10" />
-          </NavLink>
-        )}
 
-                       <button
+      <div className="mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="flex justify-baseline gap-2">
+          {/* LOGO — ONLY DASHBOARD */}
+          {location.pathname === "/" && (
+            <NavLink to="/" className="flex items-center">
+              <img src={logo} alt="Logo" className="h-10" />
+            </NavLink>
+          )}
+
+          <button
             className="lg:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-lg"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
           </button>
 
-          </div>
+        </div>
 
 
 
@@ -108,10 +118,9 @@ const isDashboard = location.pathname === "/";
               key={item.name}
               to={item.path}
               className={({ isActive }) =>
-                `flex flex-col items-center gap-1 px-3 py-1 rounded-md shadow-sm transition text-[13px] font-medium min-w-[110px] ${
-                  isActive
-                    ? "bg-orange-500 text-white"
-                    : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-100"
+                `flex flex-col items-center gap-1 px-3 py-1 rounded-md shadow-sm transition text-[13px] font-medium min-w-[110px] ${isActive
+                  ? "bg-orange-500 text-white"
+                  : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-100"
                 }`
               }
             >
@@ -125,68 +134,70 @@ const isDashboard = location.pathname === "/";
             </NavLink>
           ))}
         </div>
-        
+
 
         {/* RIGHT SIDE */}
-        <div className="flex items-center "> 
-                {/* MOBILE MENU BUTTON */}
-   
+        <div className="flex items-center ">
+          {/* MOBILE MENU BUTTON */}
+
           {/* PROFILE */}
           <div className="relative" ref={profileRef}>
             <button
               onClick={() => setProfileOpen(!profileOpen)}
               className="flex items-center gap-3 focus:outline-none"
             >
-        
+
               <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-orange-400 to-orange-600
                 text-white font-bold flex items-center justify-center shadow-md border-2 border-white">
-                <User/>
+                <User />
               </div>
             </button>
 
             {profileOpen && (
-     <div className="absolute right-0 mt-3 w-32 bg-white rounded-md shadow-xl border border-gray-100 overflow-hidden">
-          <div className=" px-2 py-1">
-                <p className="text-sm font-bold text-gray-800">Dr. Admin</p>
-          </div>
-    {/* My Profile */}
-    <p
-      className="px-2 py-1 text-sm hover:bg-orange-50 cursor-pointer"
-      onClick={() => {
-        navigate("/my-profile");
-        setProfileOpen(false);
-      }}
-    >
-      My Profile
-    </p>
+              <div className="absolute right-0 mt-3 w-32 bg-white rounded-md shadow-xl border border-gray-100 overflow-hidden">
+                <div className=" px-2 py-1">
+                  <p className="text-sm font-bold text-gray-800">
+                    {user?.user_name || "User"}
+                  </p>
+                </div>
+                {/* My Profile */}
+                <p
+                  className="px-2 py-1 text-sm hover:bg-orange-50 cursor-pointer"
+                  onClick={() => {
+                    navigate("/my-profile");
+                    setProfileOpen(false);
+                  }}
+                >
+                  My Profile
+                </p>
 
 
-        <p
-      className="px-2 py-1 text-sm hover:bg-orange-50 cursor-pointer"
-      onClick={() => {
-        setProfileOpen(false);
-        console.log("Change Password");
-      }}
-    >
-      Change Password
-    </p>
+                <p
+                  className="px-2 py-1 text-sm hover:bg-orange-50 cursor-pointer"
+                  onClick={() => {
+                    setProfileOpen(false);
+                    console.log("Change Password");
+                  }}
+                >
+                  Change Password
+                </p>
 
-    {/* Logout */}
-    <p
-      className="px-2 py-1 text-sm hover:bg-orange-50 cursor-pointer"
-      onClick={() => {
-        setProfileOpen(false);
-        console.log("Logout clicked");
-      }}
-    >
-      Logout
-    </p>
+                {/* Logout */}
+                <p
+                  className="px-2 py-1 text-sm hover:bg-orange-50 cursor-pointer"
+                  onClick={() => {
+                    setProfileOpen(false);
+                    console.log("Logout clicked");
+                  }}
+                >
+                  Logout
+                </p>
 
-  </div>
+              </div>
             )}
           </div>
 
-    
+
         </div>
       </div>
 
@@ -211,7 +222,7 @@ const isDashboard = location.pathname === "/";
           ))}
         </div>
       )}
-          
+
     </nav>
   );
 };

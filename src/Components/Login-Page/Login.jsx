@@ -25,8 +25,9 @@ function Login({ setAuth }) {
     if (apiData && apiData.success === 1) {
    
       const user = apiData.user_data[0];
+        localStorage.setItem("user", JSON.stringify(user));
       setAuth(true);
-
+    console.log("API DATA",user);
       
       const role = user.user_type.toLowerCase(); 
 
