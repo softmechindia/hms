@@ -8,12 +8,18 @@ import EditEducationPopup from "../Popup/EditEducationPopup";
 import AddCityPopup from "../Popup/AddCityPopup";
 import EditCityPopup from "../Popup/EditCityPopup";
 import { FaUser, FaSearch } from "react-icons/fa";
-import { getAvailableSlots } from "../../../api/endpoints/authApi";
+import { getAvailableSlots, getEducations, getOccupations, getCity } from "../../../api/endpoints/authApi";
 
 function Form() {
 
-  const [isTimeOpen, setIsTimeOpen] = useState(false);
+
   const [availableSlots, setAvailableSlots] = useState([]);
+  const [isTimeOpen, setIsTimeOpen] = useState(false);
+  const [occupationsList, setOccupationsList] = useState([]);
+  const [educationList, setEducationsList] = useState([]);
+  const [cityList, setCityList] = useState([]);
+
+  const [openDropdown, setOpenDropdown] = useState(null);
   const dropdownRef = useRef(null);
 
   // Popups States
@@ -99,31 +105,31 @@ function Form() {
   };
 
   // --- Fetch Available Slots ---
-useEffect(() => {
-  const fetchSlots = async () => {
-    if (!formData.appointment_date) return;
+  useEffect(() => {
+    const fetchSlots = async () => {
+      if (!formData.appointment_date) return;
 
-    try {
-      const response = await getAvailableSlots(formData.appointment_date);
-      console.log("Full API Response:", response); 
+      try {
+        const response = await getAvailableSlots(formData.appointment_date);
+        console.log("Full API Response:", response);
 
-     
-      const slotsData = response?.fullData?.slots || response?.slots || [];
-      
-      // API status check
-      if (response.status === true && Array.isArray(slotsData)) {
-        setAvailableSlots(slotsData);
-      } else {
-        console.warn("API returned status false or no slots in fullData");
+
+        const slotsData = response?.fullData?.slots || response?.slots || [];
+
+        // API status check
+        if (response.status === true && Array.isArray(slotsData)) {
+          setAvailableSlots(slotsData);
+        } else {
+          console.warn("API returned status false or no slots in fullData");
+          setAvailableSlots([]);
+        }
+      } catch (err) {
+        console.error("Critical API Error:", err);
         setAvailableSlots([]);
       }
-    } catch (err) {
-      console.error("Critical API Error:", err);
-      setAvailableSlots([]);
-    }
-  };
-  fetchSlots();
-}, [formData.appointment_date]);
+    };
+    fetchSlots();
+  }, [formData.appointment_date]);
 
 
   // Click Outside to close dropdown
@@ -145,7 +151,26 @@ useEffect(() => {
     }));
   };
 
+  // Occupation, Educatons, City
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const occ = await getOccupations();
+        const edu = await getEducations();
+        const cit = await getCity();
+
+        setOccupationsList(occ?.fullData?.data || occ?.data || []);
+        setEducationsList(edu?.fullData?.data || edu?.data || []);
+        setCityList(cit?.fullData?.data || cit?.data || []);
+      } catch (err) {
+        console.error("Fetch Error:", err);
+      }
+    };
+    fetchData();
+  }, []);
+
+  
   return (
     <div className=" rounded-md h-fit  bg-white">
       <div className="flex flex-col items-center  gap-4">
@@ -189,7 +214,7 @@ useEffect(() => {
             </div>
           </div>
 
-          <form className="px-2 pt-4 pb-2 space-y-4" onSubmit={(e) => e.preventDefault()}>
+          <form className="px-2 pt-4 pb-1 space-y-4" onSubmit={(e) => e.preventDefault()}>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 ">
 
               <div className="relative flex items-center text-black border border-gray-300 rounded overflow-hidden ">
@@ -242,54 +267,54 @@ useEffect(() => {
 
 
 
-       <div className="flex items-center border border-gray-300 bg-white rounded">
-  <input
-    type="date"
-    name="appointment_date"
-    value={formData.appointment_date}
-    onChange={handleInputChange}
-    className="w-1/2 px-2 py-1 text-sm outline-none border-r border-gray-300"
-  />
+              <div className="flex items-center border border-gray-300 bg-white rounded">
+                <input
+                  type="date"
+                  name="appointment_date"
+                  value={formData.appointment_date}
+                  onChange={handleInputChange}
+                  className="w-1/2 px-2 py-1 text-sm outline-none border-r border-gray-300"
+                />
 
-  <div className="relative w-1/2" ref={dropdownRef}>
-    <div
-      onClick={() => setIsTimeOpen(!isTimeOpen)}
-      className="px-2 py-1 text-sm cursor-pointer flex justify-between items-center text-black"
-    >
-      {formData.appointment_time || "Select Time"}
-      <ChevronDown size={14} />
-    </div>
+                <div className="relative w-1/2" ref={dropdownRef}>
+                  <div
+                    onClick={() => setIsTimeOpen(!isTimeOpen)}
+                    className="px-2 py-1 text-sm cursor-pointer flex justify-between items-center text-black"
+                  >
+                    {formData.appointment_time || "Select Time"}
+                    <ChevronDown size={14} />
+                  </div>
 
-{isTimeOpen && (
-  <div className="absolute z-50 left-0 mt-1 w-full bg-white border border-gray-300 shadow-xl rounded-md">
-    <div className="max-h-60 overflow-y-auto custom-scrollbar bg-white">
-      {availableSlots.length > 0 ? (
-        availableSlots.map((slot, index) => (
-          <div
-            key={index}
-            className={`px-3 py-2 text-sm cursor-pointer border-b border-gray-50
+                  {isTimeOpen && (
+                    <div className="absolute z-50 left-0 mt-1 w-full bg-white border border-gray-300 shadow-xl rounded-md">
+                      <div className="max-h-60 overflow-y-auto custom-scrollbar bg-white">
+                        {availableSlots.length > 0 ? (
+                          availableSlots.map((slot, index) => (
+                            <div
+                              key={index}
+                              className={`px-3 py-2 text-sm cursor-pointer border-b border-gray-50
               ${slot.available === 0 ? 'bg-red-50 text-gray-400 cursor-not-allowed' : 'hover:bg-blue-600 hover:text-white text-black'}`}
-            onClick={() => {
-              if (slot.available !== 0) {
-               
-                setFormData({ ...formData, appointment_time: slot.time || slot.slot_time });
-                setIsTimeOpen(false);
-              }
-            }}
-          >
-            {/* Yahan check karein ki property name 'time' hai ya 'slot_time' */}
-            {slot.time || slot.slot_time} 
-            {slot.available === 0 && <span className="ml-2 text-[10px] text-red-400">(Booked)</span>}
-          </div>
-        ))
-      ) : (
-        <div className="px-3 py-2 text-xs text-gray-500">No slots for this date</div>
-      )}
-    </div>
-  </div>
-)}
-  </div>
-</div>
+                              onClick={() => {
+                                if (slot.available !== 0) {
+
+                                  setFormData({ ...formData, appointment_time: slot.time || slot.slot_time });
+                                  setIsTimeOpen(false);
+                                }
+                              }}
+                            >
+                              {/* Yahan check karein ki property name 'time' hai ya 'slot_time' */}
+                              {slot.time || slot.slot_time}
+                              {slot.available === 0 && <span className="ml-2 text-[10px] text-red-400">(Booked)</span>}
+                            </div>
+                          ))
+                        ) : (
+                          <div className="px-3 py-2 text-xs text-gray-500">No slots for this date</div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
 
 
               <div className="flex gap-1 col-span-1 md:col-span-2 lg:col-span-3">
@@ -339,26 +364,56 @@ useEffect(() => {
 
 
 
-
               {[
-                { name: "occupation", value: formData.occupation, placeholder: "Select Occupation", options: ["Student", "Private Job", "Housewife", "Other"] },
-
-                { name: "education", value: formData.education, placeholder: "Select Education", options: ["Primary", "Graduate", "Other"] },
-                { name: "city", value: formData.city, placeholder: "Select City", options: ["Mumbai", "Delhi", "Pune"] }
+                {
+                  name: "occupation",
+                  value: formData.occupation,
+                  placeholder: "Select Occupation",
+                  options: occupationsList,
+                },
+                {
+                  name: "education",
+                  value: formData.education,
+                  placeholder: "Select Education",
+                  options: educationList,
+                },
+                {
+                  name: "city",
+                  value: formData.city,
+                  placeholder: "Select City",
+                  options: cityList,
+                },
               ].map((field) => (
-                <div key={field.name} className="relative  flex items-center border border-gray-300">
+                <div key={field.name} className="relative flex items-center border border-gray-300 rounded bg-white h-9">
                   <select
                     name={field.name}
                     value={field.value}
                     onChange={handleInputChange}
-                    className="w-full px-2 py-1 text-sm   outline-none bg-white cursor-pointer appearance-none"
+                    className="w-full h-full px-2 py-1 text-sm outline-none bg-transparent cursor-pointer pr-10"
                   >
                     <option value="">{field.placeholder}</option>
-                    {field.options.map((o) => <option key={o} value={o}>{o}</option>)}
+
+                    {field.options?.map((opt) => {
+                      const label =
+                        opt.occupation_name ||
+                        opt.education_name ||
+                        opt.city_name;
+
+                      return (
+                        <option key={opt.id} value={label}>
+                          {label}
+                        </option>
+                      );
+                    })}
                   </select>
-                  <div className="absolute right-2 flex items-center gap-1">
-                    <button type="button" onClick={() => openPopup(field.name, "add")} className="p-1 bg-orange-500 text-white rounded-sm"><Plus size={12} /></button>
-                    <button type="button" onClick={() => openPopup(field.name, "edit")} className="p-1 bg-orange-500 text-white rounded-sm"><Edit2 size={12} /></button>
+
+                  <div className="absolute right-1 flex items-center gap-1">
+                    <button type="button" onClick={() => openPopup(field.name, "add")} className="p-1 bg-orange-500 text-white rounded-sm">
+                      <Plus size={12} />
+                    </button>
+                    <button type="button" onClick={() => openPopup(field.name, "edit")} className="p-1 bg-orange-500 text-white rounded-sm">
+                      <Edit2 size={12} />
+                    </button>
                   </div>
                 </div>
               ))}
