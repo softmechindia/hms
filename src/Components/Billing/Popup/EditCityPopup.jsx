@@ -1,14 +1,27 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
+import { saveCity  } from "../../../api/endpoints/authApi";
 
-
-function EditCityPopup({ onClose }) {
+function EditCityPopup({ onClose, onSuccess, initialData }) {
   const [city, setCity] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("City submitted:", city);
-    onClose(); 
-  };
+  useEffect(() => {
+    if (initialData) setCity(initialData.city_name);
+  }, [initialData]);
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+  
+    await saveCity({ 
+      id: initialData.id, 
+      city_name: city 
+    });
+    onSuccess();
+    onClose();
+  } catch (err) { 
+    console.error("Edit City Error:", err); 
+  }
+};
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-black/40 backdrop-blur-md">
@@ -30,8 +43,8 @@ function EditCityPopup({ onClose }) {
             <label className="w-36 font-medium">City:</label>
             <input
               type="text"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
+              value={city} onChange={(e) => setCity(e.target.value)}
+      
               placeholder="Enter city name"
               className="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
             />

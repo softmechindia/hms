@@ -1,23 +1,28 @@
 import React, { useState } from "react";
+import { saveEducation } from "../../../api/endpoints/authApi";
 
-function AddEducationPopup({ onClose }) {
+function AddEducationPopup({ onClose, onSuccess }) {
   const [education, setEducation] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Education submitted:", education);
-    onClose(); 
+    try {
+      await saveEducation({ education_name:education });
+      onSuccess();
+      onClose();
+    } catch (err) { console.error(err); }
   };
 
+
   return (
-   
+
     <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-black/40 backdrop-blur-md">
-      
+
       <div className="bg-white w-[28rem] h-auto rounded-xl shadow-2xl p-8 relative">
-        
-        <button 
+
+        <button
           type="button"
-          onClick={onClose} 
+          onClick={onClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"
         >
           ✕
@@ -30,9 +35,9 @@ function AddEducationPopup({ onClose }) {
             <label className="w-36 font-medium text-gray-700">Education:</label>
             <input
               type="text"
-              value={education} 
-              onChange={(e) => setEducation(e.target.value)} 
-              placeholder="Enter education name"
+              value={education}
+              onChange={(e) => setEducation(e.target.value)} required
+              placeholder="Enter Education name"
               className="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />
@@ -47,8 +52,8 @@ function AddEducationPopup({ onClose }) {
             </button>
 
             <button
-              type="button" 
-              onClick={onClose}   
+              type="button"
+              onClick={onClose}
               className="bg-gray-200 text-gray-700 px-8 py-2 rounded-lg hover:bg-gray-300 transition"
             >
               Cancel

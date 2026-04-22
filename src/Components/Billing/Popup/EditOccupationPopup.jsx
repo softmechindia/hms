@@ -1,23 +1,49 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { saveOccupation } from "../../../api/endpoints/authApi";
+import { AlarmCheck } from "lucide-react";
 
-
-function EditOccupationPopup({ onClose }) {
+function EditOccupationPopup({ onClose, onSuccess, initialData }) {
   const [occupation, setOccupation] = useState("");
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    if (initialData) {
+      setOccupation(initialData.occupation_name || "");
+    }
+
+
+  }, [initialData]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Occupation submitted:", occupation);
-    onClose(); 
+    
+    try {
+      const response = await saveOccupation({ 
+        id: initialData?.id, 
+        occupation_name: occupation 
+      });
+
+      if (response && (response.success === 1 || response.status === true)) {
+        onSuccess();
+        onClose();
+      } else {
+        alert("Update failed!");
+      }
+    } catch (err) { 
+      console.error("Submit Error:", err);
+      alert("Something went wrong while saving.");
+    }
   };
+
+
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-black/40 backdrop-blur-md">
       <div className="bg-white w-[28rem] h-auto rounded-xl shadow-lg p-8 relative">
-        
 
-        <button 
+
+        <button
           type="button"
-          onClick={onClose} 
+          onClick={onClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"
         >
           ✕
@@ -45,10 +71,10 @@ function EditOccupationPopup({ onClose }) {
               Submit
             </button>
 
-       
+
             <button
-              type="button" 
-              onClick={onClose}   
+              type="button"
+              onClick={onClose}
               className="bg-gray-200 text-gray-700 px-8 py-2 rounded-lg hover:bg-gray-300 transition"
             >
               Cancel

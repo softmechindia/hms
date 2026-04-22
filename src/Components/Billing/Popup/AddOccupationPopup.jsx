@@ -1,23 +1,33 @@
 import React, { useState } from "react";
+import { saveOccupation } from "../../../api/endpoints/authApi";
 
-
-function AddOccupationPopup({ onClose }) {
+function AddOccupationPopup({ onClose, onSuccess }) {
   const [occupation, setOccupation] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Occupation submitted:", occupation);
-    onClose(); 
+    setLoading(true);
+    try {
+      const response = await saveOccupation({ occupation_name: occupation });
+      if (response.status) {
+        onSuccess(); 
+        onClose();   
+      }
+    } catch (err) { console.error(err); } 
+    finally { setLoading(false); }
   };
+
+
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-black/40 backdrop-blur-md">
       <div className="bg-white w-[28rem] h-auto rounded-xl shadow-lg p-8 relative">
-        
 
-        <button 
+
+        <button
           type="button"
-          onClick={onClose} 
+          onClick={onClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"
         >
           ✕
@@ -30,8 +40,7 @@ function AddOccupationPopup({ onClose }) {
             <label className="w-36 font-medium">Occupation:</label>
             <input
               type="text"
-              value={occupation}
-              onChange={(e) => setOccupation(e.target.value)}
+             value={occupation} onChange={(e) => setOccupation(e.target.value)} required
               placeholder="Enter occupation name"
               className="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
@@ -40,15 +49,17 @@ function AddOccupationPopup({ onClose }) {
           <div className="flex justify-center gap-4">
             <button
               type="submit"
-              className="bg-orange-500 text-white px-8 py-2 rounded-lg hover:bg-orange-600 transition shadow-md"
+              disabled={loading}
+              className={`${loading ? "bg-gray-400" : "bg-orange-500 hover:bg-orange-600"
+                } text-white px-8 py-2 rounded-lg transition shadow-md`}
             >
-              Submit
+              {loading ? "Submitting..." : "Submit"}
             </button>
 
-       
+
             <button
-              type="button" 
-              onClick={onClose}   
+              type="button"
+              onClick={onClose}
               className="bg-gray-200 text-gray-700 px-8 py-2 rounded-lg hover:bg-gray-300 transition"
             >
               Cancel
@@ -61,3 +72,15 @@ function AddOccupationPopup({ onClose }) {
 }
 
 export default AddOccupationPopup;
+
+
+
+
+
+
+
+
+
+
+
+

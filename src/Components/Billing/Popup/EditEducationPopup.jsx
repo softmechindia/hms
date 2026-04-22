@@ -1,13 +1,20 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
+import { saveEducation  } from "../../../api/endpoints/authApi";
 
-
-function EditEducationPopup({ onClose }) {
+function EditEducationPopup({ onClose, onSuccess, initialData }) {
   const [education, setEducation] = useState("");
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    if (initialData) setEducation(initialData.education_name);
+  }, [initialData]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Education submitted:", education);
-    onClose(); 
+    try {
+      await saveEducation({ id: initialData.id, education_name: education });
+      onSuccess();
+      onClose();
+    } catch (err) { console.error(err); }
   };
 
   return (
@@ -30,8 +37,8 @@ function EditEducationPopup({ onClose }) {
             <label className="w-36 font-medium">Educations:</label>
             <input
               type="text"
-              value={education}
-              onChange={(e) => setEducation(e.target.value)}
+              value={education} onChange={(e) => setEducation(e.target.value)}
+      
               placeholder="Enter education name"
               className="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
             />

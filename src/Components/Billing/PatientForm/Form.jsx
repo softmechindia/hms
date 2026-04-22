@@ -9,7 +9,8 @@ import AddCityPopup from "../Popup/AddCityPopup";
 import EditCityPopup from "../Popup/EditCityPopup";
 import { FaUser, FaSearch } from "react-icons/fa";
 import { getAvailableSlots, getEducations, getOccupations, getCity } from "../../../api/endpoints/authApi";
-
+import { saveEducation } from "../../../api/endpoints/authApi";
+import { saveCity } from "../../../api/endpoints/authApi";
 function Form() {
 
 
@@ -30,6 +31,11 @@ function Form() {
   const [showAddCities, setShowAddCities] = useState(false);
   const [showEditCities, setShowEditCities] = useState(false);
 
+
+  // OccupationPopup, EducationPopup, CityPopup 
+  const [selectedOccupation, setSelectedOccupation] = useState(null);
+  const [selectedEducation, setSelectedEducation] = useState(null);
+  const [selectedCity, setSelectedCity] = useState(null);
   const [patientFound, setPatientFound] = useState(false);
 
   const initialFormState = {
@@ -57,7 +63,7 @@ function Form() {
     review_patient: false,
     review_payment: "No",
     ref_by: "",
-    vstatus: "0", // 0 for New, 1 for Old
+    vstatus: "0",
     created_by: "ST0001"
   };
 
@@ -84,7 +90,7 @@ function Form() {
     };
 
     try {
-      // API call placeholder (e.g., await bookAppointment(payload))
+
       console.log("Saving Payload:", payload);
       alert("Appointment Booked successfully!");
       setFormData(initialFormState);
@@ -151,26 +157,101 @@ function Form() {
     }));
   };
 
+  useEffect(() => {
+    fetchData();
+  }, [])
+
   // Occupation, Educatons, City
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const occ = await getOccupations();
-        const edu = await getEducations();
-        const cit = await getCity();
+  const fetchData = async () => {
+    try {
+      const occ = await getOccupations();
+      const edu = await getEducations();
+      const cit = await getCity();
 
-        setOccupationsList(occ?.fullData?.data || occ?.data || []);
-        setEducationsList(edu?.fullData?.data || edu?.data || []);
-        setCityList(cit?.fullData?.data || cit?.data || []);
-      } catch (err) {
-        console.error("Fetch Error:", err);
+      setOccupationsList(occ?.fullData?.data || occ?.data || []);
+      setEducationsList(edu?.fullData?.data || edu?.data || []);
+      setCityList(cit?.fullData?.data || cit?.data || []);
+
+      console.log("Data refreshed successfully!");
+    } catch (err) {
+      console.error("Fetch Error:", err);
+    }
+  };
+  // OccupationPopup
+  const handleEditClick = (fieldName) => {
+    if (fieldName === "occupation") {
+
+      if (!formData.occupation) {
+        alert("Pehle occupation select karo");
+        return;
       }
-    };
-    fetchData();
-  }, []);
 
-  
+      const selected = occupationsList.find(
+        (item) => item.occupation_name === formData.occupation
+      );
+
+      if (!selected) {
+        alert("Occupation not found");
+        return;
+      }
+
+      setSelectedOccupation(selected);
+      setShowEditOccupations(true);
+    }
+  };
+
+  // EditEducation
+  const handleEditEducation = () => {
+    if (!formData.education) {
+      alert("Select first education");
+      return;
+    }
+
+    const selected = educationList.find(
+      (item) => item.education_name === formData.education
+    );
+    if (!selected) {
+      alert("Education not found");
+      return;
+    }
+    setSelectedEducation(selected);
+    setShowEditEducations(true);
+
+  }
+
+
+  // EditCity
+
+const handleEditCity = () => {
+  console.log("👉 formData.city:", formData.city);
+  console.log("👉 cityList:", cityList);
+
+  if (!formData.city) {
+    alert("Please select a city first");
+    return;
+  }
+
+  const selected = cityList.find(
+    (item) =>
+      item.city_name?.trim().toLowerCase() ===
+      formData.city?.trim().toLowerCase()
+  );
+
+  console.log("👉 matched city:", selected);
+
+  if (!selected) {
+    alert("City not found in the list!");
+    return;
+  }
+
+  setSelectedCity(selected);
+  setShowEditCities(true);
+};
+
+
+
+
   return (
     <div className=" rounded-md h-fit  bg-white">
       <div className="flex flex-col items-center  gap-4">
@@ -219,7 +300,7 @@ function Form() {
 
               <div className="relative flex items-center text-black border border-gray-300 rounded overflow-hidden ">
                 <div className="pl-3 text-black"><User size={15} /></div>
-                <input name="fullName" value={formData.name} onChange={handleInputChange}
+                <input name="name" value={formData.name} onChange={handleInputChange}
                   placeholder="Full Name" className="w-full px-2 py-1 placeholder-black  text-sm outline-none" />
               </div>
               <div className="relative flex items-center border border-gray-300 rounded overflow-hidden">
@@ -293,7 +374,7 @@ function Form() {
                             <div
                               key={index}
                               className={`px-3 py-2 text-sm cursor-pointer border-b border-gray-50
-              ${slot.available === 0 ? 'bg-red-50 text-gray-400 cursor-not-allowed' : 'hover:bg-blue-600 hover:text-white text-black'}`}
+                             ${slot.available === 0 ? 'bg-red-50 text-gray-400 cursor-not-allowed' : 'hover:bg-blue-600 hover:text-white text-black'}`}
                               onClick={() => {
                                 if (slot.available !== 0) {
 
@@ -406,15 +487,42 @@ function Form() {
                       );
                     })}
                   </select>
-
                   <div className="absolute right-1 flex items-center gap-1">
-                    <button type="button" onClick={() => openPopup(field.name, "add")} className="p-1 bg-orange-500 text-white rounded-sm">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        field.name === "occupation"
+                          ? setShowAddOccupations(true)
+                          : field.name === "education"
+                            ? setShowAddEducations(true)
+                            : field.name === "city"
+                              ? setShowAddCities(true)
+                              : null
+                      }
+                      className="p-1 bg-orange-500 text-white rounded-sm"
+                    >
                       <Plus size={12} />
                     </button>
-                    <button type="button" onClick={() => openPopup(field.name, "edit")} className="p-1 bg-orange-500 text-white rounded-sm">
+
+
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        field.name === "occupation"
+                          ? handleEditClick("occupation")
+                          : field.name === "education"
+                            ? handleEditEducation()
+                            : field.name === "city"
+                              ? handleEditCity()
+                              : null
+                      }
+                      className="p-1 bg-blue-500 text-white rounded-sm"
+                    >
                       <Edit2 size={12} />
                     </button>
                   </div>
+
                 </div>
               ))}
             </div>
@@ -490,12 +598,49 @@ function Form() {
         <div className="w-full mt-1">
           <PatientsHistory />
         </div>
-        {showAddOccupations && <AddOccupationPopup onClose={() => setShowAddOccupations(false)} />}
-        {showEditOccupations && <EditOccupationPopup onClose={() => setShowEditOccupations(false)} />}
-        {showAddEducations && <AddEducationPopup onClose={() => setShowAddEducations(false)} />}
-        {showEditEducations && <EditEducationPopup onClose={() => setShowEditEducations(false)} />}
-        {showAddCities && <AddCityPopup onClose={() => setShowAddCities(false)} />}
-        {showEditCities && <EditCityPopup onClose={() => setShowEditCities(false)} />}
+
+        {/* --- Popups Logic with onSuccess --- */}
+        {showAddOccupations && (
+          <AddOccupationPopup
+            onClose={() => setShowAddOccupations(false)}
+            onSuccess={fetchData} // Yeh add kiya hai
+          />
+        )}
+        {showEditOccupations && (
+          <EditOccupationPopup
+            initialData={selectedOccupation}
+            onClose={() => setShowEditOccupations(false)}
+            onSuccess={fetchData}
+          />
+        )}
+        {showAddEducations && (
+          <AddEducationPopup
+            onClose={() => setShowAddEducations(false)}
+            onSuccess={fetchData}
+          />
+        )}
+        {showEditEducations && (
+          <EditEducationPopup
+            initialData={selectedEducation}
+            onClose={() => setShowEditEducations(false)}
+            onSuccess={fetchData}
+          />
+        )}
+
+        {showAddCities && (
+          <AddCityPopup
+            onClose={() => setShowAddCities(false)}
+            onSuccess={fetchData} />
+        )}
+
+        {showEditCities && (
+          <EditCityPopup
+            initialData={selectedCity}
+            onClose={() => setShowEditCities(false)}
+            onSuccess={fetchData}
+          />
+        )}
+
       </div>
     </div>
 
