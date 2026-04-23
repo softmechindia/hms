@@ -1,36 +1,57 @@
 import { useEffect, useState } from "react";
-import { saveCity  } from "../../../api/endpoints/authApi";
+import { saveCity } from "../../../api/endpoints/authApi";
 
 function EditCityPopup({ onClose, onSuccess, initialData }) {
   const [city, setCity] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (initialData) setCity(initialData.city_name);
+    if (initialData) {
+      setCity(initialData.city_name || "");
+    }
   }, [initialData]);
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-  
-    await saveCity({ 
-      id: initialData.id, 
-      city_name: city 
-    });
-    onSuccess();
-    onClose();
-  } catch (err) { 
-    console.error("Edit City Error:", err); 
-  }
-};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!city.trim()) {
+      alert("Please enter city name");
+      return;
+    }
+    setLoading(true);
+
+    try {
+      const response = await saveCity({
+        id: initialData?.id,
+         city_name: city
+      });
+
+      if (response && response.message) {
+        alert(response.message);
+      }
+
+      if (response && (response.success === 1 || response.status === true)) {
+        onSuccess();
+        onClose();
+      }
+
+    } catch (err) { 
+      console.error("Submit Error:", err);
+      alert("Something went wrong while saving.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-black/40 backdrop-blur-md">
       <div className="bg-white w-[28rem] h-auto rounded-xl shadow-lg p-8 relative">
-        
 
-        <button 
+
+        <button
           type="button"
-          onClick={onClose} 
+          onClick={onClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"
         >
           ✕
@@ -44,7 +65,7 @@ const handleSubmit = async (e) => {
             <input
               type="text"
               value={city} onChange={(e) => setCity(e.target.value)}
-      
+
               placeholder="Enter city name"
               className="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
@@ -58,10 +79,10 @@ const handleSubmit = async (e) => {
               Submit
             </button>
 
-       
+
             <button
-              type="button" 
-              onClick={onClose}   
+              type="button"
+              onClick={onClose}
               className="bg-gray-200 text-gray-700 px-8 py-2 rounded-lg hover:bg-gray-300 transition"
             >
               Cancel

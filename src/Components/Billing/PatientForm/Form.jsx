@@ -183,7 +183,7 @@ function Form() {
     if (fieldName === "occupation") {
 
       if (!formData.occupation) {
-        alert("Pehle occupation select karo");
+        alert("Select First occupation  ");
         return;
       }
 

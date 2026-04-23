@@ -4,35 +4,54 @@ import { AlarmCheck } from "lucide-react";
 
 function EditOccupationPopup({ onClose, onSuccess, initialData }) {
   const [occupation, setOccupation] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (initialData) {
+    if(initialData) {
       setOccupation(initialData.occupation_name || "");
     }
+  },[initialData]);
 
-
-  }, [initialData]);
-
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Check agar field empty hai
+    if (!occupation.trim()) {
+      alert("Please enter occupation name");
+      return;
+    }
+
+    setLoading(true);
     try {
+      // Edit ke waqt 'id' aur updated 'occupation_name' dono bhej rahe hain
       const response = await saveOccupation({ 
         id: initialData?.id, 
         occupation_name: occupation 
       });
 
-      if (response && (response.success === 1 || response.status === true)) {
-        onSuccess();
-        onClose();
-      } else {
-        alert("Update failed!");
+      // 1. Backend ka message show karein (Updated or Already Exists)
+      if (response && response.message) {
+        alert(response.message);
       }
+
+      // 2. Agar success 1 hai, tabhi popup close karein aur list refresh karein
+      if (response && (response.success === 1 || response.status === true)) {
+        onSuccess(); 
+        onClose();  
+      }
+      
+
+
     } catch (err) { 
       console.error("Submit Error:", err);
       alert("Something went wrong while saving.");
+    } finally {
+      setLoading(false);
     }
   };
+
+
+
 
 
 

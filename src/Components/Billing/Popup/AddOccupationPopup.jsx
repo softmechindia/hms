@@ -5,17 +5,35 @@ function AddOccupationPopup({ onClose, onSuccess }) {
   const [occupation, setOccupation] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Basic validation
+    if (!occupation.trim()) {
+      alert("Please enter an occupation name");
+      return;
+    }
     setLoading(true);
     try {
+    
       const response = await saveOccupation({ occupation_name: occupation });
-      if (response.status) {
-        onSuccess(); 
-        onClose();   
+
+      // Dynamic Message Handling (
+      if (response && response.message) {
+        alert(response.message);
       }
-    } catch (err) { console.error(err); } 
-    finally { setLoading(false); }
+
+      // success condition
+      if (response && (response.success === 1 || response.status === true)) {
+        onSuccess(); 
+        onClose();    
+      }
+    } catch (err) {
+      console.error("Add Occupation Error:", err);
+      alert("Server error: Something went wrong!");
+    } finally {
+      setLoading(false);
+    }
   };
 
 

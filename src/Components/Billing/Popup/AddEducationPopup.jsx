@@ -3,15 +3,35 @@ import { saveEducation } from "../../../api/endpoints/authApi";
 
 function AddEducationPopup({ onClose, onSuccess }) {
   const [education, setEducation] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!education.trim()) {
+      alert("Please enter an education name");
+      return;
+    }
+    setLoading(true);
     try {
-      await saveEducation({ education_name:education });
-      onSuccess();
-      onClose();
-    } catch (err) { console.error(err); }
+      const response = await saveEducation({ education_name: education });
+
+      if (response && response.message) {
+        alert(response.message);
+      }
+
+      if (response && (response.message === 1 || response.status === true)) {
+        onSuccess();
+        onClose();
+      }
+    } catch (err) {
+      console.error("Add Education Error:", err);
+      alert("Server error: Something went wrong!");
+    } finally {
+      setLoading(false);
+    }
   };
+
 
 
   return (
@@ -46,9 +66,11 @@ function AddEducationPopup({ onClose, onSuccess }) {
           <div className="flex justify-center gap-4 pt-4">
             <button
               type="submit"
-              className="bg-orange-500 text-white px-8 py-2 rounded-lg hover:bg-orange-600 transition shadow-md font-semibold"
+              disabled={loading}
+              className={`${loading ? "bg-gray-400" : "bg-orange-500 hover:bg-orange-600"
+                } text-white px-8 py-2 rounded-lg transition shadow-md`}
             >
-              Submit
+              {loading ? "Submitting..." : "Submit"}
             </button>
 
             <button
