@@ -482,15 +482,19 @@ function Form() {
                   options: cityList,
                 },
               ].map((field) => (
-                <div key={field.name} className="relative flex items-center border border-gray-300 rounded bg-white h-9">
-                  <select
+                <div key={field.name} className="  relative flex items-center border border-gray-300 rounded bg-white h-9">
+                  <input
+                    list={`${field.name}-list`}
                     name={field.name}
                     value={field.value}
                     onChange={handleInputChange}
-                    className="w-full h-full px-2 py-1 text-sm outline-none bg-transparent cursor-pointer pr-10"
-                  >
-                    <option value="">{field.placeholder}</option>
-
+                    placeholder={field.placeholder}
+                    className="w-full h-full px-2 py-1 items-center text-sm outline-none  "
+                  />
+                   <div>
+                    
+                   </div>
+                  <datalist id={`${field.name}-list`}>
                     {field.options?.map((opt) => {
                       const label =
                         opt.occupation_name ||
@@ -498,12 +502,10 @@ function Form() {
                         opt.city_name;
 
                       return (
-                        <option key={opt.id} value={label}>
-                          {label}
-                        </option>
+                        <option key={opt.id} value={label} className="px-12" />
                       );
                     })}
-                  </select>
+                  </datalist>
                   <div className="absolute right-1 flex items-center gap-1">
                     <button
                       type="button"
@@ -556,7 +558,7 @@ function Form() {
                 />
               </div>
 
-              {/* Checkboxes aur Button: Right side pe fix rahenge */}
+           
               <div className="flex flex-row items-center 
                 justify-center sm:justify-end 
                 gap-1 sm:gap-2">
