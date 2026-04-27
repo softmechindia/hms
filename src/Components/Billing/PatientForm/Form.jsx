@@ -8,7 +8,7 @@ import EditEducationPopup from "../Popup/EditEducationPopup";
 import AddCityPopup from "../Popup/AddCityPopup";
 import EditCityPopup from "../Popup/EditCityPopup";
 import { FaUser, FaSearch } from "react-icons/fa";
-import { getAvailableSlots, getEducations, getOccupations, getCity } from "../../../api/endpoints/authApi";
+import { bookAppointment, getAvailableSlots, getEducations, getOccupations, getCity } from "../../../api/endpoints/authApi";
 import { saveEducation } from "../../../api/endpoints/authApi";
 import { saveCity } from "../../../api/endpoints/authApi";
 function Form() {
@@ -42,6 +42,7 @@ function Form() {
     patient_id: "",
     name: "",
     mobile_no: "",
+    patient_type: "1",
     email: "",
     gender: "Male",
     birth_of_year: "",
@@ -51,19 +52,19 @@ function Form() {
     marital_status: "Single",
     city: "",
     address: "",
-    doctor_id: "",
-    consultancy: "",
+    doctor_id: "DR1001",
+    consultancy: "DR1002",
     appointment_date: new Date().toISOString().split("T")[0],
     appointment_time: "",
     appointment_by: "Billing",
     appointment_mode: "Offline",
     payment_mode: "Cash",
     paid_amount: "0",
-    reserved: false,
-    review_patient: false,
+    reserved: "No",
+    review_patient: "No",
     review_payment: "No",
     ref_by: "",
-    vstatus: "0",
+    vstatus: "booking",
     created_by: "ST0001"
   };
 
@@ -83,20 +84,35 @@ function Form() {
 
 
   const handleSave = async () => {
+    if (!formData.name || !formData.mobile_no || !formData.doctor_id) {
+      alert("Please fill required fields (Name, Mobile, Doctor)!");
+      return;
+    }
+    if (!formData.appointment_time || formData.appointment_time === "Select Time") {
+      alert("Please select a valid time slot!");
+      return;
+    }
+
     const payload = {
       ...formData,
       reserved: formData.reserved ? "Yes" : "No",
       review_patient: formData.review_patient ? "Yes" : "No",
+      paid_amount: formData.paid_amount.toString()
     };
 
     try {
-
-      console.log("Saving Payload:", payload);
-      alert("Appointment Booked successfully!");
-      setFormData(initialFormState);
+      const response = await bookAppointment(payload);
+      if (response.success === 1 || response.status === true) {
+        alert(`Success: ${response.message || "Appointment Booked!"}`);
+        setFormData(initialFormState);
+        const updatedSlots = await getAvailableSlots(initialFormState.appointment_date);
+        setAvailableSlots(updatedSlots?.fullData?.slots || updatedSlots?.slots || []);
+      } else {
+        alert(`Warning: ${response.message || "Unable to book"}`);
+      }
     } catch (err) {
       console.error("Booking Error", err);
-      alert("Failed to connect to server");
+      alert("Server connection failed. Check console for details.");
     }
   };
 
@@ -223,31 +239,33 @@ function Form() {
 
   // EditCity
 
-const handleEditCity = () => {
-  console.log("👉 formData.city:", formData.city);
-  console.log("👉 cityList:", cityList);
+  const handleEditCity = () => {
+    console.log(" formData.city:", formData.city);
+    console.log(" cityList:", cityList);
 
-  if (!formData.city) {
-    alert("Please select a city first");
-    return;
-  }
+    if (!formData.city) {
+      alert("Please select a city first");
+      return;
+    }
 
-  const selected = cityList.find(
-    (item) =>
-      item.city_name?.trim().toLowerCase() ===
-      formData.city?.trim().toLowerCase()
-  );
+    const selected = cityList.find(
+      (item) =>
+        item.city_name?.trim().toLowerCase() ===
+        formData.city?.trim().toLowerCase()
+    );
 
-  console.log("👉 matched city:", selected);
+    console.log(" matched city:", selected);
 
-  if (!selected) {
-    alert("City not found in the list!");
-    return;
-  }
+    if (!selected) {
+      alert("City not found in the list!");
+      return;
+    }
 
-  setSelectedCity(selected);
-  setShowEditCities(true);
-};
+    setSelectedCity(selected);
+    setShowEditCities(true);
+  };
+
+
 
 
 
@@ -322,9 +340,9 @@ const handleEditCity = () => {
                   className="w-full px-2 py-1 text-sm outline-none bg-white"
                 >
                   <option value="" disabled>Select Doctor</option>
-                  <option value="Dr. Bharti Aggarwal">Dr. Bharti Aggarwal</option>
-                  <option value="Dr. Ritesh">Dr. Ritesh</option>
-                  <option value="Dr. S. Sharma">Dr. S. Sharma</option>
+                  <option value="DR1001">Dr. Bharti Aggarwal</option>
+                  <option value="DR1002">Dr. Ritesh</option>
+                  <option value="DR1003">Dr. S. Sharma</option>
                 </select>
               </div>
 
@@ -339,9 +357,8 @@ const handleEditCity = () => {
                   className="w-full px-2 py-1 text-sm outline-none bg-white"
                 >
                   <option value="" disabled>Select Consultancy</option>
-                  <option value="Dr. Bhartil">Dr. Bharti Aggarwal</option>
-                  <option value="Dr. Ritesh">Dr. Ritesh</option>
-                  <option value="Dr. S. Sharma">Dr. S. Sharma</option>
+                  <option value="DR1001">Dr. Bharti Aggarwal</option>
+                  <option value="DR1002">Dr. Ritesh</option>
                 </select>
               </div>
 

@@ -56,7 +56,7 @@ function AddEducationPopup({ onClose, onSuccess }) {
             <input
               type="text"
               value={education}
-              onChange={(e) => setEducation(e.target.value)} required
+              onChange={(e) => setEducation(e.target.value)} 
               placeholder="Enter Education name"
               className="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
