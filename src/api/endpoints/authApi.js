@@ -52,3 +52,15 @@ export const saveCity = async (payload) => {
     
     return proxyApiRequest("/aeCity", "POST", payload);
 };
+
+// Search Patient
+export const searchPatient = async(payload) => {
+    return proxyApiRequest("/searchPatient", "POST", payload);
+};  
+
+//Patient History
+export const searchHistory = async (payload) => {
+    return proxyApiRequest("/searchPatient", "POST", payload);
+    
+}
+

@@ -8,7 +8,7 @@ import EditEducationPopup from "../Popup/EditEducationPopup";
 import AddCityPopup from "../Popup/AddCityPopup";
 import EditCityPopup from "../Popup/EditCityPopup";
 import { FaUser, FaSearch } from "react-icons/fa";
-import { bookAppointment, getAvailableSlots, getEducations, getOccupations, getCity } from "../../../api/endpoints/authApi";
+import { bookAppointment, getAvailableSlots, getEducations, getOccupations, getCity,searchPatient } from "../../../api/endpoints/authApi";
 import { saveEducation } from "../../../api/endpoints/authApi";
 import { saveCity } from "../../../api/endpoints/authApi";
 function Form() {
@@ -19,6 +19,13 @@ function Form() {
   const [occupationsList, setOccupationsList] = useState([]);
   const [educationList, setEducationsList] = useState([]);
   const [cityList, setCityList] = useState([]);
+
+  //SEARCH & DROPDOWN STATES 
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+
+
 
   const [openDropdown, setOpenDropdown] = useState(null);
   const dropdownRef = useRef(null);
@@ -69,6 +76,64 @@ function Form() {
   };
 
   const [formData, setFormData] = useState(initialFormState);
+
+
+
+  const handleSearchInput = async (value) => {
+    setFormData(prev => ({ ...prev, patient_id: value }));
+
+    if (value.length < 3) {
+      setSearchResults([]);
+      setShowSearchDropdown(false);
+      return;
+    }
+
+    try {
+      setIsSearching(true);
+      const response = await searchPatient({ search_by: value });
+      const actualData = response.fullData;
+
+      if (actualData && actualData.success === 1) {
+        const results = Array.isArray(actualData.user_data)
+          ? actualData.user_data
+          : [actualData.user_data];
+        setSearchResults(results);
+        setShowSearchDropdown(true);
+      } else {
+        setSearchResults([]);
+        setShowSearchDropdown(false);
+      }
+    } catch (err) {
+      console.error("Search Error:", err);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const selectPatient = (patient) => {
+    setFormData(prev => ({
+      ...prev,
+      patient_id: patient.userID || patient.id || "",
+      name: patient.user_name || "",
+      mobile_no: patient.mobile_no || "",
+      email: patient.email_id || "",
+      gender: patient.gender || "Male",
+      age: patient.age || "",
+      birth_of_year: patient.birth_of_year || "",
+      occupation: patient.occupation || "",
+      education: patient.education || "",
+      city: patient.city || "",
+      address: patient.address || "",
+      patient_type: "0",
+    }));
+    setShowSearchDropdown(false);
+  };
+
+
+
+
+
+
 
   // --- Auto Age Calculation ---
   useEffect(() => {
@@ -290,25 +355,46 @@ function Form() {
 
             {/* Right */}
             <div className="flex items-center gap-2">
-              <button onClick={() => window.print()} className="bg-white text-blue-700 px-3 py-2 text-sm rounded">🖨️ Re-Print</button>
-              <button onClick={() => setFormData(initialFormState)} className="bg-white text-gray-700 px-3 py-2 text-sm rounded">🔄 Reset</button>
+              <button onClick={() => window.print()} className="bg-white text-blue-700 px-3 py-2 text-sm rounded cursor-pointer ">🖨️ Re-Print</button>
+              <button onClick={() => setFormData(initialFormState)} className="bg-white text-gray-700 px-3 py-2 text-sm rounded cursor-pointer ">🔄 Reset</button>
             </div>
           </div>
-          <div className="bg-gray-100 p-2">
+          <div className="bg-gray-100 p-2" >
             <div className="flex items-center gap-2 w-full px-1">
 
               <div className="flex items-center gap-2 w-full px-1">
+               <div className="relative flex-1">
                 <input
                   type="text"
                   name="patient_id"
                   value={formData.patient_id}
-                  onChange={handleInputChange}
-                  placeholder="Search PatientId, Name, MobileNo"
-                  className="w-full flex-1 h-10 px-2 border border-gray-400 focus:ring-2 focus:ring-orange-400 outline-none rounded placeholder-black"
+                  onChange={(e) => handleSearchInput(e.target.value)}
+                  placeholder="Search ID, Name or Mobile..."
+                  autoComplete="off"
+                  className="w-full h-10 px-3 border border-gray-400 rounded outline-none focus:ring-2 focus:ring-orange-400"
                 />
-                <button className="flex items-center gap-1 h-10 bg-[#F97316] text-white px-4 text-sm rounded">
-                  <FaSearch /> Search
-                </button>
+  
+                {/* Dropdown UI */}
+              {showSearchDropdown && searchResults.length > 0 && (
+                <div className="absolute top-11 left-0 w-full bg-white border border-gray-300 shadow-2xl z-[9999] rounded-md max-h-60 overflow-y-auto">
+                  {searchResults.map((p, idx) => (
+                    <div 
+                      key={idx} 
+                      onClick={() => selectPatient(p)}
+                      className="p-2 hover:bg-gray-300 cursor-pointer  flex justify-between items-center"
+                    >
+                      <div>
+                     
+                        <p className="text-sm text-black">{p.user_name}-{p.mobile_no}-{p.userID}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              </div>
+             <button className="bg-[#F97316] cursor-pointer  text-white px-5 h-10 rounded text-sm flex items-center gap-2">
+              {isSearching ? "..." : <><FaSearch /> Search</>}
+            </button>
               </div>
             </div>
           </div>
@@ -491,9 +577,9 @@ function Form() {
                     placeholder={field.placeholder}
                     className="w-full h-full px-2 py-1 items-center text-sm outline-none  "
                   />
-                   <div>
-                    
-                   </div>
+                  <div>
+
+                  </div>
                   <datalist id={`${field.name}-list`}>
                     {field.options?.map((opt) => {
                       const label =
@@ -558,7 +644,7 @@ function Form() {
                 />
               </div>
 
-           
+
               <div className="flex flex-row items-center 
                 justify-center sm:justify-end 
                 gap-1 sm:gap-2">
@@ -598,7 +684,7 @@ function Form() {
                 <button
                   type="button"
                   onClick={handleSave}
-                  className="bg-[#22C55E] text-white px-2 py-1
+                  className="bg-[#22C55E] cursor-pointer  text-white px-2 py-1
                 text-[11px] sm:text-sm 
                font-bold rounded-sm whitespace-nowrap 
                flex items-center justify-center">
