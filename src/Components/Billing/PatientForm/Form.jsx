@@ -8,7 +8,7 @@ import EditEducationPopup from "../Popup/EditEducationPopup";
 import AddCityPopup from "../Popup/AddCityPopup";
 import EditCityPopup from "../Popup/EditCityPopup";
 import { FaUser, FaSearch } from "react-icons/fa";
-import { bookAppointment, getAvailableSlots, getEducations, getOccupations, getCity,searchPatient } from "../../../api/endpoints/authApi";
+import { bookAppointment, getAvailableSlots, getEducations, getOccupations, getCity, searchPatient } from "../../../api/endpoints/authApi";
 import { saveEducation } from "../../../api/endpoints/authApi";
 import { saveCity } from "../../../api/endpoints/authApi";
 function Form() {
@@ -49,18 +49,18 @@ function Form() {
     patient_id: "",
     name: "",
     mobile_no: "",
-    patient_type: "1",
+    patient_type: "",
     email: "",
-    gender: "Male",
+    gender: "",
     birth_of_year: "",
     age: "",
     occupation: "",
     education: "",
-    marital_status: "Single",
+    marital_status: "",
     city: "",
     address: "",
-    doctor_id: "DR1001",
-    consultancy: "DR1002",
+    doctor_id: "",
+    consultancy: "",
     appointment_date: new Date().toISOString().split("T")[0],
     appointment_time: "",
     appointment_by: "Billing",
@@ -71,8 +71,8 @@ function Form() {
     review_patient: "No",
     review_payment: "No",
     ref_by: "",
-    vstatus: "booking",
-    created_by: "ST0001"
+    vstatus: "confirmed",
+    created_by: ""
   };
 
   const [formData, setFormData] = useState(initialFormState);
@@ -117,7 +117,7 @@ function Form() {
       name: patient.user_name || "",
       mobile_no: patient.mobile_no || "",
       email: patient.email_id || "",
-      gender: patient.gender || "Male",
+      gender: patient.gender || "",
       age: patient.age || "",
       birth_of_year: patient.birth_of_year || "",
       occupation: patient.occupation || "",
@@ -330,11 +330,6 @@ function Form() {
     setShowEditCities(true);
   };
 
-
-
-
-
-
   return (
     <div className=" rounded-md h-fit  bg-white">
       <div className="flex flex-col items-center  gap-4">
@@ -363,38 +358,38 @@ function Form() {
             <div className="flex items-center gap-2 w-full px-1">
 
               <div className="flex items-center gap-2 w-full px-1">
-               <div className="relative flex-1">
-                <input
-                  type="text"
-                  name="patient_id"
-                  value={formData.patient_id}
-                  onChange={(e) => handleSearchInput(e.target.value)}
-                  placeholder="Search ID, Name or Mobile..."
-                  autoComplete="off"
-                  className="w-full h-10 px-3 border border-gray-400 rounded outline-none focus:ring-2 focus:ring-orange-400"
-                />
-  
-                {/* Dropdown UI */}
-              {showSearchDropdown && searchResults.length > 0 && (
-                <div className="absolute top-11 left-0 w-full bg-white border border-gray-300 shadow-2xl z-[9999] rounded-md max-h-60 overflow-y-auto">
-                  {searchResults.map((p, idx) => (
-                    <div 
-                      key={idx} 
-                      onClick={() => selectPatient(p)}
-                      className="p-2 hover:bg-gray-300 cursor-pointer  flex justify-between items-center"
-                    >
-                      <div>
-                     
-                        <p className="text-sm text-black">{p.user_name}-{p.mobile_no}-{p.userID}</p>
-                      </div>
+                <div className="relative flex-1">
+                  <input
+                    type="text"
+                    name="patient_id"
+                    value={formData.patient_id}
+                    onChange={(e) => handleSearchInput(e.target.value)}
+                    placeholder="Search ID, Name or Mobile..."
+                    autoComplete="off"
+                    className="w-full h-10 px-3 border border-gray-400 rounded outline-none focus:ring-2 focus:ring-orange-400"
+                  />
+
+                  {/* Dropdown UI */}
+                  {showSearchDropdown && searchResults.length > 0 && (
+                    <div className="absolute top-11 left-0 w-full bg-white border border-gray-300 shadow-2xl z-[9999] rounded-md max-h-60 overflow-y-auto">
+                      {searchResults.map((p, idx) => (
+                        <div
+                          key={idx}
+                          onClick={() => selectPatient(p)}
+                          className="p-2 hover:bg-gray-300 cursor-pointer  flex justify-between items-center"
+                        >
+                          <div>
+
+                            <p className="text-sm text-black">{p.user_name}-{p.mobile_no}-{p.userID}</p>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
-              )}
-              </div>
-             <button className="bg-[#F97316] cursor-pointer  text-white px-5 h-10 rounded text-sm flex items-center gap-2">
-              {isSearching ? "..." : <><FaSearch /> Search</>}
-            </button>
+                <button className="bg-[#F97316] cursor-pointer  text-white px-5 h-10 rounded text-sm flex items-center gap-2">
+                  {isSearching ? "..." : <><FaSearch /> Search</>}
+                </button>
               </div>
             </div>
           </div>
@@ -403,46 +398,77 @@ function Form() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 ">
 
               <div className="relative flex items-center text-black border border-gray-300 rounded overflow-hidden ">
-                <div className="pl-3 text-black"><User size={15} /></div>
+                <div className="pl-3 text-gray-500"><User size={15} /></div>
                 <input name="name" value={formData.name} onChange={handleInputChange}
-                  placeholder="Full Name" className="w-full px-2 py-1 placeholder-black  text-sm outline-none" />
+                  placeholder="Full Name" className="w-full px-2 py-1 placeholder-gray-500  text-sm outline-none" />
               </div>
               <div className="relative flex items-center border border-gray-300 rounded overflow-hidden">
-                <div className="pl-3 text-black"><Phone size={15} /></div>
-                <input name="mobile_no" value={formData.mobile_no} onChange={handleInputChange} placeholder="10 Digit Mobile" className="placeholder-black w-full px-2 py-1 text-sm outline-none" />
+                <div className="pl-3 text-gray-500"><Phone size={15} /></div>
+                <input name="mobile_no" value={formData.mobile_no} onChange={handleInputChange} placeholder="10 Digit Mobile" className="placeholder-gray-500   w-full px-2 py-1 text-sm outline-none" />
               </div>
               <div className="relative flex items-center border border-gray-300 rounded overflow-hidden">
-                <div className="pl-3 text-black"><UserCheck size={15} /></div>
-                <select name="patientType" className="w-full px-2 py-1 text-sm outline-none bg-white">
-                  <option>New Patient</option>
-                  <option>Old Patient</option>
+                <div className="pl-3 text-gray-500">
+                  <UserCheck size={15} />
+                </div>
+
+                <select
+                  name="patient_type"
+                  value={formData.patient_type}
+                  onChange={handleInputChange}
+                  className={`w-full px-2 py-1 text-sm outline-none bg-white cursor-pointer ${formData.patient_type === ""
+                    ? "text-gray-500"
+                    : "text-black"
+                    }`}
+                >
+                  {/* Placeholder */}
+                  <option value="">
+                    Select Patient Type
+                  </option>
+
+                  <option value="1" className="text-black">
+                    New Patient
+                  </option>
+
+                  <option value="0" className="text-black">
+                    Old Patient
+                  </option>
                 </select>
               </div>
-              <div className="relative flex items-center border border-gray-300 rounded overflow-hidden">
+             <div className="relative flex items-center border border-gray-300 rounded overflow-hidden">
                 <select
                   name="doctor_id"
                   value={formData.doctor_id}
                   onChange={handleInputChange}
-                  className="w-full px-2 py-1 text-sm outline-none bg-white"
+                  className={`w-full px-2 py-1 text-sm outline-none bg-white ${formData.doctor_id === "" ? "text-gray-400" : "text-black"
+                    }`}
                 >
-                  <option value="" disabled>Select Doctor</option>
+                  <option value="">
+                    Select Doctor
+                  </option>
                   <option value="DR1001">Dr. Bharti Aggarwal</option>
                   <option value="DR1002">Dr. Ritesh</option>
                   <option value="DR1003">Dr. S. Sharma</option>
                 </select>
               </div>
 
+
+
+
+              
+
+              
+
+
+
               <div className="relative flex items-center border border-gray-300 rounded overflow-hidden">
-
-
-
                 <select
                   name="consultancy"
                   value={formData.consultancy}
                   onChange={handleInputChange}
-                  className="w-full px-2 py-1 text-sm outline-none bg-white"
+                  className={`w-full px-2 py-1 text-sm outline-none bg-white ${formData.consultancy === "" ? "text-gray-400" : "text-black"
+                    }`}
                 >
-                  <option value="" disabled>Select Consultancy</option>
+                  <option value="">Select Consultancy</option>
                   <option value="DR1001">Dr. Bharti Aggarwal</option>
                   <option value="DR1002">Dr. Ritesh</option>
                 </select>
@@ -457,13 +483,13 @@ function Form() {
                   name="appointment_date"
                   value={formData.appointment_date}
                   onChange={handleInputChange}
-                  className="w-1/2 px-2 py-1 text-sm outline-none border-r border-gray-300"
+                  className="w-1/2 px-2 py-1 text-sm outline-none border-r border-gray-300  "
                 />
 
                 <div className="relative w-1/2" ref={dropdownRef}>
                   <div
                     onClick={() => setIsTimeOpen(!isTimeOpen)}
-                    className="px-2 py-1 text-sm cursor-pointer flex justify-between items-center text-black"
+                    className={`px-2 py-1 text-sm cursor-pointer flex justify-between items-center ${formData.appointment_time ? "text-black" : "text-gray-500"}`}
                   >
                     {formData.appointment_time || "Select Time"}
                     <ChevronDown size={14} />
@@ -512,7 +538,7 @@ function Form() {
                     onChange={handleInputChange}
                     placeholder="Birth Year"
 
-                    className="w-full  placeholder-black px-2 py-1 text-sm border border-gray-300 bg-white text-black"
+                    className="w-full  placeholder-gray-500 px-2 py-1 text-sm border border-gray-300 bg-white text-black"
 
                   />
                 </div>
@@ -525,7 +551,7 @@ function Form() {
                     value={formData.age}
                     readOnly
                     placeholder="Age"
-                    className="w-full  placeholder-black px-2 py-1 text-sm border border-gray-300 bg-white text-black"
+                    className="w-full  placeholder-gray-500 px-2 py-1 text-sm border border-gray-300 bg-white text-black"
                   />
                 </div>
 
@@ -535,9 +561,13 @@ function Form() {
                     name="gender"
                     value={formData.gender}
                     onChange={handleInputChange}
-                    className="w-full px-2 py-1 text-sm border border-gray-300 bg-white text-black h-[30px]"
+                    className={`w-full px-2 py-1 text-sm border border-gray-300 bg-white h-[30px] ${formData.gender ? "text-black" : "text-gray-500"
+                      }`}
                   >
-                    <option value="" disabled>Gender</option>
+                    <option value="">
+                      Gender
+                    </option>
+
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
                     <option value="Other">Other</option>
@@ -640,7 +670,7 @@ function Form() {
                   value={formData.address}
                   onChange={handleInputChange}
                   rows={1}
-                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded outline-none resize-none focus:ring-1 focus:ring-blue-400 flex items-center min-h-[32px] placeholder-black placeholder-opacity-100" placeholder="Full Address"
+                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded outline-none resize-none focus:ring-1 focus:ring-blue-400 flex items-center min-h-[32px] placeholder-gray-500 placeholder-opacity-100" placeholder="Full Address"
                 />
               </div>
 
@@ -701,7 +731,7 @@ function Form() {
         </div>
 
         <div className="w-full mt-1">
-          <PatientsHistory />
+          <PatientsHistory userID={formData.patient_id} />
         </div>
 
         {/* --- Popups Logic with onSuccess --- */}
