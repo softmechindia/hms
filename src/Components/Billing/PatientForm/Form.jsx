@@ -8,7 +8,7 @@ import EditEducationPopup from "../Popup/EditEducationPopup";
 import AddCityPopup from "../Popup/AddCityPopup";
 import EditCityPopup from "../Popup/EditCityPopup";
 import { FaUser, FaSearch } from "react-icons/fa";
-import { bookAppointment, getAvailableSlots, getEducations, getOccupations, getCity, searchPatient } from "../../../api/endpoints/authApi";
+import { bookAppointment, getAvailableSlots, getEducations, getOccupations, getCity, searchPatient, getDoctors } from "../../../api/endpoints/authApi";
 import { saveEducation } from "../../../api/endpoints/authApi";
 import { saveCity } from "../../../api/endpoints/authApi";
 function Form() {
@@ -44,6 +44,9 @@ function Form() {
   const [selectedEducation, setSelectedEducation] = useState(null);
   const [selectedCity, setSelectedCity] = useState(null);
   const [patientFound, setPatientFound] = useState(false);
+
+  //Select Doctor & Select Consultancy
+  const [doctorsList, setDoctorsList] = useState([]);
 
   const initialFormState = {
     patient_id: "",
@@ -249,10 +252,16 @@ function Form() {
       const occ = await getOccupations();
       const edu = await getEducations();
       const cit = await getCity();
+      const docResponse = await getDoctors();
 
       setOccupationsList(occ?.fullData?.data || occ?.data || []);
       setEducationsList(edu?.fullData?.data || edu?.data || []);
       setCityList(cit?.fullData?.data || cit?.data || []);
+      const doctors = docResponse?.Getdoctorsdata || docResponse?.fullData?.Getdoctorsdata || [];
+
+      console.log("Processed Doctors List:", doctors);
+      setDoctorsList(doctors);
+
 
       console.log("Data refreshed successfully!");
     } catch (err) {
@@ -329,6 +338,8 @@ function Form() {
     setSelectedCity(selected);
     setShowEditCities(true);
   };
+
+
 
   return (
     <div className=" rounded-md h-fit  bg-white">
@@ -434,7 +445,7 @@ function Form() {
                   </option>
                 </select>
               </div>
-             <div className="relative flex items-center border border-gray-300 rounded overflow-hidden">
+              <div className="relative flex items-center border border-gray-300 rounded overflow-hidden">
                 <select
                   name="doctor_id"
                   value={formData.doctor_id}
@@ -442,23 +453,13 @@ function Form() {
                   className={`w-full px-2 py-1 text-sm outline-none bg-white ${formData.doctor_id === "" ? "text-gray-400" : "text-black"
                     }`}
                 >
-                  <option value="">
-                    Select Doctor
-                  </option>
-                  <option value="DR1001">Dr. Bharti Aggarwal</option>
-                  <option value="DR1002">Dr. Ritesh</option>
-                  <option value="DR1003">Dr. S. Sharma</option>
+                  <option value="">Select Doctor</option>
+                  {doctorsList.map((doc) => (
+                    <option key={doc.id} value={doc.userID}>{doc.user_name}</option>
+                  ))}
+
                 </select>
               </div>
-
-
-
-
-              
-
-              
-
-
 
               <div className="relative flex items-center border border-gray-300 rounded overflow-hidden">
                 <select
@@ -469,8 +470,9 @@ function Form() {
                     }`}
                 >
                   <option value="">Select Consultancy</option>
-                  <option value="DR1001">Dr. Bharti Aggarwal</option>
-                  <option value="DR1002">Dr. Ritesh</option>
+                  {doctorsList.map((doc) => (
+                    <option key={doc.id} value={doc.userID}>{doc.user_name}</option>
+                  ))}
                 </select>
               </div>
 
