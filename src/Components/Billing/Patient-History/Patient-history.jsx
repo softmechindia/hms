@@ -6,10 +6,10 @@ function PatientsHistory({ userID }) {
   const [loading, setLoading] = useState(false);
   const [cancellingId, setCancellingId] = useState(null);
 
-  // Row height constants
+ 
   const rowHeight = 40; 
   const totalVisibleRows = 7;
-  const contentHeight = rowHeight * totalVisibleRows; // 240px
+  const contentHeight = rowHeight * totalVisibleRows; 
 
   useEffect(() => {
     if (!userID) {
