@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { searchHistory, cancelAppointment } from "../../../api/endpoints/authApi";
 import CancelAppointment from "../Popup/Cancel-Appointment";
+import { Clock } from "lucide-react";
 
 function PatientsHistory({ userID }) {
   const [historyData, setHistoryData] = useState([]);
@@ -124,20 +125,20 @@ function PatientsHistory({ userID }) {
           setHistoryData((prev) =>
             prev.map((h) =>
               h.appointment_id ===
-              selectedAppointment.appointment_id
+                selectedAppointment.appointment_id
                 ? {
-                    ...h,
-                    vstatus: "cancel",
-                    cancel_reason:
-                      reason,
-                  }
+                  ...h,
+                  vstatus: "cancel",
+                  cancel_reason:
+                    reason,
+                }
                 : h
             )
           );
 
           alert(
             data?.message ||
-              "Appointment cancelled successfully"
+            "Appointment cancelled successfully"
           );
 
           // Close popup
@@ -149,7 +150,7 @@ function PatientsHistory({ userID }) {
         } else {
           alert(
             data?.message ||
-              "Unable to cancel appointment"
+            "Unable to cancel appointment"
           );
         }
       } catch (err) {
@@ -193,13 +194,13 @@ function PatientsHistory({ userID }) {
       return "bg-red-100 text-red-700";
     }
 
-    return "bg-gray-100 text-gray-600";
+
   };
 
   return (
     <>
       <div className="w-full rounded-md bg-white border border-gray-300 shadow-sm overflow-hidden flex flex-col">
-        
+
         {/* Header */}
         <h1 className="text-[10px] font-bold text-white text-center py-4 bg-[#4F6EEA] uppercase tracking-wider shrink-0">
           Patient History
@@ -234,9 +235,9 @@ function PatientsHistory({ userID }) {
               </p>
             </div>
           ) : (
-            <div className="hidden md:block">
+            <div className="">
               <table className="w-full table-fixed text-[12px]">
-                
+
                 {/* Head */}
                 <thead className="bg-gray-100 border-b border-gray-200 sticky top-0">
                   <tr className="text-black">
@@ -248,9 +249,7 @@ function PatientsHistory({ userID }) {
                       Date
                     </th>
 
-                    <th className="w-[15%] py-2 text-center">
-                      Time
-                    </th>
+
 
                     <th className="w-[18%] py-2 text-center">
                       App.ID
@@ -279,11 +278,10 @@ function PatientsHistory({ userID }) {
                           item.appointment_id ||
                           index
                         }
-                        className={`${
-                          index % 2 === 0
+                        className={`${index % 2 === 0
                             ? "bg-white"
                             : "bg-gray-50"
-                        } border-b border-gray-100`}
+                          } border-b border-gray-100`}
                         style={{
                           height: `${rowHeight}px`,
                         }}
@@ -294,18 +292,22 @@ function PatientsHistory({ userID }) {
                         </td>
 
                         {/* Date */}
-                        <td className="text-center truncate">
-                          {
-                            item.appointment_date
-                          }
+                        <td className="text-center">
+                          <div className="flex flex-col items-center leading-tight">
+
+                            <span className="font-medium">
+                              {item.appointment_date}
+                            </span>
+
+                            <span className="flex items-center gap-1 text-xs text-gray-500 mt-1">
+                              <Clock size={12} />
+                              {item.appointment_time}
+                            </span>
+
+                          </div>
                         </td>
 
-                        {/* Time */}
-                        <td className="text-center truncate">
-                          {
-                            item.appointment_time
-                          }
-                        </td>
+
 
                         {/* Appointment ID */}
                         <td className="text-center truncate">
@@ -322,14 +324,13 @@ function PatientsHistory({ userID }) {
                         </td>
 
                         {/* Status */}
-                        <td className="text-center">
+                        <td className="text-center ">
                           <span
                             className={`px-1.5 py-0.5 font-bold rounded text-[10px] ${getStatusBadge(
                               item.vstatus
                             )}`}
                           >
-                            {item.vstatus ||
-                              "N/A"}
+                            {item.vstatus}
                           </span>
                         </td>
 
@@ -349,18 +350,17 @@ function PatientsHistory({ userID }) {
                                 item.vstatus
                               ) ||
                               cancellingId ===
-                                item.appointment_id
+                              item.appointment_id
                             }
-                            className={`px-2 py-1 rounded text-white text-[10px] font-bold transition ${
-                              isCancellable(
-                                item.vstatus
-                              )
-                                ? "bg-red-500 hover:bg-red-600"
-                                : "bg-red-300 opacity-60 cursor-not-allowed"
-                            }`}
+                            className={`px-2 py-1 rounded text-white text-[10px] font-bold transition ${isCancellable(
+                              item.vstatus
+                            )
+                                ? "bg-red-500 hover:bg-red-600 cursor-pointer"
+                                : "bg-gray-500 opacity-60 cursor-not-allowed"
+                              }`}
                           >
                             {cancellingId ===
-                            item.appointment_id
+                              item.appointment_id
                               ? "..."
                               : "Cancel"}
                           </button>

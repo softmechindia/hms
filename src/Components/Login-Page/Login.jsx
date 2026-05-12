@@ -125,7 +125,7 @@ function Login({ setAuth }) {
           </div>
 
           <button type="submit" className="w-full font-poppins py-3  rounded-lg text-white font-semibold shadow-md bg-gradient-to-r from-[#FF7A00] to-[#FF9F2E]
-          hover:opacity-90 transition active:scale-[0.98]">
+          hover:opacity-90 transition active:scale-[0.98] cursor-pointer">
             Sign In </button>
           {/* Forgot */}
 
