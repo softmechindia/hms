@@ -23,7 +23,7 @@ function EditCityPopup({ onClose, onSuccess, initialData }) {
     try {
       const response = await saveCity({
         id: initialData?.id,
-         city_name: city
+        city_name: city
       });
 
       if (response && response.message) {
@@ -35,7 +35,7 @@ function EditCityPopup({ onClose, onSuccess, initialData }) {
         onClose();
       }
 
-    } catch (err) { 
+    } catch (err) {
       console.error("Submit Error:", err);
       alert("Something went wrong while saving.");
     } finally {
@@ -45,8 +45,9 @@ function EditCityPopup({ onClose, onSuccess, initialData }) {
 
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-black/40 backdrop-blur-md">
-      <div className="bg-white w-[28rem] h-auto rounded-xl shadow-lg p-8 relative">
+    <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-black/40 backdrop-blur-md px-3">
+
+      <div className="bg-white w-[95%] max-w-md h-auto rounded-xl shadow-lg p-6 sm:p-8 relative">
 
 
         <button
@@ -57,11 +58,12 @@ function EditCityPopup({ onClose, onSuccess, initialData }) {
           ✕
         </button>
 
-        <h2 className="text-2xl font-bold mb-6 text-center">Edit City</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">Edit City</h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="flex items-center">
-            <label className="w-36 font-medium">City:</label>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+
+            <label className="w-full text-xl sm:w-36 font-medium  p-3" >City:</label>
             <input
               type="text"
               value={city} onChange={(e) => setCity(e.target.value)}
@@ -71,7 +73,7 @@ function EditCityPopup({ onClose, onSuccess, initialData }) {
             />
           </div>
 
-          <div className="flex justify-center gap-4">
+          <div className="flex justify-center gap-4 pt-4">
             <button
               type="submit"
               className="bg-orange-500 text-white px-8 py-2 rounded-lg hover:bg-orange-600 transition shadow-md"

@@ -36,9 +36,9 @@ function AddEducationPopup({ onClose, onSuccess }) {
 
   return (
 
-    <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-black/40 backdrop-blur-md">
+    <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-black/40 backdrop-blur-md px-3">
 
-      <div className="bg-white w-[28rem] h-auto rounded-xl shadow-2xl p-8 relative">
+      <div className="bg-white w-[95%] max-w-md h-auto rounded-xl shadow-lg p-6 sm:p-8 relative">
 
         <button
           type="button"
@@ -47,16 +47,15 @@ function AddEducationPopup({ onClose, onSuccess }) {
         >
           ✕
         </button>
-
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Add Education</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">Add Education</h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="flex items-center">
-            <label className="w-36 font-medium text-gray-700">Education:</label>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+            <label className="w-full text-xl sm:w-36 font-medium  p-3" >Education:</label>
             <input
               type="text"
               value={education}
-              onChange={(e) => setEducation(e.target.value)} 
+              onChange={(e) => setEducation(e.target.value)}
               placeholder="Enter Education name"
               className="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
               required

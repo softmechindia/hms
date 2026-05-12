@@ -7,14 +7,14 @@ function EditOccupationPopup({ onClose, onSuccess, initialData }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if(initialData) {
+    if (initialData) {
       setOccupation(initialData.occupation_name || "");
     }
-  },[initialData]);
+  }, [initialData]);
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Check agar field empty hai
     if (!occupation.trim()) {
       alert("Please enter occupation name");
@@ -24,9 +24,9 @@ const handleSubmit = async (e) => {
     setLoading(true);
     try {
       // Edit ke waqt 'id' aur updated 'occupation_name' dono bhej rahe hain
-      const response = await saveOccupation({ 
-        id: initialData?.id, 
-        occupation_name: occupation 
+      const response = await saveOccupation({
+        id: initialData?.id,
+        occupation_name: occupation
       });
 
       // 1. Backend ka message show karein (Updated or Already Exists)
@@ -36,13 +36,13 @@ const handleSubmit = async (e) => {
 
       // 2. Agar success 1 hai, tabhi popup close karein aur list refresh karein
       if (response && (response.success === 1 || response.status === true)) {
-        onSuccess(); 
-        onClose();  
+        onSuccess();
+        onClose();
       }
-      
 
 
-    } catch (err) { 
+
+    } catch (err) {
       console.error("Submit Error:", err);
       alert("Something went wrong while saving.");
     } finally {
@@ -56,8 +56,8 @@ const handleSubmit = async (e) => {
 
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-black/40 backdrop-blur-md">
-      <div className="bg-white w-[28rem] h-auto rounded-xl shadow-lg p-8 relative">
+    <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-black/40 backdrop-blur-md p-3 ">
+      <div className="bg-white w-[95%] max-w-md h-auto rounded-xl shadow-lg p-6 sm:p-8 relative">
 
 
         <button
@@ -68,11 +68,12 @@ const handleSubmit = async (e) => {
           ✕
         </button>
 
-        <h2 className="text-2xl font-bold mb-6 text-center">Edit Occupation</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">Edit Occupation</h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="flex items-center">
-            <label className="w-36 font-medium">Occupation:</label>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+
+            <label className="-full text-xl sm:w-36 font-medium  p-3">Occupation:</label>
             <input
               type="text"
               value={occupation}

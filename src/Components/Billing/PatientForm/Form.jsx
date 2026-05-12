@@ -11,6 +11,7 @@ import { FaUser, FaSearch } from "react-icons/fa";
 import { bookAppointment, getAvailableSlots, getEducations, getOccupations, getCity, searchPatient, getDoctors } from "../../../api/endpoints/authApi";
 import { saveEducation } from "../../../api/endpoints/authApi";
 import { saveCity } from "../../../api/endpoints/authApi";
+
 function Form() {
 
 
@@ -24,7 +25,7 @@ function Form() {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
-
+  const [selectedPatientId, setSelectedPatientId] = useState("");
 
 
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -37,7 +38,7 @@ function Form() {
   const [showEditOccupations, setShowEditOccupations] = useState(false);
   const [showAddCities, setShowAddCities] = useState(false);
   const [showEditCities, setShowEditCities] = useState(false);
-
+  const [patientHistory, setPatientHistory] = useState([]);
 
   // OccupationPopup, EducationPopup, CityPopup 
   const [selectedOccupation, setSelectedOccupation] = useState(null);
@@ -75,15 +76,25 @@ function Form() {
     review_payment: "No",
     ref_by: "",
     vstatus: "confirmed",
-    created_by: ""
+    created_by: "ST0001"
   };
 
   const [formData, setFormData] = useState(initialFormState);
 
 
 
+
+
+  // UPDATED SEARCH FUNCTION
   const handleSearchInput = async (value) => {
-    setFormData(prev => ({ ...prev, patient_id: value }));
+
+    setFormData((prev) => ({
+      ...prev,
+      patient_id: value,
+    }));
+
+    // Hide history while typing
+    setSelectedPatientId("");
 
     if (value.length < 3) {
       setSearchResults([]);
@@ -93,19 +104,30 @@ function Form() {
 
     try {
       setIsSearching(true);
-      const response = await searchPatient({ search_by: value });
+
+      const response = await searchPatient({
+        search_by: value,
+      });
+
       const actualData = response.fullData;
 
-      if (actualData && actualData.success === 1) {
+      if (
+        actualData &&
+        actualData.success === 1
+      ) {
+
         const results = Array.isArray(actualData.user_data)
           ? actualData.user_data
           : [actualData.user_data];
+
         setSearchResults(results);
         setShowSearchDropdown(true);
+
       } else {
         setSearchResults([]);
         setShowSearchDropdown(false);
       }
+
     } catch (err) {
       console.error("Search Error:", err);
     } finally {
@@ -113,7 +135,10 @@ function Form() {
     }
   };
 
-  const selectPatient = (patient) => {
+
+
+  const selectPatient = (patient, history) => {
+
     setFormData(prev => ({
       ...prev,
       patient_id: patient.userID || patient.id || "",
@@ -129,6 +154,9 @@ function Form() {
       address: patient.address || "",
       patient_type: "0",
     }));
+    setSelectedPatientId(patient.userID);
+    setPatientHistory(history || []);
+
     setShowSearchDropdown(false);
   };
 
@@ -733,7 +761,7 @@ function Form() {
         </div>
 
         <div className="w-full mt-1">
-          <PatientsHistory userID={formData.patient_id} />
+          <PatientsHistory userID={selectedPatientId} />
         </div>
 
         {/* --- Popups Logic with onSuccess --- */}

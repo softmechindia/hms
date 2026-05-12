@@ -5,9 +5,9 @@ function AddOccupationPopup({ onClose, onSuccess }) {
   const [occupation, setOccupation] = useState("");
   const [loading, setLoading] = useState(false);
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Basic validation
     if (!occupation.trim()) {
       alert("Please enter an occupation name");
@@ -15,7 +15,7 @@ const handleSubmit = async (e) => {
     }
     setLoading(true);
     try {
-    
+
       const response = await saveOccupation({ occupation_name: occupation });
 
       // Dynamic Message Handling (
@@ -25,8 +25,8 @@ const handleSubmit = async (e) => {
 
       // success condition
       if (response && (response.success === 1 || response.status === true)) {
-        onSuccess(); 
-        onClose();    
+        onSuccess();
+        onClose();
       }
     } catch (err) {
       console.error("Add Occupation Error:", err);
@@ -39,8 +39,10 @@ const handleSubmit = async (e) => {
 
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-black/40 backdrop-blur-md">
-      <div className="bg-white w-[28rem] h-auto rounded-xl shadow-lg p-8 relative">
+   <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-black/40 backdrop-blur-md px-3">
+
+      <div className="bg-white w-[95%] max-w-md h-auto rounded-xl shadow-lg p-6 sm:p-8 relative">
+
 
 
         <button
@@ -51,17 +53,24 @@ const handleSubmit = async (e) => {
           ✕
         </button>
 
-        <h2 className="text-2xl font-bold mb-6 text-center">Add Occupation</h2>
+      <h2 className="text-2xl font-bold mb-4 text-center">Add Occupation</h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="flex items-center">
-            <label className="w-36 font-medium">Occupation:</label>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+
+            <label className="w-full text-xl sm:w-36 font-medium  p-3" >
+              Occupation:
+            </label>
+
             <input
               type="text"
-             value={occupation} onChange={(e) => setOccupation(e.target.value)} required
+              value={occupation}
+              onChange={(e) => setOccupation(e.target.value)}
+              required
               placeholder="Enter occupation name"
               className="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
+
           </div>
 
           <div className="flex justify-center gap-4">

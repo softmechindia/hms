@@ -86,7 +86,7 @@ function Login({ setAuth }) {
             <input
               type="text"
               value={userID}
-              onChange={(e) => setuserID(e.target.value)}
+              onChange={(e) => setuserID(e.target.value.toUpperCase())}
               placeholder="User ID"
 
               className="w-full bg-white border border-gray-200 pl-12 pr-4 py-3 rounded-lg text-sm outline-none" />
