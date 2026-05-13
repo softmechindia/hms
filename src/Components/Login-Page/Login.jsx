@@ -39,7 +39,7 @@ function Login({ setAuth }) {
         navigate("/Pharmacy");
       }
     } else {
-      // Agar server mana kare (success: 0)
+  
       alert(apiData?.message || "Login Failed");
     }
   } catch (error) {

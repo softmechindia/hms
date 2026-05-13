@@ -74,7 +74,13 @@ export const getDoctors = () => {
 };
 
 //  My-Patient Get-My-Bookings
-export const getMyBookings = (payload) => {
+export const GetMyBookings = (payload) => {
     return proxyApiRequest("/getMyBookings", "POST", payload);
 
 };
+
+
+//Billing-Dashboard-Data
+export const billingDashboardData = (payload) => {
+    return proxyApiRequest("/billingDashboardData", "POST", payload);
+}
