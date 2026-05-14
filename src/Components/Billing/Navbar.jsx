@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
+import { billingDashboardData } from "../../api/endpoints/authApi";
 import {
   FaCalendarCheck,
   FaHourglassHalf,
@@ -39,6 +40,11 @@ const Nav = () => {
 
   const isDashboard = location.pathname === "/";
 
+  const getPageTitle = () => {
+    const currentItem = menuItems.find((item) => item.path === location.pathname);
+    return currentItem ? currentItem.name : "Dashboard";
+  };
+
 
   const menuItems = [
     {
@@ -72,8 +78,36 @@ const Nav = () => {
       count: counts.collections,
     },
   ];
-
+  // API CALL
   useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const response = await billingDashboardData();
+
+        console.log("Dashboard API Response =>", response);
+
+      
+        const apiData = response?.data?.data;
+
+        if (apiData) {
+          setCounts({
+            total: apiData.total_appointments || 0,
+            pending: apiData.pending_appointments || 0,
+            today: apiData.today_completed || 0,
+            cancel: apiData.cancel_appointments || 0,
+            collections: apiData.collections || 0,
+          });
+        }
+      } catch (error) {
+        console.log("Dashboard API Error =>", error);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+    // OUTSIDE CLICK 
+    useEffect(() => {
     const handleClickOutside = (e) => {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
         setProfileOpen(false);
@@ -91,12 +125,18 @@ const Nav = () => {
 
 
       <div className="mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex justify-baseline gap-2">
-          {/* LOGO — ONLY DASHBOARD */}
-          {location.pathname === "/" && (
+        <div className="flex items-center gap-4">
+          {isDashboard ? (
             <NavLink to="/" className="flex items-center">
               <img src={logo} alt="Logo" className="h-10" />
             </NavLink>
+          ) : (
+            <div className="flex items-center gap-4">
+              <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-md lg:block hidden">
+                <FaBars size={18} />
+              </button>
+              <h1 className="text-xl font-bold text-[#1e293b]">{getPageTitle()}</h1>
+            </div>
           )}
 
           <button
@@ -112,28 +152,32 @@ const Nav = () => {
 
 
         {/* CENTER MENU */}
-        <div className="hidden lg:flex flex-1 justify-center gap-4 xl:gap-8">
-          {menuItems.map((item) => (
-            <NavLink
-              key={item.name}
-              to={item.path}
-              className={({ isActive }) =>
-                `flex flex-col items-center gap-1 px-3 py-1 rounded-md shadow-sm transition text-[13px] font-medium min-w-[110px] ${isActive
-                  ? "bg-orange-500 text-white"
-                  : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-100"
-                }`
-              }
-            >
-              <div className="flex items-center gap-2">
-                {item.icon}
-                <span className="whitespace-nowrap">{item.name}</span>
-              </div>
-              <span className="text-xs px-2 py-0.5 rounded-full bg-gray-200 text-white">
-                {item.count}
-              </span>
-            </NavLink>
-          ))}
-        </div>
+        {isDashboard && (
+          <div className="hidden lg:flex flex-1 justify-center gap-4 xl:gap-8">
+            {menuItems.map((item) => (
+              <NavLink
+                key={item.name}
+                to={item.path}
+                className={({ isActive }) =>
+                  `flex flex-col items-center gap-1 px-3 py-1 rounded-md shadow-sm transition text-[13px] font-medium min-w-[110px] ${isActive
+                    ? "bg-orange-500 text-white"
+                    : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-100"
+                  }`
+                }
+              >
+                <div className="flex items-center gap-2">
+                  {item.icon}
+                  <span className="whitespace-nowrap">{item.name}</span>
+                </div>
+                <span className="text-xs px-2 py-0.5 rounded-full bg-orange-500 text-white">
+                  {item.count}
+                </span>
+              </NavLink>
+            ))}
+          </div>
+
+        )}
+
 
 
         {/* RIGHT SIDE */}

@@ -81,12 +81,16 @@ function Form() {
 
   const [formData, setFormData] = useState(initialFormState);
 
-
-
-
-
-  // UPDATED SEARCH FUNCTION
+// UPDATED SEARCH FUNCTION
   const handleSearchInput = async (value) => {
+
+    if(!value) {
+      setFormData(initialFormState);
+      setSearchResults([]);
+      setShowSearchDropdown(false);
+      setSelectedPatientId("");
+      return;
+    }
 
     setFormData((prev) => ({
       ...prev,

@@ -12,20 +12,20 @@ import Layouts from "../Billing/Layouts";
 
 
 function BillingApp() {
-  
+
 
     return (
         <Routes>
-    
-                         <Route element={<Layouts />}>
-                        <Route index element={<HomePage />} />
-                        <Route path="my-profile" element={<MyProfile />} />
-                        <Route path="total-app" element={<TotalAppointment />} />
-                        <Route path="pending" element={<Pending />} />
-                        <Route path="today-conf" element={<TodayConf />} />
-                        <Route path="cancel" element={<CancelAppointment     />} />
-                        <Route path="collections" element={<Collections />} />
-                        </Route>
+
+            <Route element={<Layouts />}>
+                <Route index element={<HomePage />} />
+                <Route path="my-profile" element={<MyProfile />} />
+                <Route path="total-app" element={<TotalAppointment />} />
+                <Route path="pending" element={<Pending />} />
+                <Route path="today-conf" element={<TodayConf />} />
+                <Route path="cancel" element={<CancelAppointment />} />
+                <Route path="collections" element={<Collections />} />
+            </Route>
 
 
             <Route path="*" element={<Navigate to="/" />} />

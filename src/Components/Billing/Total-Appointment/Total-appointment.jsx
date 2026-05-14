@@ -83,12 +83,10 @@ function Totalapp() {
 
   return (
 
-    <div className="w-full h-[100vh]  overflow-hidden ">
-       <main className=" bg-white rounded-md shadow-sm border border-gray-200 mt-6">      
-        <div className="p-1 md:p-12">
-      <h1 className="text-xl font-black font-roboto text-gray-800 mb-6 tracking-tight uppercase text-center md:text-left">
-          Total Appointments
-        </h1>
+  <div className="w-full min-h-screen pt-16 md:pt-6 overflow-x-hidden">
+<main className="bg-white rounded-md shadow-sm border border-gray-200 mt-0 md:mt-6">       
+   <div className="p-1 md:p-12">
+   
 
           {/* Filters Container */}
           <div className="bg-gray-50 p-5 rounded-md border border-gray-100 flex flex-col md:flex-row gap-4 mb-8 items-center">

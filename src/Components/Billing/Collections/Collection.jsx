@@ -113,9 +113,6 @@ function Collections() {
       <div className=" bg-white rounded-md shadow-sm border border-gray-200 mt-6">
 
         <div className="p-1 md:p-12">
-          <h1 className="text-xl font-black font-roboto text-gray-800 mb-6 tracking-tight uppercase text-center md:text-left">
-           Collections
-          </h1>
 
 
           <div className="bg-gray-50 p-4 md:p-5 rounded-md border border-gray-100 flex flex-col md:flex-row gap-4 mb-8 items-center">
