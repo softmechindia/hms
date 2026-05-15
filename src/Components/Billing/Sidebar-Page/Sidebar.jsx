@@ -39,7 +39,7 @@ export default function Sidebar() {
         </div></div>
          <div className={`
         fixed lg:static inset-y-0 left-0 z-50
-        w-64 min-h-screen   bg-sidebar-gradient text-white p-4 flex flex-col
+        w-64 min-h-screen   bg-[#082cbb] text-white p-4 flex flex-col
         transition-transform duration-300 ease-in-out
         ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
       `}>
