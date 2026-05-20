@@ -18,14 +18,6 @@ const Nav = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
-
   const [counts, setCounts] = useState({
     total: 0,
     pending: 0,
@@ -37,6 +29,60 @@ const Nav = () => {
   const profileRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
+
+useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+       
+        const storedUser = localStorage.getItem("user");
+        let userId = "ST0001";
+
+        if (storedUser) {
+          const parsedUser = JSON.parse(storedUser);
+          setUser(parsedUser);
+          if (parsedUser?.user_id) {
+            userId = parsedUser.user_id;
+          }
+        }
+
+   
+        const response = await billingDashboardData({ user_id: userId });
+        
+        console.log("=== NAV COMPONENT API DEBUG ===");
+        console.log("Full API Response:", response);
+
+    
+        let apiData = null;
+
+        if (response?.data?.data) {
+          apiData = response.data.data; 
+        } else if (response?.data) {
+          apiData = response.data; 
+        } else if (response?.fullData?.data) {
+          apiData = response.fullData.data; 
+        } else {
+          apiData = response; 
+        }
+
+        console.log("Extracted Target Data:", apiData);
+
+    
+        if (apiData && (apiData.total_appointments !== undefined || apiData.pending_appointments !== undefined)) {
+          setCounts({
+            total: Number(apiData.total_appointments) || 0,
+            pending: Number(apiData.pending_appointments) || 0,
+            today: Number(apiData.today_completed) || 0,
+            cancel: Number(apiData.cancel_appointments) || 0,
+            collections: Number(apiData.collections) || 0,
+          });
+        }
+      } catch (error) {
+        console.error("Dashboard API Error =>", error);
+      }
+    };
+
+    fetchDashboardData();
+  }, []); 
 
   const isDashboard = location.pathname === "/";
 
@@ -78,36 +124,10 @@ const Nav = () => {
       count: counts.collections,
     },
   ];
-  // API CALL
+
+
+  // OUTSIDE CLICK 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const response = await billingDashboardData();
-
-        console.log("Dashboard API Response =>", response);
-
-      
-        const apiData = response?.data?.data;
-
-        if (apiData) {
-          setCounts({
-            total: apiData.total_appointments || 0,
-            pending: apiData.pending_appointments || 0,
-            today: apiData.today_completed || 0,
-            cancel: apiData.cancel_appointments || 0,
-            collections: apiData.collections || 0,
-          });
-        }
-      } catch (error) {
-        console.log("Dashboard API Error =>", error);
-      }
-    };
-
-    fetchDashboardData();
-  }, []);
-
-    // OUTSIDE CLICK 
-    useEffect(() => {
     const handleClickOutside = (e) => {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
         setProfileOpen(false);

@@ -205,6 +205,7 @@ function Form() {
       if (response.success === 1 || response.status === true) {
         alert(`Success: ${response.message || "Appointment Booked!"}`);
         setFormData(initialFormState);
+        setSelectedPatientId("");
         const updatedSlots = await getAvailableSlots(initialFormState.appointment_date);
         setAvailableSlots(updatedSlots?.fullData?.slots || updatedSlots?.slots || []);
       } else {

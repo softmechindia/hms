@@ -18,9 +18,9 @@ function Patients() {
 
         console.log("Full API Response:", response);
 
-        // FIX: Access success from inside fullData
+       
         if (response.fullData && response.fullData.success === 1) {
-          // FIX: Set doctors using fullData.data
+         
           console.log("Doctors Data Array:", response.fullData.data);
           setDoctors(response.fullData.data);
         } else {
