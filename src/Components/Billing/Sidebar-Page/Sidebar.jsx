@@ -19,7 +19,7 @@ export default function Sidebar() {
     { label: "Today's Confirmed", icon: CheckCircle, path: "/today-conf" },
     { label: "Cancelled Appointments", icon: XCircle, path: "/cancel" },
     { label: "Collections", icon: Wallet, path: "/collections" },
-    { label: "My Profile", icon: User, path: "/my-profile" },
+   
     { label: "Logout", icon: LogOut, path: "/Logout" },
   ];
 

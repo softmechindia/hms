@@ -5,8 +5,10 @@ import { GetMyBookings } from "../../../api/endpoints/authApi";
 
 import { FaUser, FaCalendarXmark } from "react-icons/fa6";
 import PatientSkeleton from "../Loaders/Patient-Skeleton";
+import { useOutletContext } from "react-router-dom";
 
 function Patients() {
+  const{refreshTrigger} = useOutletContext();
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -34,7 +36,7 @@ function Patients() {
     };
 
     fetchData();
-  }, []);
+  }, [refreshTrigger]);
 
 
 
