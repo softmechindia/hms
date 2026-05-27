@@ -81,7 +81,7 @@ function Form() {
 
   const [formData, setFormData] = useState(initialFormState);
 
-
+  //Print Functions
   const appbooking_print = async (appointment_id, patient_id, invoice_no = "") => {
   
     const printWindow = window.open("", "_blank", "width=600,height=800");
@@ -321,7 +321,7 @@ function Form() {
   // Timer for alerts
   useEffect(() => {
     if (successMessage) {
-      const timer = setTimeout(() => setSuccessMessage(""), 4000);
+      const timer = setTimeout(() => setSuccessMessage(""), 2000);
       return () => clearTimeout(timer);
     }
   }, [successMessage]);
@@ -352,7 +352,7 @@ function Form() {
       if (hasTodayAppointment || (currentId && todayUpdatedIDs.includes(currentId))) {
         setSuccessMessage("Patient data updated!");
         if (triggerRefresh) triggerRefresh();
-        appbooking_print("UPDATED", currentId || "NEW", "");
+      
         return;
       }
 

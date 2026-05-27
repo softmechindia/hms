@@ -20,7 +20,7 @@ export default function Sidebar() {
     { label: "Cancelled Appointments", icon: XCircle, path: "/cancel" },
     { label: "Collections", icon: Wallet, path: "/collections" },
    
-    { label: "Logout", icon: LogOut, path: "/Logout" },
+    
   ];
 
   const currentPage = menu.find(item => item.path === location.pathname)?.label || "HMS";

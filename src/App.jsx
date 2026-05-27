@@ -1,38 +1,44 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import BillingApp from "./Components/Billing/BillingApp";
 import DoctorApp from "./Components/Doctor/DoctorApp";
 import PharmacyApp from "./Components/Pharmacy/PharmacyApp";
 import Login from "./Components/Login-Page/Login";
+
 function App() {
+
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    const savedUser = localStorage.getItem("user");
-    return savedUser ? true : false;
+    return sessionStorage.getItem("isLoggedIn") === "true";
   });
 
-  const [userRole, setUserRole] = useState(() => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      const user = JSON.parse(savedUser);
-      return user.user_type.toLowerCase();
-    }
-    return null;
-  });
-  
+
+  useEffect(() => {
+    sessionStorage.setItem("isLoggedIn", isAuthenticated);
+  }, [isAuthenticated]);
+
   return (
     <Router>
       <Routes>
         {!isAuthenticated ? (
-          <Route path="*" element={<Login setAuth={setIsAuthenticated} />} />
+          <Route path="/login" element={<Login setAuth={setIsAuthenticated} />} />
         ) : (
           <>
+            <Route path="/*" element={<BillingApp />} />
             <Route path="/doctor/*" element={<DoctorApp />} />
             <Route path="/pharmacy/*" element={<PharmacyApp />} />
-            <Route path="/*" element={<BillingApp />} />
           </>
-
         )}
 
+        <Route
+          path="*"
+          element={
+            isAuthenticated ? (
+              <Navigate to="/" replace />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
       </Routes>
     </Router>
   );
