@@ -11,7 +11,7 @@ import Collections from "../Billing/Collections/Collection";
 import Layouts from "../Billing/Layouts";
 
 
-function BillingApp() {
+function BillingApp({ setAuth }) {
 
 
     return (
@@ -39,6 +39,5 @@ function BillingApp() {
 }
 
 export default BillingApp;
-
 
 

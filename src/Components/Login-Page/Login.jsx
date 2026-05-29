@@ -10,7 +10,8 @@ function Login({ setAuth }) {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
- const handleSubmit = async (e) => {
+// Login.jsx ka handleSubmit function badlein:
+const handleSubmit = async (e) => {
   e.preventDefault();
   setLoading(true);
 
@@ -18,28 +19,26 @@ function Login({ setAuth }) {
     const response = await loginUser(userID, password);
     const apiData = response.fullData; 
 
-    console.log("API DATA",response);
-
-    
-
     if (apiData && apiData.success === 1) {
-   
       const user = apiData.user_data[0];
-        localStorage.setItem("user", JSON.stringify(user));
-      setAuth(true);
-    console.log("API DATA",user);
       
-      const role = user.user_type.toLowerCase(); 
+      // Sahi tarike se data sessionStorage mein save karein
+      sessionStorage.setItem("user", JSON.stringify(user));
+      
+      const role = user.user_type.toLowerCase(); // 'doctor', 'billing', ya 'pharmacy'
+      sessionStorage.setItem("userRole", role); // Role ko alag se save kar liya
 
+      setAuth(true); // Isko hamesha role set karne ke baad chalayein
+      
+      // Sahi paths par navigate karein (Sab lowercase mein)
       if (role === "doctor") {
-        navigate("/Doctor");
+        navigate("/doctor");
       } else if (role === "billing") {
-        navigate("/Billing");
+        navigate("/billing");
       } else if (role === "pharmacy") {
-        navigate("/Pharmacy");
+        navigate("/pharmacy");
       }
     } else {
-  
       alert(apiData?.message || "Login Failed");
     }
   } catch (error) {
