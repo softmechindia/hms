@@ -10,43 +10,43 @@ function Login({ setAuth }) {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-// Login.jsx ka handleSubmit function badlein:
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+  // Login.jsx ka handleSubmit function badlein:
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-  try {
-    const response = await loginUser(userID, password);
-    const apiData = response.fullData; 
+    try {
+      const response = await loginUser(userID, password);
+      const apiData = response.fullData;
 
-    if (apiData && apiData.success === 1) {
-      const user = apiData.user_data[0];
-      
-      // Sahi tarike se data sessionStorage mein save karein
-      sessionStorage.setItem("user", JSON.stringify(user));
-      
-      const role = user.user_type.toLowerCase(); // 'doctor', 'billing', ya 'pharmacy'
-      sessionStorage.setItem("userRole", role); // Role ko alag se save kar liya
+      if (apiData && apiData.success === 1) {
+        const user = apiData.user_data[0];
 
-      setAuth(true); // Isko hamesha role set karne ke baad chalayein
-      
-      // Sahi paths par navigate karein (Sab lowercase mein)
-      if (role === "doctor") {
-        navigate("/doctor");
-      } else if (role === "billing") {
-        navigate("/billing");
-      } else if (role === "pharmacy") {
-        navigate("/pharmacy");
+
+        sessionStorage.setItem("user", JSON.stringify(user));
+
+        const role = user.user_type.toLowerCase(); 
+        sessionStorage.setItem("userRole", role); 
+
+        setAuth(true); 
+
+       
+        if (role === "doctor") {
+          navigate("/doctor");
+        } else if (role === "billing") {
+          navigate("/billing");
+        } else if (role === "pharmacy") {
+          navigate("/pharmacy");
+        }
+      } else {
+        alert(apiData?.message || "Login Failed");
       }
-    } else {
-      alert(apiData?.message || "Login Failed");
+    } catch (error) {
+      alert("Server error!");
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    alert("Server error!");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
   return (
     <div className="min-h-screen flex items-center justify-center font-sans"
       style={{

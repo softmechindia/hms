@@ -17,21 +17,20 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Agar authenticated nahi hai, toh sirf aur sirf login page khulega */}
+     
         {!isAuthenticated ? (
           <>
             <Route path="/login" element={<Login setAuth={setIsAuthenticated} />} />
-            {/* Jab logged out ho, toh koi bhi path ho use /login par hi bhej do */}
+         
             <Route path="*" element={<Navigate to="/login" replace />} />
           </>
         ) : (
-          <>
-            {/* Authenticated hone par ye paths chalenge */}
+          <>  
+           
             <Route path="/*" element={<BillingApp setAuth={setIsAuthenticated} />} />
             <Route path="/doctor/*" element={<DoctorApp setAuth={setIsAuthenticated} />} />
             <Route path="/pharmacy/*" element={<PharmacyApp setAuth={setIsAuthenticated} />} />
-            
-            {/* Logged in hone par kisi bhi galat path ko home par redirect karega */}
+         
             <Route path="*" element={<Navigate to="/" replace />} />
           </>
         )}
