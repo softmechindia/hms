@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { NavLink, useNavigate, useLocation, useOutletContext } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
 import { billingDashboardData } from "../../api/endpoints/authApi";
 import {
@@ -13,6 +13,9 @@ import {
 import { User } from "lucide-react";
 
 const Nav = ({ setAuth }) => {
+  const context = useOutletContext();
+  const refreshTrigger = context?.refreshTrigger;
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [user, setUser] = useState(null);
@@ -71,7 +74,7 @@ const Nav = ({ setAuth }) => {
     };
 
     fetchDashboardData();
-  }, []); 
+  }, [refreshTrigger]); 
 
   // LOGOUT LOGIC: Saari storage clear karke login par redirect karega
   const handleLogout = () => {

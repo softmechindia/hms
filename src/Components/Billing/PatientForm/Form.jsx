@@ -83,19 +83,18 @@ function Form() {
 
   //Print Functions
   const appbooking_print = async (appointment_id, patient_id, invoice_no = "") => {
-  
     const printWindow = window.open("", "_blank", "width=600,height=800");
 
     if (!printWindow) {
-      alert("⚠️ Please allow popups for this dashboard in your browser settings to print receipts!");
+      alert("⚠️ Browser blocked the print window! Please allow popups for this website in your browser settings to print receipts.");
       return;
     }
 
     printWindow.document.write("<h3 style='font-family:sans-serif; text-align:center; margin-top:50px;'>Generating Receipt... Please Wait.</h3>");
 
     try {
-      const BASE_URL = "/"; 
-      
+      const BASE_URL = "/";
+
       const response = await fetch(`${BASE_URL}appbooking-print-details`, {
         method: "POST",
         headers: {
@@ -106,17 +105,17 @@ function Form() {
 
       const dataText = await response.text();
       let global_di = null;
-      
+
       try {
-   
+
         const jsonStartIndex = dataText.indexOf("[");
         const jsonEndIndex = dataText.lastIndexOf("]");
-        
+
         if (jsonStartIndex !== -1 && jsonEndIndex !== -1 && jsonEndIndex > jsonStartIndex) {
           const cleanedJson = dataText.substring(jsonStartIndex, jsonEndIndex + 1);
           global_di = JSON.parse(cleanedJson);
         } else {
-         
+
           const objStart = dataText.indexOf("{");
           const objEnd = dataText.lastIndexOf("}");
           if (objStart !== -1 && objEnd !== -1 && objEnd > objStart) {
@@ -147,8 +146,8 @@ function Form() {
         }];
       }
 
-      const report_date1 = global_di[0]['today_date'] ? global_di[0]['today_date'].substring(0, 10) : new Date().toISOString().substring(0,10);
-      const D = new Date(report_date1); 
+      const report_date1 = global_di[0]['today_date'] ? global_di[0]['today_date'].substring(0, 10) : new Date().toISOString().substring(0, 10);
+      const D = new Date(report_date1);
       const mm = ("0" + (D.getMonth() + 1)).slice(-2);
       const dd = ("0" + D.getDate()).slice(-2);
       const yyyy = D.getFullYear();
@@ -158,32 +157,32 @@ function Form() {
       winHtml += '<style type="text/css">';
       winHtml += 'body { margin: 0; padding: 20px; font-family: sans-serif; color: #000; }';
       winHtml += '@media print { body { padding: 10px; } }';
-      winHtml += '@page { size: auto; margin: 0mm; }'; 
+      winHtml += '@page { size: auto; margin: 0mm; }';
       winHtml += '</style></head><body>';
-      
-      winHtml += '<div style="text-align: center; width: 100%; max-width: 300px; margin: 0 auto;">'; 
+
+      winHtml += '<div style="text-align: center; width: 100%; max-width: 300px; margin: 0 auto;">';
       winHtml += '<h4 style="padding:0px; margin:0px 0px 4px 0px; font-family: sans-serif; font-size:16px;"><u>PUNJAB RHEUMATOLOGY</u></h4>';
       winHtml += '<p style="font-size: 12px; margin:0px; font-family: sans-serif; line-height:1.4;"> B-35-922/2/1, Ferozepur Road<br> Near MBD Mall, Ludhiana (PB)<br> +91 98787-36644</p>';
       winHtml += '<p style="font-size: 13px; font-weight:bold; text-decoration:underline; margin: 8px 0px; font-family: sans-serif;">Cash Receipt</p>';
-      
+
       winHtml += '<div style="width:100%; height:22px; border-bottom: 1px solid #000; border-top: 1px solid #000; display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">';
-      winHtml += '<div style="width:50%; float:left; text-align: left;"><p style="font-size: 11px; padding:2px; margin: 0px; font-family: sans-serif;">Receipt ID: '+(global_di[0]['invoice_no'] || invoice_no || 'N/A')+'</p></div>';
-      winHtml += '<div style="width:50%; float:right; text-align: right;"><p style="font-size: 11px; padding:2px; margin: 0px; font-family: sans-serif;">Date: '+today_date+'</p></div>';
+      winHtml += '<div style="width:50%; float:left; text-align: left;"><p style="font-size: 11px; padding:2px; margin: 0px; font-family: sans-serif;">Receipt ID: ' + (global_di[0]['invoice_no'] || invoice_no || 'N/A') + '</p></div>';
+      winHtml += '<div style="width:50%; float:right; text-align: right;"><p style="font-size: 11px; padding:2px; margin: 0px; font-family: sans-serif;">Date: ' + today_date + '</p></div>';
       winHtml += '</div>';
       winHtml += '<div style="clear:both;"></div>';
-      
-      winHtml += '<div style="width:100%; text-align: left; margin: 3px 0;"><p style="font-size:11px; margin:0; padding:1px 0; font-family: sans-serif;"><b>Patient ID</b> : '+(global_di[0]['user_id'] || patient_id)+'</p></div>';
-      winHtml += '<div style="width:100%; text-align: left; margin: 3px 0;"><p style="font-size:11px; margin:0; padding:1px 0; font-family: sans-serif;"><b>Name</b> : '+(global_di[0]['user_name'] || formData.name)+'</p></div>';
-      winHtml += '<div style="width:100%; text-align: left; margin: 3px 0;"><p style="font-size:11px; margin:0; padding:1px 0; font-family: sans-serif;"><b>Age/Sex</b> : '+(global_di[0]['age'] || formData.age)+' | '+(global_di[0]['gender'] || formData.gender)+' | City: '+(global_di[0]['city'] || formData.city)+'</p></div>';
-      winHtml += '<div style="width:100%; text-align: left; margin: 3px 0;"><p style="font-size:11px; margin:0; padding:1px 0; font-family: sans-serif;"><b>Mobile</b> : '+(global_di[0]['mobile_no'] || formData.mobile_no)+'</p></div>';
-      
+
+      winHtml += '<div style="width:100%; text-align: left; margin: 3px 0;"><p style="font-size:11px; margin:0; padding:1px 0; font-family: sans-serif;"><b>Patient ID</b> : ' + (global_di[0]['user_id'] || patient_id) + '</p></div>';
+      winHtml += '<div style="width:100%; text-align: left; margin: 3px 0;"><p style="font-size:11px; margin:0; padding:1px 0; font-family: sans-serif;"><b>Name</b> : ' + (global_di[0]['user_name'] || formData.name) + '</p></div>';
+      winHtml += '<div style="width:100%; text-align: left; margin: 3px 0;"><p style="font-size:11px; margin:0; padding:1px 0; font-family: sans-serif;"><b>Age/Sex</b> : ' + (global_di[0]['age'] || formData.age) + ' | ' + (global_di[0]['gender'] || formData.gender) + ' | City: ' + (global_di[0]['city'] || formData.city) + '</p></div>';
+      winHtml += '<div style="width:100%; text-align: left; margin: 3px 0;"><p style="font-size:11px; margin:0; padding:1px 0; font-family: sans-serif;"><b>Mobile</b> : ' + (global_di[0]['mobile_no'] || formData.mobile_no) + '</p></div>';
+
       if (global_di[0]['review_patient'] !== "1" && global_di[0]['review_patient'] !== "Yes") {
         winHtml += '<table style="width:100%; border-collapse: collapse; border: 1px solid #000; margin-top:10px; font-family:sans-serif; font-size:11px;">';
         winHtml += '<tr style="border-bottom:1px solid #000; font-weight:bold;"><td style="padding:4px; text-align:left;">Charges Desc</td><td style="padding:4px; text-align:right;">Fees</td></tr>';
-        winHtml += '<tr><td style="padding:4px; text-align:left;">Registration</td><td style="padding:4px; text-align:right;">'+(global_di[0]['registration_fees'] || "0")+'/-</td></tr>';
-        winHtml += '<tr><td style="padding:4px; text-align:left;">Consultation</td><td style="padding:4px; text-align:right;">'+(global_di[0]['consulting_fees'] || "0")+'/-</td></tr>';
-        winHtml += '<tr style="border-top:1px solid #000;"><td style="padding:4px; text-align:left;">Total Amount</td><td style="padding:4px; text-align:right;">'+(global_di[0]['grand_total'] || "0")+'/-</td></tr>';
-        winHtml += '<tr style="border-top:1px solid #000; font-weight:bold; background-color:lightgray;"><td style="padding:4px; text-align:left;">Net Payable</td><td style="padding:4px; text-align:right;">'+(global_di[0]['grand_total'] || "0")+'/-</td></tr>';
+        winHtml += '<tr><td style="padding:4px; text-align:left;">Registration</td><td style="padding:4px; text-align:right;">' + (global_di[0]['registration_fees'] || "0") + '/-</td></tr>';
+        winHtml += '<tr><td style="padding:4px; text-align:left;">Consultation</td><td style="padding:4px; text-align:right;">' + (global_di[0]['consulting_fees'] || "0") + '/-</td></tr>';
+        winHtml += '<tr style="border-top:1px solid #000;"><td style="padding:4px; text-align:left;">Total Amount</td><td style="padding:4px; text-align:right;">' + (global_di[0]['grand_total'] || "0") + '/-</td></tr>';
+        winHtml += '<tr style="border-top:1px solid #000; font-weight:bold; background-color:lightgray;"><td style="padding:4px; text-align:left;">Net Payable</td><td style="padding:4px; text-align:right;">' + (global_di[0]['grand_total'] || "0") + '/-</td></tr>';
         winHtml += '</table>';
       } else {
         winHtml += '<div style="width:100%; border-top: 1px solid #000; border-bottom: 1px solid #000; margin-top:10px; padding:5px 0;"><p style="font-size: 11px; font-weight:bold; margin: 0px; font-family: sans-serif; text-align:center;">Reviewed Patient</p></div>';
@@ -195,7 +194,7 @@ function Form() {
       printWindow.document.open();
       printWindow.document.write(winHtml);
       printWindow.document.close();
-      
+
       setTimeout(() => {
         printWindow.focus();
         printWindow.print();
@@ -318,13 +317,20 @@ function Form() {
     }
   }, [formData.birth_of_year]);
 
-  // Timer for alerts
+  // Timers for messages
   useEffect(() => {
     if (successMessage) {
-      const timer = setTimeout(() => setSuccessMessage(""), 2000);
+      const timer = setTimeout(() => setSuccessMessage(""), 4000);
       return () => clearTimeout(timer);
     }
   }, [successMessage]);
+
+  useEffect(() => {
+    if (errorMessage) {
+      const timer = setTimeout(() => setErrorMessage(""), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [errorMessage]);
 
   // SAVE BUTTON WITH INTEGRATED ENGINE
   const handleSave = async () => {
@@ -352,15 +358,20 @@ function Form() {
       if (hasTodayAppointment || (currentId && todayUpdatedIDs.includes(currentId))) {
         setSuccessMessage("Patient data updated!");
         if (triggerRefresh) triggerRefresh();
-      
         return;
       }
 
       const response = await bookAppointment(payload);
       const parsedRes = response?.fullData || response?.data || response;
 
-      if (response?.success === 1 || parsedRes?.success === 1 || parsedRes?.status === true || parsedRes?.Appointment_id) {
-        setSuccessMessage(parsedRes?.message || "Appointment Booked Successfully!");
+      const isSuccess =
+        parsedRes?.success === 1 ||
+        parsedRes?.success === "1" ||
+        parsedRes?.status === true ||
+        parsedRes?.Appointment_id;
+
+      if (isSuccess) {
+        setSuccessMessage(parsedRes?.message || "Your Appointment Booked successfully");
 
         if (currentId) {
           setTodayUpdatedIDs(prev => [...prev, currentId]);
@@ -373,10 +384,11 @@ function Form() {
         const generatedApptId = parsedRes?.Appointment_id || response?.Appointment_id || "APT-" + Date.now();
         const generatedUserId = parsedRes?.user_id || response?.user_id || currentId || parsedRes?.patient_id || "PAT-NEW";
 
-        appbooking_print(generatedApptId, generatedUserId, parsedRes?.invoice_no || "");
-
+        setTimeout(() => {
+          appbooking_print(generatedApptId, generatedUserId, parsedRes?.invoice_no || "");
+        }, 5000);
         if (triggerRefresh) triggerRefresh();
-      } 
+      }
       else {
         alert(`Warning: ${parsedRes?.message || "Unable to process dynamic response execution layer."}`);
       }
@@ -488,13 +500,13 @@ function Form() {
               {errorMessage && <div className="bg-red-500 rounded-md shadow-md text-white font-bold text-xs sm:text-sm px-4 py-1 text-center max-w-sm sm:max-w-md truncate">⚠ {errorMessage}</div>}
             </div>
             <div className="flex items-center gap-2">
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={() => {
                   const activeId = selectedPatientId || formData.patient_id;
-                  if(!activeId) return alert("Please select or search a patient first to re-print.");
+                  if (!activeId) return alert("Please select or search a patient first to re-print.");
                   appbooking_print("RE-PRINT", activeId, "");
-                }} 
+                }}
                 className="bg-white text-blue-700 px-3 py-2 text-sm rounded cursor-pointer font-semibold"
               >
                 🖨️ Re-Print
