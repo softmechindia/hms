@@ -49,6 +49,9 @@ function Form() {
   const [doctorsList, setDoctorsList] = useState([]);
   const [todayUpdatedIDs, setTodayUpdatedIDs] = useState([]);
 
+  // Track list for fields where user started typing
+  const [touchedFields, setTouchedFields] = useState({});
+
   const initialFormState = {
     patient_id: "",
     name: "",
@@ -80,6 +83,35 @@ function Form() {
   };
 
   const [formData, setFormData] = useState(initialFormState);
+
+
+  const getBorderClass = (field) => {
+
+    if (touchedFields[field]) {
+      return "border-gray-300 focus-within:ring-2 focus-within:ring-blue-400";
+    }
+
+    if (!errorMessage) {
+      return "border-gray-300 focus-within:ring-2 focus-within:ring-blue-400";
+    }
+
+    const msg = errorMessage.toLowerCase();
+    let isValidationError = false;
+
+    if (field === "name" && msg.includes("name")) isValidationError = true;
+    if (field === "mobile_no" && msg.includes("mobile")) isValidationError = true;
+    if (field === "patient_type" && msg.includes("patient type")) isValidationError = true;
+    if (field === "doctor_id" && msg.includes("doctor")) isValidationError = true;
+    if (field === "consultancy" && msg.includes("consultancy")) isValidationError = true;
+    if (field === "appointment_time" && msg.includes("time")) isValidationError = true;
+
+
+    return isValidationError
+      ? "border-red-500 ring-2 ring-red-200"
+      : "border-gray-300 focus-within:ring-2 focus-within:ring-blue-400";
+  };
+
+
 
   //Print Functions
   const appbooking_print = async (appointment_id, patient_id, invoice_no = "") => {
@@ -344,7 +376,7 @@ function Form() {
     if (!formData.appointment_time || formData.appointment_time === "Select Time") {
       return setErrorMessage("Please select valid Appointment Time!");
     }
-    if (!formData.gender) return setErrorMessage("Please select Gender!");
+
 
     const currentId = formData.patient_id ? formData.patient_id.trim() : "";
     const payload = {
@@ -547,15 +579,42 @@ function Form() {
           {/* Form Fields */}
           <form className="px-2 pt-4 pb-1 space-y-4" onSubmit={(e) => e.preventDefault()}>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              <div className="relative flex items-center text-black border border-gray-300 rounded overflow-hidden">
+              {/* Parent Div par dynamic border call kiya */}
+              <div className={`relative flex items-center text-black border rounded overflow-hidden transition-all duration-200 ${getBorderClass("name")}`}>
                 <div className="pl-3 text-gray-500"><User size={15} /></div>
-                <input name="name" value={formData.name} onChange={handleInputChange} placeholder="Full Name" className="w-full px-2 py-1 placeholder-gray-500 text-sm outline-none" />
+                <input
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="Full Name"
+                  className="w-full px-2 py-1 placeholder-gray-500 text-sm outline-none"
+                />
               </div>
-              <div className="relative flex items-center border border-gray-300 rounded overflow-hidden">
+
+              <div className={`relative flex items-center border rounded overflow-hidden transition-all duration-200 ${getBorderClass("mobile_no")}`}>
                 <div className="pl-3 text-gray-500"><Phone size={15} /></div>
-                <input name="mobile_no" value={formData.mobile_no} onChange={handleInputChange} placeholder="10 Digit Mobile" className="placeholder-gray-500 w-full px-2 py-1 text-sm outline-none" />
-              </div>
-              <div className="relative flex items-center border border-gray-300 rounded overflow-hidden">
+                <input
+                  type="tel"
+                  name="mobile_no"
+                  value={formData.mobile_no}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, "");
+
+                    if (value.length <= 10) {
+                      handleInputChange({
+                        target: {
+                          name: "mobile_no",
+                          value,
+                        },
+                      });
+                    }
+                  }}
+                  maxLength={10}
+                  placeholder="10 Digit Mobile"
+                  className="placeholder-gray-500 w-full px-2 py-1 text-sm outline-none"
+                />              </div>
+
+              <div className={`relative flex items-center border rounded overflow-hidden transition-all duration-200 ${getBorderClass("patient_type")}`}>
                 <div className="pl-3 text-gray-500"><UserCheck size={15} /></div>
                 <select name="patient_type" value={formData.patient_type} onChange={handleInputChange} className={`w-full px-2 py-1 text-sm outline-none bg-white cursor-pointer ${formData.patient_type === "" ? "text-gray-500" : "text-black"}`}>
                   <option value="">Select Patient Type</option>
@@ -563,13 +622,13 @@ function Form() {
                   <option value="0">Old Patient</option>
                 </select>
               </div>
-              <div className="relative flex items-center border border-gray-300 rounded overflow-hidden">
+              <div className={`relative flex items-center border rounded overflow-hidden transition-all duration-200 ${getBorderClass("doctor_id")}`}>  
                 <select name="doctor_id" value={formData.doctor_id} onChange={handleInputChange} className={`w-full px-2 py-1 text-sm outline-none bg-white ${formData.doctor_id === "" ? "text-gray-400" : "text-black"}`}>
                   <option value="">Select Doctor</option>
                   {doctorsList.map((doc) => (<option key={doc.id} value={doc.userID}>{doc.user_name}</option>))}
                 </select>
               </div>
-              <div className="relative flex items-center border border-gray-300 rounded overflow-hidden">
+              <div className={`relative flex items-center border rounded overflow-hidden transition-all duration-200 ${getBorderClass("consultancy")}`}>
                 <select name="consultancy" value={formData.consultancy} onChange={handleInputChange} className={`w-full px-2 py-1 text-sm outline-none bg-white ${formData.consultancy === "" ? "text-gray-400" : "text-black"}`}>
                   <option value="">Select Consultancy</option>
                   {doctorsList.map((doc) => (<option key={doc.id} value={doc.userID}>{doc.user_name}</option>))}
@@ -577,7 +636,7 @@ function Form() {
               </div>
 
               {/* Date & Time Selection */}
-              <div className="flex items-center border border-gray-300 bg-white rounded">
+              <div className={`flex items-center bg-white border rounded transition-all duration-200 ${getBorderClass("appointment_time")}`}>
                 <input type="date" name="appointment_date" value={formData.appointment_date} onChange={handleInputChange} className="w-1/2 px-2 py-1 text-sm outline-none border-r border-gray-300" />
                 <div className="relative w-1/2" ref={dropdownRef}>
                   <div onClick={() => setIsTimeOpen(!isTimeOpen)} className={`px-2 py-1 text-sm cursor-pointer flex justify-between items-center ${formData.appointment_time ? "text-black" : "text-gray-500"}`}>
