@@ -536,7 +536,11 @@ function Form() {
                 type="button"
                 onClick={() => {
                   const activeId = selectedPatientId || formData.patient_id;
-                  if (!activeId) return alert("Please select or search a patient first to re-print.");
+                  
+                  if (!activeId) {
+                    setErrorMessage("Please select or search a patient first to re-print.");
+                    return;
+                  }
                   appbooking_print("RE-PRINT", activeId, "");
                 }}
                 className="bg-white text-blue-700 px-3 py-2 text-sm rounded cursor-pointer font-semibold"
@@ -622,7 +626,7 @@ function Form() {
                   <option value="0">Old Patient</option>
                 </select>
               </div>
-              <div className={`relative flex items-center border rounded overflow-hidden transition-all duration-200 ${getBorderClass("doctor_id")}`}>  
+              <div className={`relative flex items-center border rounded overflow-hidden transition-all duration-200 ${getBorderClass("doctor_id")}`}>
                 <select name="doctor_id" value={formData.doctor_id} onChange={handleInputChange} className={`w-full px-2 py-1 text-sm outline-none bg-white ${formData.doctor_id === "" ? "text-gray-400" : "text-black"}`}>
                   <option value="">Select Doctor</option>
                   {doctorsList.map((doc) => (<option key={doc.id} value={doc.userID}>{doc.user_name}</option>))}

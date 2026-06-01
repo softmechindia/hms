@@ -13,14 +13,12 @@ export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false)
 
   const menu = [
-    { label: "Dashboard", icon: LayoutGrid, path: "/" },
-    { label: "Total Appointments", icon: CalendarDays, path: "/total-app" },
-    { label: "Pending Appointments", icon: Hourglass, path: "/pending" },
-    { label: "Today's Confirmed", icon: CheckCircle, path: "/today-conf" },
-    { label: "Cancelled Appointments", icon: XCircle, path: "/cancel" },
-    { label: "Collections", icon: Wallet, path: "/collections" },
-   
-    
+    { label: "Dashboard", icon: LayoutGrid, path: "/billing" },
+    { label: "Total Appointments", icon: CalendarDays, path: "/billing/total-app" },
+    { label: "Pending Appointments", icon: Hourglass, path: "/billing/pending" },
+    { label: "Today's Confirmed", icon: CheckCircle, path: "/billing/today-conf" },
+    { label: "Cancelled Appointments", icon: XCircle, path: "/billing/cancel" },
+    { label: "Collections", icon: Wallet, path: "/billing/collections" },
   ];
 
   const currentPage = menu.find(item => item.path === location.pathname)?.label || "HMS";
@@ -34,10 +32,10 @@ export default function Sidebar() {
             <Menu size={24} />
           </button>
           <span className="text-white font-bold">{currentPage}</span></div>
-          <div className="w-9 h-9  bg-white/20 flex items-center justify-center border border-white/30">
-           <FaUser size={16} className="text-white" />
+        <div className="w-9 h-9  bg-white/20 flex items-center justify-center border border-white/30">
+          <FaUser size={16} className="text-white" />
         </div></div>
-         <div className={`
+      <div className={`
         fixed lg:static inset-y-0 left-0 z-50
         w-64 min-h-screen   bg-[#082cbb] text-white p-4 flex flex-col
         transition-transform duration-300 ease-in-out
@@ -59,8 +57,8 @@ export default function Sidebar() {
               <FaUser size={20} className="text-orange-500" />
             </div>
           </div>
-<h3 className="mt-4 font-bold text-lg">Dr. John Doe</h3>          
-<p className="text-white/60 text-xs tracking-widest uppercase">Cardiologist</p>
+          <h3 className="mt-4 font-bold text-lg">Dr. John Doe</h3>
+          <p className="text-white/60 text-xs tracking-widest uppercase">Cardiologist</p>
         </div>
 
         <nav className="px-1 space-y-2">

@@ -17,20 +17,32 @@ function App() {
   return (
     <Router>
       <Routes>
-     
         {!isAuthenticated ? (
           <>
             <Route path="/login" element={<Login setAuth={setIsAuthenticated} />} />
-         
             <Route path="*" element={<Navigate to="/login" replace />} />
           </>
         ) : (
           <>  
-           
-            <Route path="/*" element={<BillingApp setAuth={setIsAuthenticated} />} />
+            {/* Doctor aur Pharmacy independent paths */}
             <Route path="/doctor/*" element={<DoctorApp setAuth={setIsAuthenticated} />} />
             <Route path="/pharmacy/*" element={<PharmacyApp setAuth={setIsAuthenticated} />} />
-         
+            
+            {/* Billing Main Context Sub-routes */}
+            <Route path="/billing/*" element={<BillingApp setAuth={setIsAuthenticated} />} />
+            
+            {/* Base domain redirection logic */}
+            <Route 
+              path="/" 
+              element={
+                (() => {
+                  const role = sessionStorage.getItem("userRole");
+                  if (role === "doctor") return <Navigate to="/doctor" replace />;
+                  if (role === "pharmacy") return <Navigate to="/pharmacy" replace />;
+                  return <Navigate to="/billing" replace />;
+                })()
+              } 
+            />
             <Route path="*" element={<Navigate to="/" replace />} />
           </>
         )}

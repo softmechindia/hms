@@ -76,7 +76,6 @@ const Nav = ({ setAuth }) => {
     fetchDashboardData();
   }, [refreshTrigger]); 
 
-  // LOGOUT LOGIC: Saari storage clear karke login par redirect karega
   const handleLogout = () => {
     sessionStorage.clear(); 
     localStorage.clear(); 
@@ -88,20 +87,22 @@ const Nav = ({ setAuth }) => {
     window.location.href = "/login";
   };
 
-  const isDashboard = location.pathname === "/";
+  // Synchronized alignment with Layout condition mapping
+  const isDashboard = location.pathname === "/billing" || location.pathname === "/billing/";
+
+  // FIXED PATHS: Paths mapped explicitly to handle sub-navigation correctly
+  const menuItems = [
+    { name: "Total Appointments", icon: <FaCalendarCheck />, path: "/billing/total-app", count: counts.total },
+    { name: "Pending Appointments", icon: <FaHourglassHalf />, path: "/billing/pending", count: counts.pending },
+    { name: "Today’s Confirmed", icon: <FaHourglassHalf />, path: "/billing/today-conf", count: counts.today },
+    { name: "Cancel Appointments", icon: <FaTimesCircle />, path: "/billing/cancel", count: counts.cancel },
+    { name: "Collections", icon: <FaCoins />, path: "/billing/collections", count: counts.collections },
+  ];
 
   const getPageTitle = () => {
     const currentItem = menuItems.find((item) => item.path === location.pathname);
     return currentItem ? currentItem.name : "Dashboard";
   };
-
-  const menuItems = [
-    { name: "Total Appointments", icon: <FaCalendarCheck />, path: "/total-app", count: counts.total },
-    { name: "Pending Appointments", icon: <FaHourglassHalf />, path: "/pending", count: counts.pending },
-    { name: "Today’s Confirmed", icon: <FaHourglassHalf />, path: "/today-conf", count: counts.today },
-    { name: "Cancel Appointments", icon: <FaTimesCircle />, path: "/cancel", count: counts.cancel },
-    { name: "Collections", icon: <FaCoins />, path: "/collections", count: counts.collections },
-  ];
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -118,7 +119,7 @@ const Nav = ({ setAuth }) => {
       <div className="mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-4">
           {isDashboard ? (
-            <NavLink to="/" className="flex items-center">
+            <NavLink to="/billing" className="flex items-center">
               <img src={logo} alt="Logo" className="h-10" />
             </NavLink>
           ) : (
@@ -175,7 +176,7 @@ const Nav = ({ setAuth }) => {
             </button>
 
             {profileOpen && (
-              <div className="absolute right-0 mt-3 w-32 bg-white rounded-md shadow-xl border border-gray-100 overflow-hidden">
+              <div className="absolute right-0 mt-3 w-43 bg-white rounded-md shadow-xl border border-gray-100 overflow-hidden">
                 <div className="px-2 py-1">
                   <p className="text-sm font-bold text-gray-800">
                     {user?.user_name || "User"}
@@ -184,7 +185,7 @@ const Nav = ({ setAuth }) => {
                 <p
                   className="px-2 py-1 text-sm hover:bg-orange-50 cursor-pointer"
                   onClick={() => {
-                    navigate("/my-profile");
+                    navigate("/billing/my-profile");
                     setProfileOpen(false);
                   }}
                 >
@@ -199,7 +200,6 @@ const Nav = ({ setAuth }) => {
                   Change Password
                 </p>
 
-                {/* LOGOUT BUTTON ACTION CONNECTED HERE */}
                 <p
                   className="px-2 py-1 text-sm hover:bg-orange-50 cursor-pointer text-red-600 font-semibold border-t border-gray-100"
                   onClick={handleLogout}

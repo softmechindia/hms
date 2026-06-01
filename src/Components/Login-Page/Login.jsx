@@ -10,7 +10,7 @@ function Login({ setAuth }) {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Login.jsx ka handleSubmit function badlein:
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);

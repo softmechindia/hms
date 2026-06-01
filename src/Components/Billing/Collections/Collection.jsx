@@ -132,10 +132,7 @@ const [toDate, setToDate] = useState("");
           </label>
 
           <div className="relative">
-            <Calendar
-              size={16}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-            />
+      
 
             <input
               type="date"
@@ -153,10 +150,7 @@ const [toDate, setToDate] = useState("");
           </label>
 
           <div className="relative">
-            <Calendar
-              size={16}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-            />
+   
 
             <input
               type="date"
