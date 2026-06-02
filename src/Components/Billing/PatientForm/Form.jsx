@@ -118,7 +118,7 @@ function Form() {
     const printWindow = window.open("", "_blank", "width=600,height=800");
 
     if (!printWindow) {
-      alert("⚠️ Browser blocked the print window! Please allow popups for this website in your browser settings to print receipts.");
+      alert(" Browser blocked the print window! Please allow popups for this website in your browser settings to print receipts.");
       return;
     }
 

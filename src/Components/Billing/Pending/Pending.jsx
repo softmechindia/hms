@@ -3,7 +3,7 @@ import DataTable from "react-data-table-component";
 import { getTotalAppointments, getDoctors } from "../../../api/endpoints/authApi"; 
 import { Search, Calendar, ShieldCheck, Clock, ChevronDown } from "lucide-react";
 
-function Totalapp() {
+function Pending() {
   const todayDate = new Date().toISOString().split('T')[0];
 
   const [fromDate, setFromDate] = useState(todayDate);
@@ -272,4 +272,4 @@ function Totalapp() {
   );
 }
 
-export default Totalapp;
+export default Pending;
