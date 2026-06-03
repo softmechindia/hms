@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import logo from "../../assets/images/logo.png";
+import Dashboardlogo from "../../assets/images/Dashboardlogo.png";
 import { Lock, Eye, EyeOff, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../api/endpoints/authApi";
@@ -65,7 +65,7 @@ function Login({ setAuth }) {
 
 
         <div className="flex flex-col items-center mb-6 ">
-          <img src={logo} alt="logo" className="h-12 mb-3" />
+          <img src={Dashboardlogo} alt="logo" className="h-auto w-[50%] mb-3" />
 
           <h2 className="text-2xl font-bold text-[#2C2F33] font-roboto">
             Hospital Management System

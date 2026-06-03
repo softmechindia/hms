@@ -24,7 +24,7 @@ export default function TopHeader() {
     return (
         <div className="flex items-center justify-between bg-white px-6 py-3 border-b border-gray-200 w-full h-[60px]">
 
-            {/* LEFT SIDE: Hamburger & Dynamic Title */}
+  
             <div className="flex items-center gap-4">
                 <button className="text-gray-500 hover:text-gray-800 transition-colors focus:outline-none">
                     <Menu className="w-5 h-5" />

@@ -49,8 +49,36 @@ function Form() {
   const [doctorsList, setDoctorsList] = useState([]);
   const [todayUpdatedIDs, setTodayUpdatedIDs] = useState([]);
 
-  // Track list for fields where user started typing
+    // Track list for fields where user started typing
   const [touchedFields, setTouchedFields] = useState({});
+
+const handleSearchFilter = () => {
+ 
+  if (!formData.fromDate || !formData.toDate || !formData.doctor) {
+    alert("Please select From Date, To Date, and Doctor first!");
+    return;
+  }
+
+
+  const filtered = allAppointments.filter((item) => {
+    const itemDate = new Date(item.date); 
+    const from = new Date(formData.fromDate);
+    const to = new Date(formData.toDate);
+    
+   
+    const matchesDate = itemDate >= from && itemDate <= to;
+    const matchesDoctor = itemName.doctor_id === formData.doctor; 
+
+    return matchesDate && matchesDoctor;
+  });
+
+
+  setDisplayData(filtered);
+};
+
+
+
+
 
   const initialFormState = {
     patient_id: "",
@@ -536,7 +564,7 @@ function Form() {
                 type="button"
                 onClick={() => {
                   const activeId = selectedPatientId || formData.patient_id;
-                  
+
                   if (!activeId) {
                     setErrorMessage("Please select or search a patient first to re-print.");
                     return;
@@ -574,9 +602,9 @@ function Form() {
                   </div>
                 )}
               </div>
-              <button type="button" className="bg-[#F97316] cursor-pointer text-white px-5 h-10 rounded text-sm flex items-center gap-2">
+              {/* <button type="button" className="bg-[#F97316] cursor-pointer text-white px-5 h-10 rounded text-sm flex items-center gap-2">
                 {isSearching ? "..." : <><FaSearch /> Search</>}
-              </button>
+              </button> */}
             </div>
           </div>
 

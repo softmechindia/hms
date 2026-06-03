@@ -42,11 +42,11 @@ export default function Sidebar() {
         ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
       `}>
 
-        <div className="flex mx justify-center items-center gap-3 ">
+       <div className="flex justify-center items-center w-full">
           <img
             src={logo}
             alt="HMS Logo"
-            className="h-9 w-auto hover:opacity-80  transition cursor-pointer"
+            className="h-auto w-[80%]"
           />
         </div>
 

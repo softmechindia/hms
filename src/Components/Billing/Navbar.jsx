@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { NavLink, useNavigate, useLocation, useOutletContext } from "react-router-dom";
-import logo from "../../assets/images/logo.png";
+import Dashboardlogo from "../../assets/images/Dashboardlogo.png";
 import { billingDashboardData } from "../../api/endpoints/authApi";
 import {
   FaCalendarCheck,
@@ -50,13 +50,13 @@ const Nav = ({ setAuth }) => {
         let apiData = null;
 
         if (response?.data?.data) {
-          apiData = response.data.data; 
+          apiData = response.data.data;
         } else if (response?.data) {
-          apiData = response.data; 
+          apiData = response.data;
         } else if (response?.fullData?.data) {
-          apiData = response.fullData.data; 
+          apiData = response.fullData.data;
         } else {
-          apiData = response; 
+          apiData = response;
         }
 
         if (apiData && (apiData.total_appointments !== undefined || apiData.pending_appointments !== undefined)) {
@@ -74,11 +74,11 @@ const Nav = ({ setAuth }) => {
     };
 
     fetchDashboardData();
-  }, [refreshTrigger]); 
+  }, [refreshTrigger]);
 
   const handleLogout = () => {
-    sessionStorage.clear(); 
-    localStorage.clear(); 
+    sessionStorage.clear();
+    localStorage.clear();
 
     if (typeof setAuth === "function") {
       setAuth(false);
@@ -116,14 +116,19 @@ const Nav = ({ setAuth }) => {
 
   return (
     <nav className={`w-full bg-white sticky top-0 z-50 shadow-sm ${isDashboard ? "block" : "hidden lg:block"}`}>
-    <div className="mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="w-[250px] flex items-center">
+
           {isDashboard ? (
-            <NavLink to="/billing" className="flex items-center">
-              <img src={logo} alt="Logo" className="h-10" />
+            <NavLink to="/billing">
+              <img
+                src={Dashboardlogo}
+                alt="Dashboardlogo"
+                className="h-auto w-[60%]"
+              />
             </NavLink>
           ) : (
-            <div className="flex items-center gap-4">
+            <div className="flex items-center ">
               <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-md lg:block hidden">
                 <FaBars size={18} />
               </button>
@@ -168,7 +173,7 @@ const Nav = ({ setAuth }) => {
           <div className="relative" ref={profileRef}>
             <button
               onClick={() => setProfileOpen(!profileOpen)}
-              className="flex items-center gap-3 focus:outline-none"
+              className="flex items-center  focus:outline-none"
             >
               <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-orange-400 to-orange-600 text-white font-bold flex items-center justify-center shadow-md border-2 border-white">
                 <User />
@@ -210,8 +215,8 @@ const Nav = ({ setAuth }) => {
             )}
           </div>
         </div>
-      </div> 
-      
+      </div>
+
 
       <div>
 
