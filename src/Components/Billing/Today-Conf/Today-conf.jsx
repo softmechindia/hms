@@ -157,29 +157,10 @@ function TodayConfirmAppointment() {
   return (
     <div className="w-full min-h-screen pt-16 md:pt-6 overflow-x-hidden p-1 md:p-6">
       <form onSubmit={handleSearch} className="bg-white p-4 rounded-sm border border-gray-200 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-        <div className="w-full">
-          <label className="block text-xs text-gray-500 mb-1 font-semibold">From Date</label>
-          <div className="relative">
-            <input
-              type="date"
-              value={fromDate}
-              onChange={(e) => setFromDate(e.target.value)}
-              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-sm text-sm outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer pr-10"
-            />
-          </div>
-        </div>
 
-        <div className="w-full">
-          <label className="block text-xs text-gray-500 mb-1 font-semibold">To Date</label>
-          <div className="relative">
-            <input
-              type="date"
-              value={toDate}
-              onChange={(e) => setToDate(e.target.value)}
-              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-sm text-sm outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer pr-10"
-            />
-          </div>
-        </div>
+
+  
+   
 
         <div className="w-full">
           <label className="block text-xs text-gray-500 mb-1 font-semibold">Doctor</label>

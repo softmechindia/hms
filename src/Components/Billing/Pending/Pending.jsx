@@ -1,38 +1,50 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import DataTable from "react-data-table-component";
-import { getTotalAppointments, getDoctors } from "../../../api/endpoints/authApi"; 
+import { getTotalAppointments, getDoctors } from "../../../api/endpoints/authApi";
 import { Search, Calendar, ShieldCheck, Clock, ChevronDown } from "lucide-react";
 
-function Pending() {
-  const todayDate = new Date().toISOString().split('T')[0];
+function PendingAppointment() {
 
-  const [fromDate, setFromDate] = useState(todayDate);
-  const [toDate, setToDate] = useState(todayDate);
+  const getLiveDateString = () => {
+    const today = new Date();
+    const offset = today.getTimezoneOffset();
+    const localToday = new Date(today.getTime() - offset * 60 * 1000);
+    return localToday.toISOString().split("T")[0];
+  };
+
+  const currentLiveDate = getLiveDateString();
+
+
+  const [fromDate, setFromDate] = useState(currentLiveDate);
+  const [toDate, setToDate] = useState(currentLiveDate);
   const [selectedDoctor, setSelectedDoctor] = useState("All Doctor");
+  const [searchClickedDoctor, setSearchClickedDoctor] = useState("All Doctor");
+
   const [appointments, setAppointments] = useState([]);
-  const [doctorsList, setDoctorsList] = useState([]); 
+  const [doctorsList, setDoctorsList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState("");
 
+  // Fetch Doctors Dropdown List
   const fetchDoctor = useCallback(async () => {
     try {
-      const docResponse = await getDoctors(); 
+      const docResponse = await getDoctors();
       const doctors = docResponse?.Getdoctorsdata || docResponse?.fullData?.Getdoctorsdata || [];
-      console.log("--- Processed Doctors List inside Totalapp ---", doctors);
       setDoctorsList(doctors);
     } catch (err) {
       console.error("Doctors API Fetch Failure:", err);
     }
   }, []);
 
-  const fetchTotalAppointments = useCallback(async () => {
+  // API Fetch Function for Appointments
+  const fetchTotalAppointments = useCallback(async (searchFromDate = "", searchToDate = "") => {
     setIsLoading(true);
     setApiError("");
 
     const payload = {
       user_id: "ST0001",
-      from_date: fromDate,
-      to_date: toDate,
+      from_date: searchFromDate,
+      to_date: searchToDate,
     };
 
     try {
@@ -52,27 +64,41 @@ function Pending() {
       setAppointments(fetchedList);
     } catch (err) {
       console.error("Fetch Failure Error:", err);
-      setApiError("Failed to fetch appointment data dynamically.");
+      setApiError("Failed to fetch appointment data.");
     } finally {
       setIsLoading(false);
     }
-  }, [fromDate, toDate]);
+  }, []);
 
+  
   useEffect(() => {
-    fetchTotalAppointments();
+    fetchTotalAppointments(currentLiveDate, currentLiveDate);
     fetchDoctor();
-  }, [fetchTotalAppointments, fetchDoctor]);
+  }, [currentLiveDate, fetchDoctor, fetchTotalAppointments]);
+
 
   const handleSearch = (e) => {
     e.preventDefault();
-    fetchTotalAppointments();
+    
+    if (!fromDate || !toDate) {
+      alert("Please select both From Date and To Date first!");
+      return;
+    }
+    
+    // Search click hone par state lock hogi aur selected date range ka data aayega
+    setSearchClickedDoctor(selectedDoctor);
+    fetchTotalAppointments(fromDate, toDate);
   };
 
+  // Local Memoized Filter (Sirf search hit hone ke baad locked doctor par chalega)
   const filteredAppointments = useMemo(() => {
-    if (selectedDoctor === "All Doctor") return appointments;
-    return appointments.filter((item) => item.doctor_name === selectedDoctor);
-  }, [appointments, selectedDoctor]);
+    if (!searchClickedDoctor || searchClickedDoctor === "All Doctor") {
+      return appointments; // "All Doctor" par current filtered date ka saara data dikhega
+    }
+    return appointments.filter((item) => item.doctor_name === searchClickedDoctor);
+  }, [appointments, searchClickedDoctor]);
 
+  // Data Table Columns Configuration
   const columns = [
     {
       name: "SNO.",
@@ -114,8 +140,12 @@ function Pending() {
       cell: (row) => {
         const statusText = row.vstatus || "Pending";
         const isConfirmed = statusText.toLowerCase() === "confirmed" || statusText.toLowerCase() === "approved";
+        const isCancelled = statusText.toLowerCase() === "cancelled";
+        
         return (
-          <span className={`px-3 py-1 rounded-sm text-[10px] font-black uppercase ${isConfirmed ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}>
+          <span className={`px-3 py-1 rounded-sm text-[10px] font-black uppercase ${
+            isConfirmed ? "bg-green-100 text-green-700" : isCancelled ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"
+          }`}>
             {statusText}
           </span>
         );
@@ -203,7 +233,7 @@ function Pending() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full border border-gray-200 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-sm text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-50 font-medium h-[38px]"
+          className="w-full md:w-auto mt-0 md:mt-5 border border-gray-200 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-md text-sm flex items-center justify-center gap-2 transition-all cursor-pointer"
         >
           <Search size={16} />
           {isLoading ? "Searching..." : "Search"}
@@ -217,7 +247,7 @@ function Pending() {
           <div className="text-center py-10 font-medium text-gray-500">Loading appointments...</div>
         ) : filteredAppointments.length === 0 ? (
           <div className="text-center py-10 font-medium text-gray-500 bg-white border border-gray-200 rounded-sm">
-            No dynamic records found matching current timeline parameters.
+            No appointment records found for today.
           </div>
         ) : (
           <>
@@ -272,4 +302,4 @@ function Pending() {
   );
 }
 
-export default Pending;
+export default PendingAppointment;

@@ -83,12 +83,22 @@ export const GetMyBookings = (payload) => {
 //Billing-Dashboard-Data
 export const billingDashboardData = (payload) => {
     return proxyApiRequest("/billingDashboardData", "POST", payload);
-}
+};
   //get-Total-Appointments
 export const getTotalAppointments = (payload) => {
      return proxyApiRequest("/getTotalAppointments", "POST", payload);
 
+};
+
+//Get-Collections
+export const getCollections = (payload) => {
+    return proxyApiRequest("/getCollections", "POST", payload);
+};
 
 
-     
+
+//   List of  getCunsultancy
+export const getConsultancy = async () => {
+    return proxyApiRequest("/getConsultancy","GET"); 
 }
+

@@ -213,6 +213,7 @@ const Nav = ({ setAuth }) => {
                 </p>
               </div>
             )}
+            
           </div>
         </div>
       </div>

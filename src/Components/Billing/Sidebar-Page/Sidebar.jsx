@@ -42,7 +42,7 @@ export default function Sidebar() {
         ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
       `}>
 
-       <div className="flex justify-center items-center w-full">
+        <div className="flex justify-center items-center w-full">
           <img
             src={logo}
             alt="HMS Logo"
@@ -70,17 +70,16 @@ export default function Sidebar() {
               <NavLink
                 key={item.path}
                 to={item.path}
+                end={item.path === "/billing"}
                 onClick={() => setIsOpen(false)}
                 className={({ isActive }) =>
                   `flex items-center gap-3 p-3 rounded-md transition-all ${isActive
-                    ? "bg-white text-[#4F6EEA] shadow-md border-l-4 border-white"
+                    ? "bg-white text-[#4F6EEA]"
                     : "text-white hover:bg-white/10"
                   }`
                 }
               >
-
                 <Icon size={20} />
-
                 <span className="text-sm font-medium">{item.label}</span>
               </NavLink>
             );

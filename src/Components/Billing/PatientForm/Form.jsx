@@ -8,7 +8,7 @@ import EditEducationPopup from "../Popup/EditEducationPopup";
 import AddCityPopup from "../Popup/AddCityPopup";
 import EditCityPopup from "../Popup/EditCityPopup";
 import { FaUser, FaSearch } from "react-icons/fa";
-import { bookAppointment, getAvailableSlots, getEducations, getOccupations, getCity, searchPatient, getDoctors } from "../../../api/endpoints/authApi";
+import { bookAppointment, getAvailableSlots, getEducations, getOccupations, getCity, searchPatient, getDoctors, getConsultancy } from "../../../api/endpoints/authApi";
 import { useOutletContext } from "react-router-dom";
 
 function Form() {
@@ -18,6 +18,7 @@ function Form() {
   const [occupationsList, setOccupationsList] = useState([]);
   const [educationList, setEducationsList] = useState([]);
   const [cityList, setCityList] = useState([]);
+  const [consultancyList, setConsultancyList] = useState();
 
   // SEARCH & DROPDOWN STATES 
   const [searchResults, setSearchResults] = useState([]);
@@ -49,32 +50,32 @@ function Form() {
   const [doctorsList, setDoctorsList] = useState([]);
   const [todayUpdatedIDs, setTodayUpdatedIDs] = useState([]);
 
-    // Track list for fields where user started typing
+  // Track list for fields where user started typing
   const [touchedFields, setTouchedFields] = useState({});
 
-const handleSearchFilter = () => {
- 
-  if (!formData.fromDate || !formData.toDate || !formData.doctor) {
-    alert("Please select From Date, To Date, and Doctor first!");
-    return;
-  }
+  const handleSearchFilter = () => {
+
+    if (!formData.fromDate || !formData.toDate || !formData.doctor) {
+      alert("Please select From Date, To Date, and Doctor first!");
+      return;
+    }
 
 
-  const filtered = allAppointments.filter((item) => {
-    const itemDate = new Date(item.date); 
-    const from = new Date(formData.fromDate);
-    const to = new Date(formData.toDate);
-    
-   
-    const matchesDate = itemDate >= from && itemDate <= to;
-    const matchesDoctor = itemName.doctor_id === formData.doctor; 
-
-    return matchesDate && matchesDoctor;
-  });
+    const filtered = allAppointments.filter((item) => {
+      const itemDate = new Date(item.date);
+      const from = new Date(formData.fromDate);
+      const to = new Date(formData.toDate);
 
 
-  setDisplayData(filtered);
-};
+      const matchesDate = itemDate >= from && itemDate <= to;
+      const matchesDoctor = itemName.doctor_id === formData.doctor;
+
+      return matchesDate && matchesDoctor;
+    });
+
+
+    setDisplayData(filtered);
+  };
 
 
 
@@ -82,6 +83,7 @@ const handleSearchFilter = () => {
 
   const initialFormState = {
     patient_id: "",
+    doctor_fees: "0",
     name: "",
     mobile_no: "",
     patient_type: "",
@@ -199,7 +201,7 @@ const handleSearchFilter = () => {
           city: formData.city || "N/A",
           mobile_no: formData.mobile_no || "N/A",
           registration_fees: "0",
-          consulting_fees: "400",
+          doctor_fees: "400",
           grand_total: "400",
           appointment_time: formData.appointment_time || "09:30 AM",
           review_patient: formData.review_patient
@@ -409,6 +411,7 @@ const handleSearchFilter = () => {
     const currentId = formData.patient_id ? formData.patient_id.trim() : "";
     const payload = {
       ...formData,
+      doctor_fees: formData.doctor_fees.toString(),
       reserved: formData.reserved === "Yes" || formData.reserved === true ? "Yes" : "No",
       review_patient: formData.review_patient === "Yes" || formData.review_patient === true ? "Yes" : "No",
       paid_amount: formData.paid_amount.toString()
@@ -508,17 +511,22 @@ const handleSearchFilter = () => {
 
   const fetchData = async () => {
     try {
-      const [occ, edu, cit, docResponse] = await Promise.all([
+      const [occ, edu, cit, docResponse, consResponse] = await Promise.all([
         getOccupations(),
         getEducations(),
         getCity(),
-        getDoctors()
+        getDoctors(),
+        getConsultancy()
       ]);
 
       setOccupationsList(occ?.fullData?.data || occ?.data || []);
       setEducationsList(edu?.fullData?.data || edu?.data || []);
       setCityList(cit?.fullData?.data || cit?.data || []);
+
+      // Fixed lines below:
       setDoctorsList(docResponse?.Getdoctorsdata || docResponse?.fullData?.Getdoctorsdata || []);
+      setConsultancyList(consResponse?.Getconsultancydata || consResponse?.fullData?.Getconsultancydata || []);
+
     } catch (err) {
       console.error("Fetch Error:", err);
     }
@@ -544,6 +552,37 @@ const handleSearchFilter = () => {
     if (selected) { setSelectedCity(selected); setShowEditCities(true); }
   };
 
+  const handleDoctorChange = (e) => {
+    const selectedDoctorId = e.target.value;
+
+    // 1. Find the selected doctor's complete data object from doctorsList
+    const selectedDoctorObj = doctorsList.find(
+      (doc) => doc.userID === selectedDoctorId
+    );
+
+    // 2. Extract their fees dynamically. Adjust 'doc.fees' or 'doc.consulting_fees' 
+    // based on your exact API key structure.
+    const fetchedFees = selectedDoctorObj?.fees || selectedDoctorObj?.consulting_fees || "0";
+
+    // 3. Clear errors related to doctor field if present
+    if (errorMessage && errorMessage.toLowerCase().includes("doctor")) {
+      setErrorMessage("");
+    }
+
+    // 4. Update the formData object internally
+    setFormData((prev) => ({
+      ...prev,
+      doctor_id: selectedDoctorId,
+      doctor_fees: fetchedFees.toString(), // Internal assignment
+    }));
+
+    // 5. Console logs to verify the internal data flow
+    console.group("🏥 Doctor Selection Synced");
+    console.log("Selected Doctor ID :", selectedDoctorId);
+    console.log("Doctor Full Object :", selectedDoctorObj);
+    console.log("Mapped Patient Fee :", fetchedFees);
+    console.groupEnd();
+  };
   return (
     <div className="rounded-md h-fit bg-white">
       <div className="flex flex-col items-center gap-4">
@@ -560,21 +599,18 @@ const handleSearchFilter = () => {
               {errorMessage && <div className="bg-red-500 rounded-md shadow-md text-white font-bold text-xs sm:text-sm px-4 py-1 text-center max-w-sm sm:max-w-md truncate">⚠ {errorMessage}</div>}
             </div>
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  const activeId = selectedPatientId || formData.patient_id;
-
-                  if (!activeId) {
-                    setErrorMessage("Please select or search a patient first to re-print.");
-                    return;
-                  }
-                  appbooking_print("RE-PRINT", activeId, "");
-                }}
-                className="bg-white text-blue-700 px-3 py-2 text-sm rounded cursor-pointer font-semibold"
-              >
-                🖨️ Re-Print
-              </button>
+             
+              {selectedPatientId && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    appbooking_print("RE-PRINT", selectedPatientId, "");
+                  }}
+                  className="bg-white text-blue-700 px-3 py-2 text-sm rounded cursor-pointer font-semibold"
+                >
+                  🖨️ Re-Print
+                </button>
+              )}
               <button type="button" onClick={handleResetForm} className="bg-white text-gray-700 px-3 py-2 text-sm rounded cursor-pointer font-semibold">🔄 Reset</button>
             </div>
           </div>
@@ -655,7 +691,7 @@ const handleSearchFilter = () => {
                 </select>
               </div>
               <div className={`relative flex items-center border rounded overflow-hidden transition-all duration-200 ${getBorderClass("doctor_id")}`}>
-                <select name="doctor_id" value={formData.doctor_id} onChange={handleInputChange} className={`w-full px-2 py-1 text-sm outline-none bg-white ${formData.doctor_id === "" ? "text-gray-400" : "text-black"}`}>
+                <select name="doctor_id" value={formData.doctor_id} onChange={handleDoctorChange} className={`w-full px-2 py-1 text-sm outline-none bg-white ${formData.doctor_id === "" ? "text-gray-400" : "text-black"}`}>
                   <option value="">Select Doctor</option>
                   {doctorsList.map((doc) => (<option key={doc.id} value={doc.userID}>{doc.user_name}</option>))}
                 </select>
@@ -663,7 +699,7 @@ const handleSearchFilter = () => {
               <div className={`relative flex items-center border rounded overflow-hidden transition-all duration-200 ${getBorderClass("consultancy")}`}>
                 <select name="consultancy" value={formData.consultancy} onChange={handleInputChange} className={`w-full px-2 py-1 text-sm outline-none bg-white ${formData.consultancy === "" ? "text-gray-400" : "text-black"}`}>
                   <option value="">Select Consultancy</option>
-                  {doctorsList.map((doc) => (<option key={doc.id} value={doc.userID}>{doc.user_name}</option>))}
+                  {consultancyList?.map((doc) => (<option key={doc.id} value={doc.userID}>{doc.user_name}</option>))}
                 </select>
               </div>
 
@@ -773,4 +809,4 @@ const handleSearchFilter = () => {
   );
 }
 
-export default Form;
+export default Form;  
