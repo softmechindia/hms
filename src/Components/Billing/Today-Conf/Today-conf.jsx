@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import DataTable from "react-data-table-component";
-import { getTotalAppointments, getDoctors } from "../../../api/endpoints/authApi"; 
+import { getTodayConfirmed, getDoctors } from "../../../api/endpoints/authApi"; 
 import { Search, Calendar, ShieldCheck, Clock, ChevronDown } from "lucide-react";
 
 function TodayConfirmAppointment() {
@@ -25,7 +25,7 @@ function TodayConfirmAppointment() {
     }
   }, []);
 
-  const fetchTotalAppointments = useCallback(async () => {
+  const fetchGetTodayConfirmed = useCallback(async () => {
     setIsLoading(true);
     setApiError("");
 
@@ -36,7 +36,7 @@ function TodayConfirmAppointment() {
     };
 
     try {
-      const res = await getTotalAppointments(payload);
+      const res = await getTodayConfirmed(payload);
       const responseData = res?.data !== undefined ? res.data : res;
 
       let fetchedList = [];
@@ -59,13 +59,13 @@ function TodayConfirmAppointment() {
   }, [fromDate, toDate]);
 
   useEffect(() => {
-    fetchTotalAppointments();
+    fetchGetTodayConfirmed();
     fetchDoctor();
-  }, [fetchTotalAppointments, fetchDoctor]);
+  }, [fetchGetTodayConfirmed, fetchDoctor]);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    fetchTotalAppointments();
+    fetchGetTodayConfirmed();
   };
 
   const filteredAppointments = useMemo(() => {

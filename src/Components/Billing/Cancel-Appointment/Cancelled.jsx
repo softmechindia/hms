@@ -1,76 +1,94 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import DataTable from "react-data-table-component";
-import { getTotalAppointments, getDoctors } from "../../../api/endpoints/authApi"; 
-import { Search, Calendar, ShieldCheck, Clock, ChevronDown } from "lucide-react";
+import { getCancelledAppointments, getDoctors } from "../../../api/endpoints/authApi"; 
+import { Search, ShieldCheck, Clock, ChevronDown } from "lucide-react";
 
 function CancelledAppointment() {
-  const todayDate = new Date().toISOString().split('T')[0];
-
-  const [fromDate, setFromDate] = useState(todayDate);
-  const [toDate, setToDate] = useState(todayDate);
+ 
+  const [fromDate, setFromDate] = useState("2026-03-16");
+  const [toDate, setToDate] = useState("2026-05-16");
   const [selectedDoctor, setSelectedDoctor] = useState("All Doctor");
   const [appointments, setAppointments] = useState([]);
   const [doctorsList, setDoctorsList] = useState([]); 
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState("");
 
+  // Get Doctors Data Dynamically
   const fetchDoctor = useCallback(async () => {
     try {
       const docResponse = await getDoctors(); 
       const doctors = docResponse?.Getdoctorsdata || docResponse?.fullData?.Getdoctorsdata || [];
-      console.log("--- Processed Doctors List inside Totalapp ---", doctors);
       setDoctorsList(doctors);
     } catch (err) {
       console.error("Doctors API Fetch Failure:", err);
     }
   }, []);
 
-  const fetchTotalAppointments = useCallback(async () => {
+
+  const fetchCancelledAppointments = useCallback(async (startRange, endRange) => {
     setIsLoading(true);
     setApiError("");
 
+
+    const finalFromDate = startRange || fromDate;
+    const finalToDate = endRange || toDate;
+
     const payload = {
       user_id: "ST0001",
-      from_date: fromDate,
-      to_date: toDate,
+      from_date: finalFromDate,
+      to_date: finalToDate,
+      doctor_id: "" 
     };
 
+    console.log("%c[DEBUG] Requesting Dynamic Payload:", "color: #00ff00; font-weight: bold;", payload);
+
     try {
-      const res = await getTotalAppointments(payload);
-      const responseData = res?.data !== undefined ? res.data : res;
+      const res = await getCancelledAppointments(payload);
+      console.log("%c[DEBUG] Raw API Target Response:", "color: #00ffff; font-weight: bold;", res);
 
       let fetchedList = [];
 
-      if (responseData && Array.isArray(responseData.data)) {
-        fetchedList = responseData.data;
-      } else if (responseData?.fullData && Array.isArray(responseData.fullData.data)) {
-        fetchedList = responseData.fullData.data;
-      } else if (Array.isArray(responseData)) {
-        fetchedList = responseData;
+    
+      if (res?.fullData && Array.isArray(res.fullData.data)) {
+        fetchedList = res.fullData.data;
+      } else if (res?.data && Array.isArray(res.data)) {
+        fetchedList = res.data;
+      } else if (res?.data?.data && Array.isArray(res.data.data)) {
+        fetchedList = res.data.data;
+      } else if (Array.isArray(res)) {
+        fetchedList = res;
       }
 
+      console.log("%c[DEBUG] Setting Active Appointments State:", "color: #ffff00; font-weight: bold;", fetchedList);
       setAppointments(fetchedList);
     } catch (err) {
-      console.error("Fetch Failure Error:", err);
-      setApiError("Failed to fetch appointment data dynamically.");
+      console.error("[DEBUG] Network Layer Breakdown Exception:", err);
+      setApiError("Failed to synchronize cancelled dataset from infrastructure endpoints.");
     } finally {
       setIsLoading(false);
     }
   }, [fromDate, toDate]);
 
-  useEffect(() => {
-    fetchTotalAppointments();
-    fetchDoctor();
-  }, [fetchTotalAppointments, fetchDoctor]);
 
+  useEffect(() => {
+  
+    fetchCancelledAppointments("2026-03-16", "2026-05-16");
+    fetchDoctor();
+  }, []); 
+
+ 
   const handleSearch = (e) => {
     e.preventDefault();
-    fetchTotalAppointments();
+    fetchCancelledAppointments(fromDate, toDate);
   };
 
   const filteredAppointments = useMemo(() => {
+    if (!appointments || appointments.length === 0) return [];
     if (selectedDoctor === "All Doctor") return appointments;
-    return appointments.filter((item) => item.doctor_name === selectedDoctor);
+    
+    return appointments.filter((item) => {
+      return item.doctor_name && item.doctor_name.toLowerCase().trim() === selectedDoctor.toLowerCase().trim();
+    });
   }, [appointments, selectedDoctor]);
 
   const columns = [
@@ -112,10 +130,9 @@ function CancelledAppointment() {
       name: "STATUS",
       selector: (row) => row.vstatus,
       cell: (row) => {
-        const statusText = row.vstatus || "Pending";
-        const isConfirmed = statusText.toLowerCase() === "confirmed" || statusText.toLowerCase() === "approved";
+        const statusText = row.vstatus || "Cancelled";
         return (
-          <span className={`px-3 py-1 rounded-sm text-[10px] font-black uppercase ${isConfirmed ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}>
+          <span className="px-3 py-1 rounded-sm text-[10px] font-black uppercase bg-red-100 text-red-700">
             {statusText}
           </span>
         );
@@ -220,52 +237,17 @@ function CancelledAppointment() {
             No dynamic records found matching current timeline parameters.
           </div>
         ) : (
-          <>
-            {/* MOBILE VIEW */}
-            <div className="block md:hidden space-y-4">
-              {filteredAppointments.map((item, index) => (
-                <div
-                  key={`${item.appointment_id || item.id || 'appt'}-${index}`}
-                  className="bg-white p-5 border border-gray-100 shadow-sm rounded-sm"
-                >
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <span className="text-[10px] font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded-sm mb-1 block w-fit italic">
-                        {item.appointment_id || item.id}
-                      </span>
-                      <h3 className="text-lg font-black text-gray-800">
-                        {item.patient_name}
-                      </h3>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4 border-t border-gray-50 pt-4">
-                    <div>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Doctor</p>
-                      <p className="text-sm font-bold text-gray-700">{item.doctor_name}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Schedule</p>
-                      <p className="text-sm font-bold text-gray-700">{item.appointment_date}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* DESKTOP VIEW */}
-            <div className="hidden md:block overflow-hidden border border-gray-50 rounded-sm bg-white">
-              <DataTable
-                columns={columns}
-                data={filteredAppointments}
-                customStyles={customStyles}
-                pagination
-                paginationPerPage={5}
-                highlightOnHover
-                responsive
-              />
-            </div>
-          </>
+          <div className="hidden md:block overflow-hidden border border-gray-50 rounded-sm bg-white">
+            <DataTable
+              columns={columns}
+              data={filteredAppointments}
+              customStyles={customStyles}
+              pagination
+              paginationPerPage={5}
+              highlightOnHover
+              responsive
+            />
+          </div>
         )}
       </div>
     </div>

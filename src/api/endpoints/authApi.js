@@ -100,5 +100,20 @@ export const getCollections = (payload) => {
 //   List of  getCunsultancy
 export const getConsultancy = async () => {
     return proxyApiRequest("/getConsultancy","GET"); 
-}
+};
 
+//getPendingAppointments
+export const getPendingAppointments = (payload) => {
+    return proxyApiRequest("/getPendingAppointments", "POST")
+};
+
+//getTodayConfirmed
+export const getTodayConfirmed = (payload) => {
+    return proxyApiRequest("/getTodayConfirmed" ,"POST");
+};
+
+// ISKO APNI API ENDPOINT FILE ME UPDATE KAREIN
+export const getCancelledAppointments = (payload) => {
+   
+    return proxyApiRequest("/getCancelledAppointments", "POST", payload); 
+};

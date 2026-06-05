@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import DataTable from "react-data-table-component";
-import { getTotalAppointments, getDoctors } from "../../../api/endpoints/authApi";
+import {  getPendingAppointments, getDoctors } from "../../../api/endpoints/authApi";
 import { Search, Calendar, ShieldCheck, Clock, ChevronDown } from "lucide-react";
 
 function PendingAppointment() {
@@ -37,7 +37,7 @@ function PendingAppointment() {
   }, []);
 
   // API Fetch Function for Appointments
-  const fetchTotalAppointments = useCallback(async (searchFromDate = "", searchToDate = "") => {
+  const fetchGetPendingAppointments = useCallback(async (searchFromDate = "", searchToDate = "") => {
     setIsLoading(true);
     setApiError("");
 
@@ -48,7 +48,7 @@ function PendingAppointment() {
     };
 
     try {
-      const res = await getTotalAppointments(payload);
+      const res = await  getPendingAppointments(payload);
       const responseData = res?.data !== undefined ? res.data : res;
 
       let fetchedList = [];
@@ -72,9 +72,9 @@ function PendingAppointment() {
 
   
   useEffect(() => {
-    fetchTotalAppointments(currentLiveDate, currentLiveDate);
+    fetchGetPendingAppointments(currentLiveDate, currentLiveDate);
     fetchDoctor();
-  }, [currentLiveDate, fetchDoctor, fetchTotalAppointments]);
+  }, [currentLiveDate, fetchDoctor, fetchGetPendingAppointments]);
 
 
   const handleSearch = (e) => {
