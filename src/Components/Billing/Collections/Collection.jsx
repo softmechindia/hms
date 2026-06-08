@@ -23,11 +23,10 @@ function Collections() {
 
   const currentLiveDate = getLiveDateString();
 
-
-  const [date, setDate] = useState("2026-01-01"); 
+  const [fromDate, setFromDate] = useState(currentLiveDate);
   const [toDate, setToDate] = useState(currentLiveDate);
-  const [doctor, setDoctor] = useState("All Doctor");
-  const [filterDoctor, setFilterDoctor] = useState("All Doctor");
+  const [selectedDoctor, setSelectedDoctor] = useState("All Doctor");
+  const [searchClickedDoctor, setSearchClickedDoctor] = useState("All Doctor");
 
   // Dynamic state pools
   const [appointments, setAppointments] = useState([]);
@@ -54,24 +53,24 @@ function Collections() {
   }, []);
 
   // 2. Fetch Dynamic Collections and Summary Metrics from API
-  const fetchCollectionsDataset = useCallback(async (startRange, endRange) => {
+  const fetchCollectionsDataset = useCallback(async (searchFromDate = "", searchToDate = "") => {
     setIsLoading(true);
     setApiError("");
 
+
     const payload = {
-      user_id: "ST0001", 
-      from_date: startRange,
-      to_date: endRange,
-      doctor_id: "" 
+      user_id: "ST0001",
+      from_date: searchFromDate,
+      to_date: searchToDate,
     };
 
-    console.log("[DEBUG] Bheja Jane Wala Payload:", payload);
+
+
 
     try {
       const res = await getCollections(payload);
       console.log("[DEBUG] Raw API Response:", res);
       
-      // Array data extractor layer handling root or fullData nesting
       let rawRecords = [];
       if (res && Array.isArray(res.data)) {
         rawRecords = res.data;
@@ -103,35 +102,36 @@ function Collections() {
     }
   }, []);
 
-  // 3. Mount Synchronization Lifecycle (Loads default system history parameters)
+  // Initial mount load
   useEffect(() => {
     fetchCollectionsDataset("2026-01-01", currentLiveDate);
     fetchDoctorsData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchCollectionsDataset, fetchDoctorsData, currentLiveDate]);
 
+  // 3. Form Submission Handler
   const handleSearch = (e) => {
     e.preventDefault();
 
-    if (!date || !toDate) {
+    if (!fromDate || !toDate) {
       alert("Please select both From Date and To Date first!");
       return;
     }
 
-    setFilterDoctor(doctor);
-    fetchCollectionsDataset(date, toDate);
+    // Sync current selection state to filter variable on submission
+    setSearchClickedDoctor(selectedDoctor);
+    fetchCollectionsDataset(fromDate, toDate);
   };
 
   // 4. Client side secondary filter for Doctor selection
   const filteredData = useMemo(() => {
     if (!appointments || appointments.length === 0) return [];
-    if (filterDoctor === "All Doctor") return appointments;
+    if (searchClickedDoctor === "All Doctor") return appointments;
     
     return appointments.filter((item) => {
       const docName = item.doctor_name || "";
-      return docName.toLowerCase().trim() === filterDoctor.toLowerCase().trim();
+      return docName.toLowerCase().trim() === searchClickedDoctor.toLowerCase().trim();
     });
-  }, [appointments, filterDoctor]);
+  }, [appointments, searchClickedDoctor]);
 
   // Columns layout schema matching the updated database payload structures
   const columns = [
@@ -146,9 +146,9 @@ function Collections() {
       selector: (row) => row.patient_name,
       cell: (row) => (
         <div className="flex flex-col py-2">
-          <span className="font-bold text-gray-800">{row.patient_name || "N/A"}</span>
-          <span className="text-[10px] font-mono text-orange-500 font-bold uppercase tracking-tight">
-            ID: {row.user_id || "N/A"}
+          <span className="font-bold text-xs text-gray-800">{row.patient_name || "N/A"}</span>
+          <span className="text-xs font-bold text-gray-400">
+            {row.user_id || "N/A"}
           </span>
         </div>
       ),
@@ -158,39 +158,35 @@ function Collections() {
       selector: (row) => row.doctor_name,
       cell: (row) => <span className="font-semibold text-gray-600">{row.doctor_name || "N/A"}</span>
     },
-    {
-      name: "DATE",
-      selector: (row) => row.created_date,
-      width: "130px",
-      cell: (row) => (
-        <div className="flex items-center gap-1 text-gray-800 font-bold">
-          <Clock size={12} /> {row.created_date || "N/A"}
-        </div>
-      )
-    },
+{
+  name: "DATE & TIME",
+  selector: (row) => row.created_date, 
+  cell: (row) => (
+    <div className="py-2">
+  
+      <div className="font-bold text-xs text-gray-800">
+        {row.created_date || "N/A"}
+      </div>
+      
+   
+    </div>
+  )
+},
     {
       name: "AMOUNT",
       selector: (row) => row.grand_total,
       cell: (row) => <span className="font-black text-emerald-600 text-sm">₹{row.grand_total || "0"}</span>
     },
     {
-      name: "PAYMENT",
+      name: "PAYMENT-MODE",
       selector: (row) => row.payment_mode,
       cell: (row) => (
-        <span className="px-3 py-1 bg-slate-100 text-slate-600 rounded-md text-[10px] font-black uppercase tracking-wider">
+        <span className="px-3 py-1 bg-slate-100 text-slate-600 rounded-md text-xs font-bold">
           {row.payment_mode || "N/A"}
         </span>
       )
     },
-    {
-      name: "ACTION",
-      width: "80px",
-      cell: () => (
-        <button type="button" className="p-2 hover:bg-orange-100 text-orange-500 rounded-md transition-all active:scale-90">
-          <ChevronRight size={18} />
-        </button>
-      )
-    }
+
   ];
 
   const customStyles = {
@@ -206,7 +202,7 @@ function Collections() {
       style: {
         border: "none",
         color: "#6b7280",
-        justifyContent: "flex-end",
+        justify: "flex-end",
         paddingRight: "40px",
         paddingTop: "10px",
         paddingBottom: "10px",
@@ -215,48 +211,42 @@ function Collections() {
   };
 
   return (
-    <div className="w-full min-h-screen pt-16 md:pt-6 overflow-x-hidden p-1 md:p-6">
+   <div className="w-full min-h-screen p-4">
       
       {/* FILTER SECTION */}
-      <form onSubmit={handleSearch} className="bg-white p-4 rounded-sm border border-gray-200 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-        {/* FROM DATE */}
-        <div className="w-full">
+      <form onSubmit={handleSearch} className="bg-white p-4 rounded-md border border-gray-200 flex flex-col md:flex-row gap-4 items-end">
+        <div className="flex-1 w-full">
           <label className="block text-xs text-gray-500 mb-1 font-semibold">From Date</label>
           <div className="relative">
             <input
               type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-sm text-sm outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer"
-            />
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-sm text-sm appearance-none outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer pr-2" />
           </div>
         </div>
 
-        {/* TO DATE */}
-        <div className="w-full">
+        <div className="flex-1 w-full">
           <label className="block text-xs text-gray-500 mb-1 font-semibold">To Date</label>
           <div className="relative">
             <input
               type="date"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
-              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-sm text-sm outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer"
-            />
+              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-sm text-sm appearance-none outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer pr-3" />
           </div>
         </div>
 
-        {/* DOCTOR */}
-        <div className="w-full">
+        <div className="flex-1 w-full">
           <label className="block text-xs text-gray-500 mb-1 font-semibold">Doctor</label>
           <div className="relative">
             <select
-              value={doctor}
-              onChange={(e) => setDoctor(e.target.value)}
-              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-sm text-sm appearance-none outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer pr-10"
-            >
+              value={selectedDoctor}
+              onChange={(e) => setSelectedDoctor(e.target.value)}
+              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-sm text-sm appearance-none outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer pr-10"            >
               <option value="All Doctor">All Doctor</option>
               {doctorsList.map((doc) => (
-                <option key={doc.id || doc.userID} value={doc.user_name}>
+                <option key={doc.id || doc.userID || doc.user_name} value={doc.user_name}>
                   {doc.user_name}
                 </option>
               ))}
@@ -265,11 +255,10 @@ function Collections() {
           </div>
         </div>
 
-        {/* SEARCH BUTTON */}
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full md:w-auto border border-gray-200 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-md text-sm flex items-center justify-center gap-2 transition-all cursor-pointer"
+          className="w-full md:w-24 shrink-0 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md text-sm flex items-center justify-center gap-2 transition-all disabled:bg-blue-400"
         >
           <Search size={16} />
           {isLoading ? "Searching..." : "Search"}

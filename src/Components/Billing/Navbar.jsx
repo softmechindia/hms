@@ -175,7 +175,7 @@ const Nav = ({ setAuth }) => {
               onClick={() => setProfileOpen(!profileOpen)}
               className="flex items-center  focus:outline-none"
             >
-              <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-orange-400 to-orange-600 text-white font-bold flex items-center justify-center shadow-md border-2 border-white">
+              <div className="w-11 h-11 rounded-full cursor-pointer  bg-gradient-to-tr from-orange-400 to-orange-600 text-white font-bold flex items-center justify-center shadow-md border-2 border-white">
                 <User />
               </div>
             </button>

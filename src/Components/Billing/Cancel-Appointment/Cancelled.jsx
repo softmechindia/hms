@@ -96,15 +96,15 @@ function CancelledAppointment() {
       name: "SNO.",
       selector: (row, index) => index + 1,
       width: "70px",
-      cell: (row, index) => <span className="font-bold text-gray-500">{index + 1}.</span>,
+      cell: (row, index) => <span className="font-bold text-xs text-gray-500">{index + 1}.</span>,
     },
     {
       name: "DATE & TIME",
       selector: (row) => row.appointment_date,
       cell: (row) => (
         <div className="py-2">
-          <div className="font-bold text-gray-800">{row.appointment_date}</div>
-          <div className="text-[12px] font-bold text-gray-400 flex items-center gap-1">
+          <div className="font-bold text-xs text-gray-800">{row.appointment_date}</div>
+          <div className="text-[12px] text-xs font-bold text-gray-400 flex items-center gap-1">
             <Clock size={10} />
             {row.appointment_time || "N/A"}
           </div>
@@ -114,17 +114,17 @@ function CancelledAppointment() {
     {
       name: "APPT ID",
       selector: (row) => row.appointment_id || row.id,
-      cell: (row) => <span className="text-[#4F6EEA] font-bold text-xs">{row.appointment_id || row.id}</span>,
+      cell: (row) => <span className="text-[#4F6EEA] font-semibold text-xs">{row.appointment_id || row.id}</span>,
     },
     {
       name: "PATIENT",
       selector: (row) => row.patient_name,
-      cell: (row) => <span className="font-bold text-gray-700">{row.patient_name || "N/A"}</span>,
+      cell: (row) => <span className="font-semibold text-gray-600 text-xs">{row.patient_name || "N/A"}</span>,
     },
     {
       name: "DOCTOR",
       selector: (row) => row.doctor_name,
-      cell: (row) => <span className="font-semibold text-gray-600">{row.doctor_name || "N/A"}</span>,
+      cell: (row) => <span className="font-semibold text-gray-600 text-xs">{row.doctor_name || "N/A"}</span>,
     },
     {
       name: "STATUS",
@@ -132,7 +132,7 @@ function CancelledAppointment() {
       cell: (row) => {
         const statusText = row.vstatus || "Cancelled";
         return (
-          <span className="px-3 py-1 rounded-sm text-[10px] font-black uppercase bg-red-100 text-red-700">
+          <span className="px-3 py-1 rounded-sm text-xs  bg-red-100 text-red-700">
             {statusText}
           </span>
         );
@@ -142,8 +142,8 @@ function CancelledAppointment() {
       name: "VERIFY BY",
       width: "150px",
       cell: (row) => (
-        <div className="flex items-center gap-1.5 text-gray-600 font-medium">
-          <ShieldCheck size={14} className="text-blue-500" />
+        <div className="flex items-center gap-1.5 text-xs text-gray-600 font-medium">
+          <ShieldCheck size={14} className="text-blue-500 " />
           {row.verified_by || "N/A"}
         </div>
       ),
@@ -172,40 +172,38 @@ function CancelledAppointment() {
   };
 
   return (
-    <div className="w-full min-h-screen pt-16 md:pt-6 overflow-x-hidden p-1 md:p-6">
-      <form onSubmit={handleSearch} className="bg-white p-4 rounded-sm border border-gray-200 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-        <div className="w-full">
+       <div className="w-full min-h-screen p-4">
+      <form onSubmit={handleSearch} className="bg-white p-4 rounded-md border border-gray-200 flex flex-col md:flex-row gap-4 items-end">
+        <div className="flex-1 w-full">
           <label className="block text-xs text-gray-500 mb-1 font-semibold">From Date</label>
           <div className="relative">
             <input
               type="date"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-sm text-sm outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer pr-10"
-            />
+              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-sm text-sm appearance-none outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer pr-2" />
           </div>
         </div>
 
-        <div className="w-full">
+
+        <div className="flex-1 w-full">
           <label className="block text-xs text-gray-500 mb-1 font-semibold">To Date</label>
           <div className="relative">
             <input
               type="date"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
-              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-sm text-sm outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer pr-10"
-            />
+              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-sm text-sm appearance-none outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer pr-3" />
           </div>
         </div>
 
-        <div className="w-full">
+        <div className="flex-1 w-full">
           <label className="block text-xs text-gray-500 mb-1 font-semibold">Doctor</label>
           <div className="relative">
             <select
               value={selectedDoctor}
               onChange={(e) => setSelectedDoctor(e.target.value)}
-              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-sm text-sm appearance-none outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer pr-10"
-            >
+              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-sm text-sm appearance-none outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer pr-3"            >
               <option value="All Doctor">All Doctor</option>
               {doctorsList.map((doc) => (
                 <option key={doc.id || doc.userID} value={doc.user_name}>
@@ -220,7 +218,7 @@ function CancelledAppointment() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full border border-gray-200 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-sm text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-50 font-medium h-[38px]"
+          className="w-full md:w-24 shrink-0 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md text-sm flex items-center justify-center gap-2"
         >
           <Search size={16} />
           {isLoading ? "Searching..." : "Search"}

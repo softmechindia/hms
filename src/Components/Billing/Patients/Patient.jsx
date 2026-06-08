@@ -74,7 +74,7 @@ function Patients() {
                     alt={doctor.doctor_name || "Doctor"}
                     className="w-[70px] h-[70px] rounded-md object-cover shadow-md border-2 border-white"
                     onError={(e) => {
-                      e.target.onerror = null; // Prevents infinite loop if fallback fails
+                      e.target.onerror = null; 
                       e.target.src = DEFAULT_DOCTOR_PHOTO;
                     }}
                   />
@@ -137,7 +137,7 @@ function Patients() {
                         <td className="py-1.5 px-2 text-[13px] whitespace-nowrap text-black">
                           <div className="flex items-center gap-2">
                             <FaUser className="h-3 text-blue-500 flex-shrink-0" />
-                            <span className="font-medium truncate max-w-[120px]">
+                            <span className=" text-xs truncate max-w-[120px]">
                               {p.patient_name}
                             </span>
                           </div>
@@ -171,7 +171,7 @@ function Patients() {
             <div className="bg-blue-50 p-6 rounded-full mb-4">
               <FaCalendarXmark className="text-blue-300 text-6xl" />
             </div>
-            <h2 className="text-xl font-bold text-slate-700">No Appointments Found</h2>
+            <h2 className="text-xs font-bold text-slate-700">No Appointments Found</h2>
           </div>
         )}
 

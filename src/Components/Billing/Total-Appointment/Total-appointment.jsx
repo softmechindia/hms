@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import DataTable from "react-data-table-component";
 import { getTotalAppointments, getDoctors } from "../../../api/endpoints/authApi";
-import { Search, Calendar, ShieldCheck, Clock, ChevronDown } from "lucide-react";
+import { Search, ShieldCheck, Clock, ChevronDown } from "lucide-react";
 
 function Totalapp() {
 
@@ -70,7 +70,7 @@ function Totalapp() {
     }
   }, []);
 
-  
+
   useEffect(() => {
     fetchTotalAppointments(currentLiveDate, currentLiveDate);
     fetchDoctor();
@@ -79,21 +79,21 @@ function Totalapp() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    
+
     if (!fromDate || !toDate) {
       alert("Please select both From Date and To Date first!");
       return;
     }
-    
-    // Search click hone par state lock hogi aur selected date range ka data aayega
+
+
     setSearchClickedDoctor(selectedDoctor);
     fetchTotalAppointments(fromDate, toDate);
   };
 
-  // Local Memoized Filter (Sirf search hit hone ke baad locked doctor par chalega)
+
   const filteredAppointments = useMemo(() => {
     if (!searchClickedDoctor || searchClickedDoctor === "All Doctor") {
-      return appointments; // "All Doctor" par current filtered date ka saara data dikhega
+      return appointments;
     }
     return appointments.filter((item) => item.doctor_name === searchClickedDoctor);
   }, [appointments, searchClickedDoctor]);
@@ -104,15 +104,15 @@ function Totalapp() {
       name: "SNO.",
       selector: (row, index) => index + 1,
       width: "70px",
-      cell: (row, index) => <span className="font-bold text-gray-500">{index + 1}.</span>,
+      cell: (row, index) => <span className="font-bold text-xs text-gray-500">{index + 1}.</span>,
     },
     {
       name: "DATE & TIME",
       selector: (row) => row.appointment_date,
       cell: (row) => (
         <div className="py-2">
-          <div className="font-bold text-gray-800">{row.appointment_date}</div>
-          <div className="text-[12px] font-bold text-gray-400 flex items-center gap-1">
+          <div className="font-bold text-xs text-gray-800">{row.appointment_date}</div>
+          <div className=" text-xs font-bold text-gray-400 flex items-center gap-1">
             <Clock size={10} />
             {row.appointment_time || "N/A"}
           </div>
@@ -122,17 +122,17 @@ function Totalapp() {
     {
       name: "APPT ID",
       selector: (row) => row.appointment_id || row.id,
-      cell: (row) => <span className="text-[#4F6EEA] font-bold text-xs">{row.appointment_id || row.id}</span>,
+      cell: (row) => <span className="text-[#4F6EEA] font-semibold text-xs">{row.appointment_id || row.id}</span>,
     },
     {
       name: "PATIENT",
       selector: (row) => row.patient_name,
-      cell: (row) => <span className="font-bold text-gray-700">{row.patient_name || "N/A"}</span>,
+       cell: (row) => <span className="font-semibold text-gray-600 text-xs">{row.patient_name || "N/A"}</span>,
     },
     {
       name: "DOCTOR",
       selector: (row) => row.doctor_name,
-      cell: (row) => <span className="font-semibold text-gray-600">{row.doctor_name || "N/A"}</span>,
+      cell: (row) => <span className="text-xs text-black">{row.doctor_name || "N/A"}</span>,
     },
     {
       name: "STATUS",
@@ -141,11 +141,10 @@ function Totalapp() {
         const statusText = row.vstatus || "Pending";
         const isConfirmed = statusText.toLowerCase() === "confirmed" || statusText.toLowerCase() === "approved";
         const isCancelled = statusText.toLowerCase() === "cancelled";
-        
+
         return (
-          <span className={`px-3 py-1 rounded-sm text-[10px] font-black uppercase ${
-            isConfirmed ? "bg-green-100 text-green-700" : isCancelled ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"
-          }`}>
+          <span className={`px-3 py-1 rounded-sm text-xs  ${isConfirmed ? "bg-green-100 text-green-700" : isCancelled ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"
+            }`}>
             {statusText}
           </span>
         );
@@ -155,8 +154,8 @@ function Totalapp() {
       name: "VERIFY BY",
       width: "150px",
       cell: (row) => (
-        <div className="flex items-center gap-1.5 text-gray-600 font-medium">
-          <ShieldCheck size={14} className="text-blue-500" />
+        <div className="flex items-center gap-1.5 text-xs text-gray-600 font-medium">
+          <ShieldCheck size={14} className="text-blue-500 text-xs" />
           {row.verified_by || "N/A"}
         </div>
       ),
@@ -185,40 +184,38 @@ function Totalapp() {
   };
 
   return (
-    <div className="w-full min-h-screen pt-16 md:pt-6 overflow-x-hidden p-1 md:p-6">
-      <form onSubmit={handleSearch} className="bg-white p-4 rounded-sm border border-gray-200 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-        <div className="w-full">
+    <div className="w-full min-h-screen p-1">
+      <form onSubmit={handleSearch} className="bg-white p-4 rounded-md border border-gray-200 flex flex-col md:flex-row gap-4 items-end">
+        <div className="flex-1 w-full">
           <label className="block text-xs text-gray-500 mb-1 font-semibold">From Date</label>
           <div className="relative">
             <input
               type="date"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-sm text-sm outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer pr-10"
-            />
+              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-sm text-sm appearance-none outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer pr-2" />
           </div>
         </div>
 
-        <div className="w-full">
+
+        <div className="flex-1 w-full">
           <label className="block text-xs text-gray-500 mb-1 font-semibold">To Date</label>
           <div className="relative">
             <input
               type="date"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
-              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-sm text-sm outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer pr-10"
-            />
+              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-sm text-sm appearance-none outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer pr-3" />
           </div>
         </div>
 
-        <div className="w-full">
+        <div className="flex-1 w-full">
           <label className="block text-xs text-gray-500 mb-1 font-semibold">Doctor</label>
           <div className="relative">
             <select
               value={selectedDoctor}
               onChange={(e) => setSelectedDoctor(e.target.value)}
-              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-sm text-sm appearance-none outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer pr-10"
-            >
+              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-sm text-sm appearance-none outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer pr-3"            >
               <option value="All Doctor">All Doctor</option>
               {doctorsList.map((doc) => (
                 <option key={doc.id || doc.userID} value={doc.user_name}>
@@ -233,7 +230,7 @@ function Totalapp() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full md:w-auto mt-0 md:mt-5 border border-gray-200 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-md text-sm flex items-center justify-center gap-2 transition-all cursor-pointer"
+          className="w-full md:w-24 shrink-0 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md text-sm flex items-center justify-center gap-2"
         >
           <Search size={16} />
           {isLoading ? "Searching..." : "Search"}
@@ -252,15 +249,15 @@ function Totalapp() {
         ) : (
           <>
             {/* MOBILE VIEW */}
-            <div className="block md:hidden space-y-4">
+            <div className="block md:hidden space-y-4 ">
               {filteredAppointments.map((item, index) => (
                 <div
                   key={`${item.appointment_id || item.id || 'appt'}-${index}`}
-                  className="bg-white p-5 border border-gray-100 shadow-sm rounded-sm"
+                  className="bg-white p-5 border border-gray-100 shadow-sm rounded-sm text-xs"
                 >
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <span className="text-[10px] font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded-sm mb-1 block w-fit italic">
+                      <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded-sm mb-1 block w-fit italic">
                         {item.appointment_id || item.id}
                       </span>
                       <h3 className="text-lg font-black text-gray-800">

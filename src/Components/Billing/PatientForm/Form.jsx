@@ -154,6 +154,8 @@ function Form() {
 
     printWindow.document.write("<h3 style='font-family:sans-serif; text-align:center; margin-top:50px;'>Generating Receipt... Please Wait.</h3>");
 
+    handleResetForm();
+
     try {
       const BASE_URL = "/";
 
@@ -577,14 +579,14 @@ function Form() {
     }));
 
     // 5. Console logs to verify the internal data flow
-    console.group("🏥 Doctor Selection Synced");
+    console.group("Doctor Selection Synced");
     console.log("Selected Doctor ID :", selectedDoctorId);
     console.log("Doctor Full Object :", selectedDoctorObj);
     console.log("Mapped Patient Fee :", fetchedFees);
     console.groupEnd();
   };
   return (
-    <div className="rounded-md h-fit bg-white">
+    <div className="rounded-md h-fit bg-white   --text-xs">
       <div className="flex flex-col items-center gap-4">
         <div className="w-full bg-white shadow-xl rounded-md overflow-hidden border border-gray-200">
 
@@ -599,7 +601,7 @@ function Form() {
               {errorMessage && <div className="bg-red-500 rounded-md shadow-md text-white font-bold text-xs sm:text-sm px-4 py-1 text-center max-w-sm sm:max-w-md truncate">⚠ {errorMessage}</div>}
             </div>
             <div className="flex items-center gap-2">
-             
+
               {selectedPatientId && (
                 <button
                   type="button"
@@ -626,7 +628,7 @@ function Form() {
                   onChange={(e) => handleSearchInput(e.target.value)}
                   placeholder="Search ID, Name or Mobile..."
                   autoComplete="off"
-                  className="w-full h-10 px-3 border border-gray-400 rounded outline-none text-black focus:ring-2 focus:ring-orange-400"
+                  className="w-full  text-xs h-10 px-3 border border-gray-400 rounded outline-none text-black focus:ring-2 focus:ring-orange-400"
                 />
                 {showSearchDropdown && searchResults.length > 0 && (
                   <div className="absolute top-11 left-0 w-full bg-white border border-gray-300 shadow-2xl z-[9999] rounded-md max-h-60 overflow-y-auto">
@@ -655,7 +657,7 @@ function Form() {
                   value={formData.name}
                   onChange={handleInputChange}
                   placeholder="Full Name"
-                  className="w-full px-2 py-1 placeholder-gray-500 text-sm outline-none"
+                  className="w-full text-xs px-2 py-1 placeholder-gray-500  outline-none"
                 />
               </div>
 
@@ -679,25 +681,25 @@ function Form() {
                   }}
                   maxLength={10}
                   placeholder="10 Digit Mobile"
-                  className="placeholder-gray-500 w-full px-2 py-1 text-sm outline-none"
+                  className="placeholder-gray-500 w-full px-2 py-1 text-xs outline-none"
                 />              </div>
 
               <div className={`relative flex items-center border rounded overflow-hidden transition-all duration-200 ${getBorderClass("patient_type")}`}>
                 <div className="pl-3 text-gray-500"><UserCheck size={15} /></div>
-                <select name="patient_type" value={formData.patient_type} onChange={handleInputChange} className={`w-full px-2 py-1 text-sm outline-none bg-white cursor-pointer ${formData.patient_type === "" ? "text-gray-500" : "text-black"}`}>
+                <select name="patient_type" value={formData.patient_type} onChange={handleInputChange} className={`w-full px-2 py-1 text-xs outline-none bg-white cursor-pointer ${formData.patient_type === "" ? "text-gray-500" : "text-black"}`}>
                   <option value="">Select Patient Type</option>
                   <option value="1">New Patient</option>
                   <option value="0">Old Patient</option>
                 </select>
               </div>
               <div className={`relative flex items-center border rounded overflow-hidden transition-all duration-200 ${getBorderClass("doctor_id")}`}>
-                <select name="doctor_id" value={formData.doctor_id} onChange={handleDoctorChange} className={`w-full px-2 py-1 text-sm outline-none bg-white ${formData.doctor_id === "" ? "text-gray-400" : "text-black"}`}>
+                <select name="doctor_id" value={formData.doctor_id} onChange={handleDoctorChange} className={`w-full px-2 py-1 text-xs outline-none bg-white ${formData.doctor_id === "" ? "text-gray-400" : "text-black"}`}>
                   <option value="">Select Doctor</option>
                   {doctorsList.map((doc) => (<option key={doc.id} value={doc.userID}>{doc.user_name}</option>))}
                 </select>
               </div>
               <div className={`relative flex items-center border rounded overflow-hidden transition-all duration-200 ${getBorderClass("consultancy")}`}>
-                <select name="consultancy" value={formData.consultancy} onChange={handleInputChange} className={`w-full px-2 py-1 text-sm outline-none bg-white ${formData.consultancy === "" ? "text-gray-400" : "text-black"}`}>
+                <select name="consultancy" value={formData.consultancy} onChange={handleInputChange} className={`w-full px-2 py-1 text-xs outline-none bg-white ${formData.consultancy === "" ? "text-gray-400" : "text-black"}`}>
                   <option value="">Select Consultancy</option>
                   {consultancyList?.map((doc) => (<option key={doc.id} value={doc.userID}>{doc.user_name}</option>))}
                 </select>
@@ -705,9 +707,9 @@ function Form() {
 
               {/* Date & Time Selection */}
               <div className={`flex items-center bg-white border rounded transition-all duration-200 ${getBorderClass("appointment_time")}`}>
-                <input type="date" name="appointment_date" value={formData.appointment_date} onChange={handleInputChange} className="w-1/2 px-2 py-1 text-sm outline-none border-r border-gray-300" />
+                <input type="date" name="appointment_date" value={formData.appointment_date} onChange={handleInputChange} className="w-1/2 px-2 py-1 text-xs outline-none border-r border-gray-300" />
                 <div className="relative w-1/2" ref={dropdownRef}>
-                  <div onClick={() => setIsTimeOpen(!isTimeOpen)} className={`px-2 py-1 text-sm cursor-pointer flex justify-between items-center ${formData.appointment_time ? "text-black" : "text-gray-500"}`}>
+                  <div onClick={() => setIsTimeOpen(!isTimeOpen)} className={`px-2 py-1 text-xs cursor-pointer flex justify-between items-center ${formData.appointment_time ? "text-black" : "text-gray-500"}`}>
                     {formData.appointment_time || "Select Time"}
                     <ChevronDown size={14} />
                   </div>
@@ -716,7 +718,7 @@ function Form() {
                       <div className="max-h-60 overflow-y-auto custom-scrollbar bg-white">
                         {availableSlots.length > 0 ? (
                           availableSlots.map((slot, index) => (
-                            <div key={index} className={`px-3 py-2 text-sm cursor-pointer border-b border-b-gray-50 ${slot.available === 0 ? 'bg-red-50 text-gray-400 cursor-not-allowed' : 'hover:bg-blue-600 hover:text-white text-black'}`}
+                            <div key={index} className={`px-3 py-2 text-xs cursor-pointer border-b border-b-gray-50 ${slot.available === 0 ? 'bg-red-50 text-gray-400 cursor-not-allowed' : 'hover:bg-blue-600 hover:text-white text-black'}`}
                               onClick={() => { if (slot.available !== 0) { setFormData({ ...formData, appointment_time: slot.time || slot.slot_time }); setIsTimeOpen(false); } }}
                             >
                               {slot.time || slot.slot_time}
@@ -734,10 +736,10 @@ function Form() {
 
               {/* Birth, Age & Gender */}
               <div className="flex gap-1 col-span-1 md:col-span-2 lg:col-span-3">
-                <div className="flex-1"><input type="number" name="birth_of_year" value={formData.birth_of_year} onChange={handleInputChange} placeholder="Birth Year" className="w-full placeholder-gray-500 px-2 py-1 text-sm border border-gray-300 bg-white text-black" /></div>
-                <div className="flex-1"><input type="number" name="age" value={formData.age} readOnly placeholder="Age" className="w-full placeholder-gray-500 px-2 py-1 text-sm border border-gray-300 bg-gray-100 text-black cursor-not-allowed" /></div>
+                <div className="flex-1"><input type="number" name="birth_of_year" value={formData.birth_of_year} onChange={handleInputChange} placeholder="Birth Year" className="w-full placeholder-gray-500 px-2 py-1 text-xs border border-gray-300 bg-white text-black" /></div>
+                <div className="flex-1"><input type="number" name="age" value={formData.age} readOnly placeholder="Age" className="w-full placeholder-gray-500 px-2 py-1 text-xs border border-gray-300 bg-gray-100 text-black cursor-not-allowed" /></div>
                 <div className="flex-1">
-                  <select name="gender" value={formData.gender} onChange={handleInputChange} className={`w-full px-2 py-1 text-sm border border-gray-300 bg-white h-[30px] ${formData.gender ? "text-black" : "text-gray-500"}`}>
+                  <select name="gender" value={formData.gender} onChange={handleInputChange} className={`w-full px-2 py-1 text-xs border border-gray-300 bg-white h-[30px] ${formData.gender ? "text-black" : "text-gray-500"}`}>
                     <option value="">Gender</option>
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
@@ -753,7 +755,7 @@ function Form() {
                 { name: "city", value: formData.city, placeholder: "Select City", options: cityList },
               ].map((field) => (
                 <div key={field.name} className="relative flex items-center border border-gray-300 rounded bg-white h-9">
-                  <input list={`${field.name}-list`} name={field.name} value={field.value} onChange={handleInputChange} placeholder={field.placeholder} className="w-full h-full px-2 py-1 text-sm outline-none text-black" />
+                  <input list={`${field.name}-list`} name={field.name} value={field.value} onChange={handleInputChange} placeholder={field.placeholder} className="w-full h-full px-2 py-1 text-xs outline-none text-black" />
                   <datalist id={`${field.name}-list`}>
                     {field.options?.map((opt) => {
                       const label = opt.occupation_name || opt.education_name || opt.city_name;
@@ -769,27 +771,52 @@ function Form() {
             </div>
 
             {/* Bottom Section Controls */}
-            <div className="flex text-black flex-col lg:flex-row items-stretch lg:items-center gap-2">
-              <div className="flex-grow">
-                <textarea name="address" value={formData.address} onChange={handleInputChange} rows={1} className="w-full px-2 py-1 text-sm border border-gray-300 rounded outline-none resize-none min-h-[32px] placeholder-gray-500" placeholder="Full Address" />
-              </div>
-              <div className="flex flex-row items-center justify-center sm:justify-end gap-1 sm:gap-2">
-                <div className="flex items-center gap-2 sm:gap-4 bg-gray-50 px-2 sm:px-4 py-1 border border-gray-200 rounded-sm">
-                  <label className="flex items-center gap-1 text-xs font-bold text-gray-700 whitespace-nowrap">
-                    <input type="checkbox" name="reserved" checked={formData.reserved === "Yes" || formData.reserved === true} onChange={handleInputChange} className="w-3 h-3 sm:w-4 sm:h-4 accent-blue-600" />
-                    Reserved
-                  </label>
-                  <div className="w-[1px] h-4 sm:h-5 bg-gray-300"></div>
-                  <label className="flex items-center gap-1 text-xs font-bold text-gray-700 whitespace-nowrap">
-                    <input type="checkbox" name="review_patient" checked={formData.review_patient === "Yes" || formData.review_patient === true} onChange={handleInputChange} className="w-3 h-3 sm:w-4 sm:h-4 accent-blue-600" />
-                    Review
-                  </label>
-                </div>
-                <button type="button" onClick={handleSave} className={`cursor-pointer text-white px-3 py-1.5 text-[11px] sm:text-sm font-bold rounded-sm whitespace-nowrap flex items-center justify-center transition shadow-sm ${hasTodayAppointment ? "bg-amber-500" : "bg-[#22C55E]"}`}>
-                  {hasTodayAppointment ? "Update Info" : "Save & Print"}
-                </button>
-              </div>
-            </div>
+        {/* Bottom Section Controls */}
+<div className="flex text-black flex-col lg:flex-row items-stretch lg:items-center gap-2">
+  <div className="flex-grow">
+    <textarea 
+      name="address" 
+      value={formData.address} 
+      onChange={handleInputChange} 
+      rows={1} 
+      className="w-full px-2 py-1 text-xs border border-gray-300 rounded outline-none resize-none min-h-[32px] placeholder-gray-500" 
+      placeholder="Full Address" 
+    />
+  </div>
+  <div className="flex flex-row items-center justify-center sm:justify-end gap-1 sm:gap-2">
+    <div className="flex items-center gap-2 sm:gap-4 bg-gray-50 px-2 sm:px-4 py-1 border border-gray-200 rounded-sm">
+      <label className="flex items-center gap-1 font-bold text-gray-700 text-xs">
+        <input 
+          type="checkbox" 
+          name="reserved" 
+          checked={formData.reserved === "Yes" || formData.reserved === true} 
+          onChange={handleInputChange} 
+          className="w-3.5 h-3.5 text-xs accent-blue-600" 
+        />
+        Reserved
+      </label>
+      <div className="w-[1px] h-4 sm:h-5 bg-gray-300"></div>
+      <label className="flex items-center gap-1 font-bold text-gray-700 text-xs whitespace-nowrap">
+        <input 
+          type="checkbox" 
+          name="review_patient" 
+          checked={formData.review_patient === "Yes" || formData.review_patient === true} 
+          onChange={handleInputChange} 
+          className="w-3.5 h-3.5 text-xs accent-blue-600" 
+        />
+        Review
+      </label>
+    </div>
+    <button 
+      type="button" 
+      onClick={handleSave} 
+      className={`cursor-pointer text-white px-3 py-1.5 text-xs font-bold rounded-sm whitespace-nowrap flex items-center justify-center transition shadow-sm ${hasTodayAppointment ? "bg-amber-500" : "bg-[#22C55E]"}`}
+    >
+      {hasTodayAppointment ? "Update Info" : "Save & Print"}
+    </button>
+  </div>
+</div>
+            
           </form>
         </div>
 
