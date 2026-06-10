@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { NavLink, useNavigate, useLocation, useOutletContext } from "react-router-dom";
 import Dashboardlogo from "../../assets/images/Dashboardlogo.png";
 import { billingDashboardData } from "../../api/endpoints/authApi";
+import ChangePassword from "./ChangePassword/Change-Password";
 import {
   FaCalendarCheck,
   FaHourglassHalf,
@@ -13,6 +14,7 @@ import {
 import { User } from "lucide-react";
 
 const Nav = ({ setAuth }) => {
+const goToPage = useNavigate();
   const context = useOutletContext();
   const refreshTrigger = context?.refreshTrigger;
 
@@ -29,7 +31,7 @@ const Nav = ({ setAuth }) => {
   });
 
   const profileRef = useRef(null);
-  const navigate = useNavigate();
+
   const location = useLocation();
 
   useEffect(() => {
@@ -200,6 +202,7 @@ const Nav = ({ setAuth }) => {
                   className="px-2 py-1 text-sm hover:bg-orange-50 cursor-pointer"
                   onClick={() => {
                     setProfileOpen(false);
+                    goToPage("/billing/change-password");
                   }}
                 >
                   Change Password

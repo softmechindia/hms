@@ -4,9 +4,18 @@ import { getCancelledAppointments, getDoctors } from "../../../api/endpoints/aut
 import { Search, ShieldCheck, Clock, ChevronDown } from "lucide-react";
 
 function CancelledAppointment() {
- 
-  const [fromDate, setFromDate] = useState("2026-03-16");
-  const [toDate, setToDate] = useState("2026-05-16");
+  
+const getLiveDateString = () => {
+    const today = new Date();
+    const offset = today.getTimezoneOffset();
+    const localToday = new Date(today.getTime() - offset * 60 * 1000);
+    return localToday.toISOString().split("T")[0];
+  };
+const currentLiveDate = getLiveDateString();
+
+
+  const [fromDate, setFromDate] = useState(currentLiveDate);
+  const [toDate, setToDate] = useState(currentLiveDate);
   const [selectedDoctor, setSelectedDoctor] = useState("All Doctor");
   const [appointments, setAppointments] = useState([]);
   const [doctorsList, setDoctorsList] = useState([]); 
@@ -40,7 +49,7 @@ function CancelledAppointment() {
       doctor_id: "" 
     };
 
-    console.log("%c[DEBUG] Requesting Dynamic Payload:", "color: #00ff00; font-weight: bold;", payload);
+   
 
     try {
       const res = await getCancelledAppointments(payload);
@@ -62,7 +71,7 @@ function CancelledAppointment() {
       console.log("%c[DEBUG] Setting Active Appointments State:", "color: #ffff00; font-weight: bold;", fetchedList);
       setAppointments(fetchedList);
     } catch (err) {
-      console.error("[DEBUG] Network Layer Breakdown Exception:", err);
+      console.error("Network Layer Breakdown Exception:", err);
       setApiError("Failed to synchronize cancelled dataset from infrastructure endpoints.");
     } finally {
       setIsLoading(false);
@@ -70,11 +79,11 @@ function CancelledAppointment() {
   }, [fromDate, toDate]);
 
 
-  useEffect(() => {
-  
-    fetchCancelledAppointments("2026-03-16", "2026-05-16");
+ useEffect(() => {
+    fetchCancelledAppointments(currentLiveDate, currentLiveDate);
     fetchDoctor();
-  }, []); 
+   
+  }, []);
 
  
   const handleSearch = (e) => {

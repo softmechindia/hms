@@ -112,8 +112,24 @@ export const getTodayConfirmed = (payload) => {
     return proxyApiRequest("/getTodayConfirmed" ,"POST");
 };
 
-// ISKO APNI API ENDPOINT FILE ME UPDATE KAREIN
+
 export const getCancelledAppointments = (payload) => {
    
     return proxyApiRequest("/getCancelledAppointments", "POST", payload); 
 };
+
+export const changePassword = (payload) => {
+    return proxyApiRequest("/changePassword", "POST", payload);
+}
+export const getMyProfile = (payload) => {
+    return proxyApiRequest("/getMyProfile","POST", payload);
+};
+
+export const updateProfileImage = (payload) => {
+    return proxyApiRequest("/updateProfileImage", "POST", payload);
+};
+
+export const updateProfile = (payload) => {
+    return proxyApiRequest("/updateProfile", "POST",payload);
+};
+

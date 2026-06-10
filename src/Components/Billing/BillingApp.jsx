@@ -9,7 +9,7 @@ import TodayConf from "../Billing/Today-Conf/Today-conf";
 import CancelAppointment from "../Billing/Cancel-Appointment/Cancelled";
 import Collections from "../Billing/Collections/Collection";
 import Layouts from "../Billing/Layouts";
-
+import ChangePassword from "./ChangePassword/Change-Password";
 
 function BillingApp({ setAuth }) {
 
@@ -25,6 +25,7 @@ function BillingApp({ setAuth }) {
                 <Route path="today-conf" element={<TodayConf />} />
                 <Route path="cancel" element={<CancelAppointment />} />
                 <Route path="collections" element={<Collections />} />
+                <Route path="change-password" element={<ChangePassword/>}/>
             </Route>
 
 

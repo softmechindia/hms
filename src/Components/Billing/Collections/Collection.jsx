@@ -102,11 +102,12 @@ function Collections() {
     }
   }, []);
 
-  // Initial mount load
-  useEffect(() => {
-    fetchCollectionsDataset("2026-01-01", currentLiveDate);
-    fetchDoctorsData();
-  }, [fetchCollectionsDataset, fetchDoctorsData, currentLiveDate]);
+
+useEffect(() => {
+
+  fetchCollectionsDataset(currentLiveDate, currentLiveDate); 
+  fetchDoctorsData();
+}, [fetchCollectionsDataset, fetchDoctorsData, currentLiveDate]);
 
   // 3. Form Submission Handler
   const handleSearch = (e) => {

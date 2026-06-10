@@ -49,6 +49,7 @@ export default function TopHeader() {
     if (path.endsWith("/cancel")) return "Cancelled Appointments";
     if (path.endsWith("/collections")) return "Collections";
     if (path.endsWith("/my-profile")) return "My Profile";
+  //  if (path.endsWith("/change-password")) return "Change Password";
 
     return "Appointments";
   };
