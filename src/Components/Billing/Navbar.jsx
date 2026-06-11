@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { NavLink, useNavigate, useLocation, useOutletContext } from "react-router-dom";
 import Dashboardlogo from "../../assets/images/Dashboardlogo.png";
 import { billingDashboardData } from "../../api/endpoints/authApi";
-import ChangePassword from "./ChangePassword/Change-Password";
 import {
   FaCalendarCheck,
   FaHourglassHalf,
@@ -14,13 +13,19 @@ import {
 import { User } from "lucide-react";
 
 const Nav = ({ setAuth }) => {
-const goToPage = useNavigate();
+  const navigate = useNavigate();
+  const goToPage = useNavigate();
   const context = useOutletContext();
   const refreshTrigger = context?.refreshTrigger;
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [user, setUser] = useState(null);
+
+
+  const [profile, setProfile] = useState({
+    user_name: "User",
+    picture_url: ""
+  });
 
   const [counts, setCounts] = useState({
     total: 0,
@@ -30,9 +35,33 @@ const goToPage = useNavigate();
     collections: 0,
   });
 
+  const getInitial = (name) => {
+    if (!name) return "U";
+    return name.trim().charAt(0).toUpperCase();
+  };
   const profileRef = useRef(null);
-
   const location = useLocation();
+
+
+  const syncProfileData = () => {
+    const storedProfile = localStorage.getItem("user_profile");
+    if (storedProfile) {
+      const parsed = JSON.parse(storedProfile);
+      setProfile({
+        user_name: parsed.user_name || "User",
+        picture_url: parsed.picture_url || parsed.user_pic || ""
+      });
+    } else {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        setProfile((prev) => ({
+          ...prev,
+          user_name: parsedUser.user_name || parsedUser.name || "User"
+        }));
+      }
+    }
+  };
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -42,7 +71,6 @@ const goToPage = useNavigate();
 
         if (storedUser) {
           const parsedUser = JSON.parse(storedUser);
-          setUser(parsedUser);
           if (parsedUser?.user_id) {
             userId = parsedUser.user_id;
           }
@@ -76,6 +104,11 @@ const goToPage = useNavigate();
     };
 
     fetchDashboardData();
+    syncProfileData();
+
+
+    window.addEventListener("storage", syncProfileData);
+    return () => window.removeEventListener("storage", syncProfileData);
   }, [refreshTrigger]);
 
   const handleLogout = () => {
@@ -89,10 +122,8 @@ const goToPage = useNavigate();
     window.location.href = "/login";
   };
 
-  // Synchronized alignment with Layout condition mapping
   const isDashboard = location.pathname === "/billing" || location.pathname === "/billing/";
 
-  // FIXED PATHS: Paths mapped explicitly to handle sub-navigation correctly
   const menuItems = [
     { name: "Total Appointments", icon: <FaCalendarCheck />, path: "/billing/total-app", count: counts.total },
     { name: "Pending Appointments", icon: <FaHourglassHalf />, path: "/billing/pending", count: counts.pending },
@@ -119,8 +150,7 @@ const goToPage = useNavigate();
   return (
     <nav className={`w-full bg-white sticky top-0 z-50 shadow-sm ${isDashboard ? "block" : "hidden lg:block"}`}>
       <div className="mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="w-[250px] flex items-center">
-
+        <div className="w-[250px] flex items-center">
           {isDashboard ? (
             <NavLink to="/billing">
               <img
@@ -164,7 +194,7 @@ const goToPage = useNavigate();
                   <span className="whitespace-nowrap">{item.name}</span>
                 </div>
                 <span className="text-xs px-2 py-0.5 rounded-full bg-orange-500 text-white">
-                  {item.count}
+                  {item.name === "Collections" ? `₹${item.count}` : item.count}
                 </span>
               </NavLink>
             ))}
@@ -175,22 +205,41 @@ const goToPage = useNavigate();
           <div className="relative" ref={profileRef}>
             <button
               onClick={() => setProfileOpen(!profileOpen)}
-              className="flex items-center  focus:outline-none"
+              className="flex items-center focus:outline-none"
             >
-              <div className="w-11 h-11 rounded-full cursor-pointer  bg-gradient-to-tr from-orange-400 to-orange-600 text-white font-bold flex items-center justify-center shadow-md border-2 border-white">
-                <User />
+              <div className="w-11 h-11 rounded-full cursor-pointer bg-gradient-to-tr from-orange-400 to-orange-600 text-white font-bold flex items-center justify-center shadow-md border-2 border-white overflow-hidden">
+                {profile.picture_url ? (
+                  <img
+                    src={profile.picture_url}
+                    alt="Profile Avatar"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'flex';
+                    }}
+                  />
+                ) : null}
+
+
+                <div
+                  style={{ display: profile.picture_url ? 'none' : 'flex' }}
+                  className="w-full h-full items-center justify-center text-white text-lg font-bold select-none"
+                >
+                  {getInitial(profile.user_name)}
+                </div>
               </div>
             </button>
 
             {profileOpen && (
-              <div className="absolute right-0 mt-3 w-43 bg-white rounded-md shadow-xl border border-gray-100 overflow-hidden">
-                <div className="px-2 py-1">
-                  <p className="text-sm font-bold text-gray-800">
-                    {user?.user_name || "User"}
+              <div className="absolute right-0 mt-3 w-44 bg-white rounded-md shadow-xl border border-gray-100 overflow-hidden">
+                <div className="px-3 py-2 border-b border-gray-50 bg-gray-50/50">
+                  <p className="text-xs text-gray-400 font-medium">Logged in as</p>
+                  <p className="text-sm font-bold text-gray-800 truncate">
+                    {profile.user_name}
                   </p>
                 </div>
                 <p
-                  className="px-2 py-1 text-sm hover:bg-orange-50 cursor-pointer"
+                  className="px-3 py-2 text-sm hover:bg-orange-50 cursor-pointer transition-colors text-gray-700"
                   onClick={() => {
                     navigate("/billing/my-profile");
                     setProfileOpen(false);
@@ -199,7 +248,7 @@ const goToPage = useNavigate();
                   My Profile
                 </p>
                 <p
-                  className="px-2 py-1 text-sm hover:bg-orange-50 cursor-pointer"
+                  className="px-3 py-2 text-sm hover:bg-orange-50 cursor-pointer transition-colors text-gray-700"
                   onClick={() => {
                     setProfileOpen(false);
                     goToPage("/billing/change-password");
@@ -209,21 +258,15 @@ const goToPage = useNavigate();
                 </p>
 
                 <p
-                  className="px-2 py-1 text-sm hover:bg-orange-50 cursor-pointer text-red-600 font-semibold border-t border-gray-100"
+                  className="px-3 py-2 text-sm hover:bg-orange-50 cursor-pointer text-red-600 font-semibold border-t border-gray-100 transition-colors"
                   onClick={handleLogout}
                 >
                   Logout
                 </p>
               </div>
             )}
-            
           </div>
         </div>
-      </div>
-
-
-      <div>
-
       </div>
     </nav>
   );
