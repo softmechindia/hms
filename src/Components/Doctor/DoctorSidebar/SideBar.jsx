@@ -1,12 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import logo from "../../../assets/images/logo.png";
 import { Calendar, FileText, LayoutDashboard, LogOut, Users, Menu, X } from "lucide-react";
 import { FaKey, FaUser } from "react-icons/fa";
 
-function Sidebar({ isOpen, setIsOpen }) {
+function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
+
+
+
 
   const menu = [
     { label: "Dashboard", icon: <LayoutDashboard size={20} />, path: "/doctor/dashboard" },
@@ -14,8 +18,8 @@ function Sidebar({ isOpen, setIsOpen }) {
     { label: "Upcoming", icon: <Calendar size={20} />, path: "/doctor/upcoming" },
     { label: "Prescription", icon: <FileText size={20} />, path: "/doctor/add-prescription" },
     { label: "My Patient", icon: <FaUser size={20} />, path: "/my-patient" },
-    { label: "Change Password", icon: <FaKey size={20} />, path: "/change-password" },
-    { label: "Logout", icon: <LogOut size={20} />, path: "/logout" },
+
+
   ];
 
   const currentPage = menu.find(item => item.path === location.pathname)?.label || "HMS";
@@ -23,10 +27,11 @@ function Sidebar({ isOpen, setIsOpen }) {
   return (
     <>
       {/* --- MOBILE TOP BAR --- */}
-      <div className="lg:hidden fixed top-0 right-0 left-0 h-16  flex items-center justify-between px-4 z-[50] shadow-md">
+      <div className="lg:hidden fixed top-0 right-0 left-0 h-16 bg-[#4F6EEA] flex items-center justify-between px-4 z-[50] shadow-md">
+
         <div className="flex items-center gap-3">
-          <button 
-            onClick={() => setIsOpen(true)} 
+          <button
+            onClick={() => setIsOpen(true)}
             className="text-white bg-white/10 rounded-lg p-1.5"
           >
             <Menu size={24} />
@@ -40,14 +45,14 @@ function Sidebar({ isOpen, setIsOpen }) {
 
       {/* --- SIDEBAR MAIN --- */}
       <div className={`
-        fixed lg:static inset-y-0 left-0 z-[60]
-        w-64 min-h-screen bg-sidebar-gradient text-white p-4 flex flex-col
+        fixed lg:static inset-y-0 left-0 z-50
+        w-64 min-h-screen bg-[#082cbb] text-white p-4 flex flex-col
         transition-transform duration-300 ease-in-out
         ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
       `}>
-        
+
         {/* Mobile Close Button */}
-        <button 
+        <button
           onClick={() => setIsOpen(false)}
           className="lg:hidden absolute right-4 top-4 text-white/70"
         >
@@ -82,9 +87,8 @@ function Sidebar({ isOpen, setIsOpen }) {
               to={item.path}
               onClick={() => setIsOpen(false)}
               className={({ isActive }) =>
-                `flex items-center gap-3 p-3 rounded-md transition-all ${
-                  isActive 
-                  ? "bg-white text-[#4F6EEA] shadow-md border-l-4 border-white" 
+                `flex items-center gap-3 p-3 rounded-md transition-all ${isActive
+                  ? "bg-white text-[#4F6EEA] shadow-md border-l-4 border-white"
                   : "text-white hover:bg-white/10"
                 }`
               }

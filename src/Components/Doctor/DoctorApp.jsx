@@ -6,7 +6,8 @@ import HomePage from "../Doctor/HomePage";
 import Dashboard from "../Doctor/Dashbaord"; 
 import Patients from "../Doctor/Patients";
 import Upcoming from "../Doctor/Upcoming";
-
+import DoctorProfile from "./Doctor-Profile";
+import ChangePassword from "../Doctor/Change-Password";
 
 function DoctorApp() {
   return (
@@ -16,6 +17,8 @@ function DoctorApp() {
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="patient" element={<Patients />} />
         <Route path="upcoming" element={<Upcoming />} />
+       <Route path="profile" element={<DoctorProfile />} />
+       <Route path="change-password" element={<ChangePassword/>}/>
         
 
         <Route path="add-prescription" element={<HomePage/>} />

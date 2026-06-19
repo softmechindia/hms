@@ -1,24 +1,21 @@
 import React, { useState } from "react";
 import DataTable from "react-data-table-component";
-import { Users, Calendar, CheckCircle, Clock, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, LayoutDashboard,FileText } from "lucide-react";
+import { Users, Calendar, CheckCircle, Clock, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, LayoutDashboard, FileText } from "lucide-react";
 
-// Custom Styles for DataTable
 const customStyles = {
   headRow: {
     style: {
-      background: "linear-gradient(90deg, #5B7CFA, #7DA0FA)",
+      backgroundColor: "#082cbb",
+      color: "#ffffff",
       fontWeight: "800",
       fontSize: "12px",
-      color: "#ffffff",
-     
     },
   },
   pagination: {
     style: {
       border: "none",
       color: "#6b7280",
-      justifyContent: "flex-end",
-      paddingRight: "50px",
+      paddingRight: "40px",
       paddingTop: "10px",
       paddingBottom: "10px",
     },
@@ -34,7 +31,7 @@ const initialData = [
     apptID: "1119043",
     apptTime: "09:30 AM",
     waiting: "0 min",
-    
+
   },
   {
     patient: "Rohit Sharma",
@@ -62,7 +59,7 @@ const columns = [
     cell: row => (
       <div>
         <div className="font-bold text-gray-800">{row.doctor}</div>
-       
+
       </div>
     ),
   },
@@ -96,34 +93,29 @@ function Dashboard() {
   const [filteredData, setFilteredData] = useState(initialData);
 
   return (
-  <div className="flex-1 min-h-screen">
+    <div className="w-full min-h-screen p-4 bg-white">
 
-   <div className="h-auto p-6 rounded-md m-4 bg-white font-sans text-slate-900">
-            <h1 className="text-xl font-black font-roboto text-gray-800 mb-6 tracking-tight uppercase text-center md:text-left">
+      <div className="max-w-6xl mx-auto">
+  
 
-        Clinic Overview
-      </h1>
- 
- {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <StatCard count={12} label="Total Appointments" icon={<Calendar className="text-indigo-600" />} color="bg-indigo-50" />
-        <StatCard count={8} label="Confirmed" icon={<CheckCircle className="text-emerald-600" />} color="bg-emerald-50" />
-        <StatCard count={4} label="Completed" icon={<Users className="text-amber-600" />} color="bg-amber-50" />
-      </div>
-      
-
-      {/* Table Section */}
-      <div className="bg-white rounded-t-md shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
-        <div className="flex items-center justify-between p-4 border-b border-slate-100">
-          <h2 className="text-lg font-bold text-slate-800">Today's Schedule</h2>
-          <button className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors">
-            View All
-          </button>
-        </div>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <StatCard count={12} label="Total Appointments" icon={<Calendar className="text-indigo-600" />} color="bg-indigo-50" />
+          <StatCard count={8} label="Confirmed" icon={<CheckCircle className="text-emerald-600" />} color="bg-emerald-50" />
+          <StatCard count={4} label="Completed" icon={<Users className="text-amber-600" />} color="bg-amber-50" />
         </div>
 
-        {/* Desktop DataTable */}
-        <div className="hidden md:block">
+
+        {/* Table Section */}
+        <div className="bg-white rounded-t-md shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+          <div className="flex items-center justify-between p-4 border-b border-slate-100">
+            <h2 className="text-lg font-bold text-slate-800">Today's Schedule</h2>
+            <button className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors">
+              View All
+            </button>
+          </div>
+        </div>
+
           <DataTable
             columns={columns}
             data={filteredData}
@@ -149,9 +141,9 @@ function Dashboard() {
           />
         </div>
       </div>
-    </div>
-    
-    
+ 
+
+
   );
 }
 
@@ -163,7 +155,7 @@ const StatCard = ({ count, label, icon, color }) => (
     </div>
     <div className={`p-2 rounded-lg ${color}`}>{React.cloneElement(icon, { size: 20 })}</div>
   </div>
-  
+
 );
 
 export default Dashboard;

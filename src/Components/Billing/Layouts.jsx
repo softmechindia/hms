@@ -3,9 +3,10 @@ import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar-Page/Sidebar";
 import TopHeader from "./TopHeader";
 
-export default function Layouts({ setAuth }) {
+export default function Layouts({ setAuth,onToggleMenu}) {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const location = useLocation();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // Strict condition mapping matching dashboard path state
   const isDashboard = location.pathname === "/billing" || location.pathname === "/billing/";
@@ -26,11 +27,11 @@ export default function Layouts({ setAuth }) {
       ) : (
 
         <div className="flex min-h-screen">
-          <Sidebar />
+          <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
 
           <div className="flex-1 flex flex-col shadow-lg overflow-hidden">
-            <TopHeader />
+            <TopHeader onToggleMenu={() => setIsSidebarOpen((prev) => !prev)} />
 
 
             <main className="flex-1 p-4 overflow-y-auto">

@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { User, Pencil, Camera, CheckCircle } from "lucide-react";
-
-import { getMyProfile, updateProfileImage, updateProfile } from "../../../api/endpoints/authApi";
+// -------------------------------------------------------------------------
+// API ENDPOINTS LOGIC COMMENT:
+// 1. DoctorMyProfile -> Dashboard ya user profile loading ke waqt user ki existing profile database se fetch karne ke liye hai.
+// 2. doctorupdateProfileImage -> Sirf multipart image file binary format me backend server par upload/update karne ke liye hai.
+// 3. DoctorupdateProfile -> Baki ka text data (Jaise Name, Email, Phone, Qualificaton) update karne ke liye use hota hai.
+// -------------------------------------------------------------------------
+import { DoctorMyProfile, doctorupdateProfileImage, DoctorupdateProfile } from "../../api/endpoints/authApi";
 
 function MyProfile() {
   const [isEditing, setIsEditing] = useState(false);
@@ -9,118 +14,129 @@ function MyProfile() {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
 
-
-  // Helper for Initial
+  // Helper Logic: Agar user ki image na ho, toh naam ka pehla akshar (Initial Letter) display karne ke liye helper utility function.
   const getInitial = (name) => {
     if (!name) return "U";
     return name.trim().charAt(0).toUpperCase();
   };
 
-
+  // -------------------------------------------------------------------------
+  // INITIAL STATE LOGIC:
+  // Sabse pahle localStorage check hota hai 'user_profile' key ke liye taaki offline data load ho sake.
+  // Agar profile nahi milti, toh backup ke liye 'user' authentication token key se raw details parse ki jaati hain.
+  // -------------------------------------------------------------------------
   const [formData, setFormData] = useState(() => {
     const savedProfile = localStorage.getItem("user_profile");
-    if (savedProfile) return JSON.parse(savedProfile);
+    if (savedProfile) {
+      const parsed = JSON.parse(savedProfile);
+      return parsed.data || parsed;
+    }
 
     const savedUser = localStorage.getItem("user");
     const parsedUser = savedUser ? JSON.parse(savedUser) : null;
+    const uData = parsedUser?.data || parsedUser;
 
     return {
-      id: parsedUser?.id || "",
-      userID: parsedUser?.userID || parsedUser?.user_id || "",
-      user_name: parsedUser?.user_name || "",
-      email_id: parsedUser?.email_id || "",
-      mobile_no: parsedUser?.mobile_no || "",
-      gender: parsedUser?.gender || "",
-      user_type: parsedUser?.user_type || "billing",
-      doctor_type: parsedUser?.doctor_type || "",
-      doctor_fees: parsedUser?.doctor_fees || "",
-      dob: parsedUser?.dob || "",
-      doj: parsedUser?.doj || "",
-      blood_group: parsedUser?.blood_group || "",
-      experience: parsedUser?.experience || "",
-      address: parsedUser?.address || "",
-      department: parsedUser?.department || "",
-      designation: parsedUser?.designation || "",
-      education: parsedUser?.education || "",
-      user_pic: parsedUser?.user_pic || parsedUser?.picture_url || "",
-      picture_url: parsedUser?.picture_url || parsedUser?.user_pic || ""
+      id: uData?.id || "",
+      userID: uData?.userID || uData?.user_id || "",
+      user_name: uData?.user_name || "",
+      email_id: uData?.email_id || "",
+      mobile_no: uData?.mobile_no || "",
+      gender: uData?.gender || "",
+      user_type: uData?.user_type || "doctor",
+      doctor_type: uData?.doctor_type || "",
+      doctor_fees: uData?.doctor_fees || "",
+      dob: uData?.dob || "",
+      doj: uData?.doj || "",
+      blood_group: uData?.blood_group || "",
+      experience: uData?.experience || "",
+      address: uData?.address || "",
+      department: uData?.department || "",
+      designation: uData?.designation || "",
+      education: uData?.education || "",
+      user_pic: uData?.user_pic || uData?.picture_url || "",
+      picture_url: uData?.picture_url || uData?.user_pic || ""
     };
   });
 
+  // -------------------------------------------------------------------------
+  // API LOGIC: DoctorMyProfile (Easy & Secure Version)
+  // Component mount hote hi user_id payload lekar server se real-time state sync karne ke liye data lata hai.
+  // -------------------------------------------------------------------------
+  const fetchProfileData = async () => {
+    try {
+      setError(null);
+      const storedUser = localStorage.getItem("user");
+      let currentUserId = "DR0001"; // Updated to DR0001 for Doctor profile default
 
-const fetchProfileData = async () => {
-  try {
-    setError(null);
-    const storedUser = localStorage.getItem("user");
-    let currentUserId = "ST0001";
-    if (storedUser) {
-      const parsed = JSON.parse(storedUser);
-      currentUserId = parsed?.user_id || parsed?.userID || "ST0001";
-    }
+      if (storedUser) {
+        const parsed = JSON.parse(storedUser);
+        const uData = parsed?.data || parsed;
+        currentUserId = uData?.user_id || uData?.userID || "DR0001";
+      }
 
-    const payload = { user_id: currentUserId };
-    const response = await getMyProfile(payload);
+      const payload = { user_id: currentUserId };
+      const response = await DoctorMyProfile(payload);
 
-    const locateDataDeeply = (obj) => {
-      if (!obj || typeof obj !== 'object') return null;
-      if (obj.user_name || obj.userID || obj.user_id) return obj;
-      for (let key in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, key)) {
-          const found = locateDataDeeply(obj[key]);
-          if (found) return found;
+      // --- EASY WAY ALTERNATIVE LOGIC ---
+      // Bina loops ya recursion ke seedha response ka dabba check kar rahe hain
+      let profile = null;
+
+      if (response) {
+        if (response.user_name || response.user_id || response.userID) {
+          profile = response; // Agar seedha top level par data mil gaya
+        } else if (response.data && (response.data.user_name || response.data.user_id || response.data.userID)) {
+          profile = response.data; // Agar response.data ke andar data chhupa hai
+        } else if (response.profile && (response.profile.user_name || response.profile.user_id || response.profile.userID)) {
+          profile = response.profile; // Agar response.profile ke andar data chhupa hai
         }
       }
-      return null;
-    };
+      // ----------------------------------
 
-    const profile = locateDataDeeply(response);
+      if (profile) {
+        const freshImage = profile.picture_url || profile.user_pic || formData.picture_url || "";
 
-    if (profile) {
-      const existingLocalImage = formData.picture_url || formData.user_pic || "";
+        const updatedData = {
+          ...formData,
+          ...profile,
+          userID: profile.userID || profile.user_id || currentUserId,
+          user_pic: freshImage,
+          picture_url: freshImage
+        };
 
-      const updatedData = {
-        ...formData,
-        ...profile,
-        user_name: profile.user_name || formData.user_name, // API ka real name
-        userID: profile.userID || profile.user_id || currentUserId,
-        user_pic: existingLocalImage,
-        picture_url: existingLocalImage
-      };
-
-      setFormData(updatedData);
-
-      // 🔥 FIX HERE: Local storage ko update karo taaki baaki components ko real name mile
-      localStorage.setItem("user_profile", JSON.stringify(updatedData));
-      
-      const storedUserObj = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : {};
-      localStorage.setItem("user", JSON.stringify({ ...storedUserObj, ...updatedData }));
-
-      // Custom events fire karo taaki live changes Header aur Sidebar ko dikhein
-      window.dispatchEvent(new Event("profileUpdate"));
-      window.dispatchEvent(new Event("storage"));
+        setFormData(updatedData);
+        localStorage.setItem("user_profile", JSON.stringify(updatedData));
+        
+        // Custom App Events: TopHeader aur Sidebar component ko live runtime cross-communication trigger deta hai.
+        window.dispatchEvent(new Event("profileUpdate"));
+      }
+    } catch (err) {
+      console.error("Profile Fetch Error:", err);
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error("Profile Fetch Error:", err);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   useEffect(() => {
     fetchProfileData();
   }, []);
 
+  // Form input field changes mapping logic
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-
+  // -------------------------------------------------------------------------
+  // API LOGIC: doctorupdateProfileImage
+  // Pehle client UI par instant reactivity ke liye standard blob stream render karta hai.
+  // Phir FormData instances bana kar core image file ko secure format me destination upload url par process karta hai.
+  // -------------------------------------------------------------------------
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-   
+    // Local Preview mechanism (Lag-free dynamic experience ke liye)
     const localUrl = URL.createObjectURL(file);
 
     const instantUpdatedForm = { ...formData, picture_url: localUrl, user_pic: localUrl };
@@ -130,16 +146,19 @@ const fetchProfileData = async () => {
     const storedUserObj = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : {};
     localStorage.setItem("user", JSON.stringify({ ...storedUserObj, picture_url: localUrl, user_pic: localUrl }));
 
+    // Global notifications push
     window.dispatchEvent(new Event("profileUpdate"));
     window.dispatchEvent(new Event("storage"));
 
     try {
       const payload = new FormData();
-      payload.append("user_id", formData.userID || "ST0001");
+      payload.append("user_id", formData.userID || "DR0001");
       payload.append("profile_picture", file);
 
-      const response = await updateProfileImage(payload);
-      const serverImageUrl = response?.picture_url || response?.data?.picture_url || response?.user_pic;
+      // Dedicated Endpoint Execution
+      const response = await doctorupdateProfileImage(payload);
+      const resData = response?.data || response;
+      const serverImageUrl = resData?.picture_url || resData?.user_pic;
 
       if (serverImageUrl) {
         const finalForm = { ...formData, picture_url: serverImageUrl, user_pic: serverImageUrl };
@@ -153,15 +172,18 @@ const fetchProfileData = async () => {
     } catch (err) {
       console.error("Server upload failed, keeping local preview active.", err);
     }
-    
   };
 
-
+  // -------------------------------------------------------------------------
+  // API LOGIC: DoctorupdateProfile
+  // Text parameter object metadata array build karke complete updates execute karne ka controller pipeline hai.
+  // Response check validation match karne par pure layout aur navigation elements me values update karta hai.
+  // -------------------------------------------------------------------------
   const handleSaveChanges = async () => {
     try {
       const payload = {
         user_name: formData.user_name,
-        user_id: formData.userID || "ST0001",
+        user_id: formData.userID || "DR0001",
         email_id: formData.email_id,
         gender: formData.gender,
         mobile_no: formData.mobile_no,
@@ -174,9 +196,10 @@ const fetchProfileData = async () => {
       };
 
       setError(null);
-      const response = await updateProfile(payload);
+      const response = await DoctorupdateProfile(payload);
+      const resData = response?.data || response;
 
-      if (response && (response.success === 1 || response.data?.success === 1)) {
+      if (response && (response.success === 1 || resData.success === 1)) {
         const currentActiveImage = formData.picture_url || formData.user_pic || "";
         const finalPersistedForm = {
           ...formData,
@@ -195,13 +218,12 @@ const fetchProfileData = async () => {
           user_pic: currentActiveImage
         }));
 
- 
-        showCenterMessage(response.message || "Profile Updated Successfully");
+        showCenterMessage(response.message || resData.message || "Profile Updated Successfully");
 
         window.dispatchEvent(new Event("profileUpdate"));
         window.dispatchEvent(new Event("storage"));
       } else {
-        showCenterMessage(response.message || "Update Failed");
+        showCenterMessage(response.message || resData.message || "Update Failed");
       }
     } catch (err) {
       console.error("Profile Update Error:", err);
@@ -209,7 +231,7 @@ const fetchProfileData = async () => {
     }
   };
 
-
+  // Global Alert Message duration trigger controller
   const showCenterMessage = (msg) => {
     setSuccessMessage(msg);
     setTimeout(() => {
@@ -218,17 +240,13 @@ const fetchProfileData = async () => {
     }, 3000);
   };
 
-
-
-
   if (loading && !formData.user_name) {
     return <div className="min-h-screen bg-gray-100 flex items-center justify-center font-medium text-gray-500">Loading Profile...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 space-y-6 relative">
-
-  
+    <div className="min-h-screen bg-gray-100 space-y-6 relative">
+      {/* SUCCESS MODAL POPUP LAYOUT */}
       {successMessage && (
         <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-black/40 backdrop-blur-sm">
           <div className="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full mx-4 border border-gray-100 text-center flex flex-col items-center">
@@ -245,6 +263,7 @@ const fetchProfileData = async () => {
         </div>
       )}
 
+      {/* READ ONLY MODE VIEW */}
       {!isEditing && (
         <div className="bg-white rounded-md shadow-sm border border-gray-200 p-5">
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
@@ -267,7 +286,7 @@ const fetchProfileData = async () => {
           <div className="p-5">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="flex flex-col items-center border-r border-gray-200 pr-4">
-                <label className="relative w-28 h-28 rounded-full overflow-hidden bg-gradient-to-tr from-orange-400 to-orange-600 cursor-pointer group border-2 border-transparent  text-white font-bold flex items-center justify-center shadow-md border-2 border-white overflow-hidden   transition-all">
+                <label className="relative w-28 h-28 rounded-full overflow-hidden bg-gradient-to-tr from-orange-400 to-orange-600 cursor-pointer group border-2 border-white flex items-center justify-center shadow-md transition-all">
                   {formData.picture_url || formData.user_pic ? (
                     <img
                       src={formData.picture_url || formData.user_pic}
@@ -292,7 +311,6 @@ const fetchProfileData = async () => {
                 </label>
               </div>
 
-
               <div className="space-y-8">
                 <ProfileItem label="Full Name" value={formData.user_name} />
                 <ProfileItem label="Email ID" value={formData.email_id} />
@@ -301,8 +319,8 @@ const fetchProfileData = async () => {
 
               <div className="space-y-5 border-l border-gray-200 pl-6">
                 <ProfileItem label="Employee ID" value={formData.userID} />
-                <ProfileItem label="Designation" value={formData.designation || "Senior Billing Executive"} />
-                <ProfileItem label="Department" value={formData.department || "Billing"} />
+                <ProfileItem label="Designation" value={formData.designation || "Doctor"} />
+                <ProfileItem label="Department" value={formData.department || "Medical"} />
                 <ProfileItem label="Address" value={formData.address} />
               </div>
 
@@ -314,10 +332,10 @@ const fetchProfileData = async () => {
               </div>
             </div>
           </div>
-
         </div>
       )}
 
+      {/* EDITING FORMS LAYOUT PANEL */}
       {isEditing && (
         <div className="bg-white rounded-md shadow-sm border border-gray-200 p-5">
           <div className="flex items-center justify-between mb-6">
@@ -357,6 +375,7 @@ const fetchProfileData = async () => {
   );
 }
 
+// Global UI Form Render Components
 const ProfileItem = ({ label, value, icon }) => (
   <div>
     <p className="text-[11px] text-gray-500 mb-1">{label}</p>

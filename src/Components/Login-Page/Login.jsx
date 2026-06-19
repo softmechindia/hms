@@ -23,14 +23,18 @@ function Login({ setAuth }) {
         const user = apiData.user_data[0];
 
 
-        sessionStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("user", JSON.stringify(user));
 
-        const role = user.user_type.toLowerCase(); 
-        sessionStorage.setItem("userRole", role); 
+        const role = user.user_type.toLowerCase();
+        sessionStorage.setItem("userRole", role);
+        localStorage.setItem("userRole", role);
 
-        setAuth(true); 
+        window.dispatchEvent(new Event("storage"));
+        window.dispatchEvent(new Event("profileUpdate"));
 
-       
+        setAuth(true);
+
+
         if (role === "doctor") {
           navigate("/doctor");
         } else if (role === "billing") {

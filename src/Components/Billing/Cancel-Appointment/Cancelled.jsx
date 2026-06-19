@@ -1,31 +1,31 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import DataTable from "react-data-table-component";
-import { getCancelledAppointments, getDoctors } from "../../../api/endpoints/authApi"; 
+import { getCancelledAppointments, getDoctors } from "../../../api/endpoints/authApi";
 import { Search, ShieldCheck, Clock, ChevronDown } from "lucide-react";
 
 function CancelledAppointment() {
-  
-const getLiveDateString = () => {
+
+  const getLiveDateString = () => {
     const today = new Date();
     const offset = today.getTimezoneOffset();
     const localToday = new Date(today.getTime() - offset * 60 * 1000);
     return localToday.toISOString().split("T")[0];
   };
-const currentLiveDate = getLiveDateString();
+  const currentLiveDate = getLiveDateString();
 
 
   const [fromDate, setFromDate] = useState(currentLiveDate);
   const [toDate, setToDate] = useState(currentLiveDate);
   const [selectedDoctor, setSelectedDoctor] = useState("All Doctor");
   const [appointments, setAppointments] = useState([]);
-  const [doctorsList, setDoctorsList] = useState([]); 
+  const [doctorsList, setDoctorsList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState("");
 
   // Get Doctors Data Dynamically
   const fetchDoctor = useCallback(async () => {
     try {
-      const docResponse = await getDoctors(); 
+      const docResponse = await getDoctors();
       const doctors = docResponse?.Getdoctorsdata || docResponse?.fullData?.Getdoctorsdata || [];
       setDoctorsList(doctors);
     } catch (err) {
@@ -46,10 +46,10 @@ const currentLiveDate = getLiveDateString();
       user_id: "ST0001",
       from_date: finalFromDate,
       to_date: finalToDate,
-      doctor_id: "" 
+      doctor_id: ""
     };
 
-   
+
 
     try {
       const res = await getCancelledAppointments(payload);
@@ -57,7 +57,7 @@ const currentLiveDate = getLiveDateString();
 
       let fetchedList = [];
 
-    
+
       if (res?.fullData && Array.isArray(res.fullData.data)) {
         fetchedList = res.fullData.data;
       } else if (res?.data && Array.isArray(res.data)) {
@@ -79,13 +79,13 @@ const currentLiveDate = getLiveDateString();
   }, [fromDate, toDate]);
 
 
- useEffect(() => {
+  useEffect(() => {
     fetchCancelledAppointments(currentLiveDate, currentLiveDate);
     fetchDoctor();
-   
+
   }, []);
 
- 
+
   const handleSearch = (e) => {
     e.preventDefault();
     fetchCancelledAppointments(fromDate, toDate);
@@ -94,7 +94,7 @@ const currentLiveDate = getLiveDateString();
   const filteredAppointments = useMemo(() => {
     if (!appointments || appointments.length === 0) return [];
     if (selectedDoctor === "All Doctor") return appointments;
-    
+
     return appointments.filter((item) => {
       return item.doctor_name && item.doctor_name.toLowerCase().trim() === selectedDoctor.toLowerCase().trim();
     });
@@ -181,8 +181,11 @@ const currentLiveDate = getLiveDateString();
   };
 
   return (
-       <div className="w-full min-h-screen p-4">
-      <form onSubmit={handleSearch} className="bg-white p-4 rounded-md border border-gray-200 flex flex-col md:flex-row gap-4 items-end">
+    <div className="w-full min-h-screen ">
+      <form
+        onSubmit={handleSearch}
+        className="bg-white p-4 rounded-md border border-gray-200 grid grid-cols-1 md:grid-cols-4 gap-4 items-end"
+      >
         <div className="flex-1 w-full">
           <label className="block text-xs text-gray-500 mb-1 font-semibold">From Date</label>
           <div className="relative">

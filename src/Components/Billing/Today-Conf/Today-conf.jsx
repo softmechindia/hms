@@ -155,8 +155,11 @@ function TodayConfirmAppointment() {
   };
 
   return (
-    <div className="w-full min-h-screen p-4">
-      <form onSubmit={handleSearch} className="bg-white p-4 rounded-md border border-gray-200 flex flex-col md:flex-row gap-4 items-end">
+    <div className="w-full min-h-screen ">
+      <form
+        onSubmit={handleSearch}
+        className="bg-white p-4 rounded-md border border-gray-200 grid grid-cols-1 md:grid-cols-4 gap-4 items-end"
+      >
 
 
 

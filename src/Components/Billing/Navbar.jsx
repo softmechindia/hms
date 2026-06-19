@@ -43,23 +43,25 @@ const Nav = ({ setAuth }) => {
   const location = useLocation();
 
 
-  const syncProfileData = () => {
+const syncProfileData = () => {
     const storedProfile = localStorage.getItem("user_profile");
+    const storedUser = localStorage.getItem("user");
+
     if (storedProfile) {
       const parsed = JSON.parse(storedProfile);
       setProfile({
         user_name: parsed.user_name || "User",
         picture_url: parsed.picture_url || parsed.user_pic || ""
       });
-    } else {
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) {
-        const parsedUser = JSON.parse(storedUser);
-        setProfile((prev) => ({
-          ...prev,
-          user_name: parsedUser.user_name || parsedUser.name || "User"
-        }));
-      }
+    } else if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      const dynamicName = parsedUser.user_name || parsedUser.name || parsedUser.data?.user_name || "User";
+      const dynamicPic = parsedUser.picture_url || parsedUser.user_pic || parsedUser.data?.picture_url || "";
+      
+      setProfile({
+        user_name: dynamicName,
+        picture_url: dynamicPic
+      });
     }
   };
 
@@ -241,7 +243,7 @@ const Nav = ({ setAuth }) => {
                 <p
                   className="px-3 py-2 text-sm hover:bg-orange-50 cursor-pointer transition-colors text-gray-700"
                   onClick={() => {
-                    navigate("/billing/my-profile");
+                    navigate("/billing/my-profile"); 
                     setProfileOpen(false);
                   }}
                 >

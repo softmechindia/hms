@@ -2,13 +2,13 @@ import React, { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Menu } from "lucide-react";
 
-export default function TopHeader() {
+export default function TopHeader({ onToggleMenu }) {
   const location = useLocation();
   const navigate = useNavigate();
 
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
-
+const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [profile, setProfile] = useState({
     user_name: "User",
     picture_url: ""
@@ -22,11 +22,22 @@ export default function TopHeader() {
 
   const syncProfileData = () => {
     const storedProfile = localStorage.getItem("user_profile");
+    const storedUser = localStorage.getItem("user");
+
     if (storedProfile) {
       const parsed = JSON.parse(storedProfile);
       setProfile({
         user_name: parsed.user_name || parsed.name || "User",
         picture_url: parsed.picture_url || parsed.user_pic || ""
+      });
+    } else if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      const dynamicName = parsedUser.user_name || parsedUser.name || parsedUser.data?.user_name || "User";
+      const dynamicPic = parsedUser.picture_url || parsedUser.user_pic || parsedUser.data?.picture_url || "";
+
+      setProfile({
+        user_name: dynamicName,
+        picture_url: dynamicPic
       });
     }
   };
@@ -54,7 +65,13 @@ export default function TopHeader() {
   const handleLogout = () => {
     sessionStorage.clear();
     localStorage.clear();
-    navigate("/");
+
+    if(typeof setAuth === "function"){x`  `
+      setAuth(false);
+    }
+
+    window.location.href = "/login";  
+   
   };
 
   const getHeading = () => {
@@ -70,9 +87,12 @@ export default function TopHeader() {
   };
 
   return (
-    <div className="flex items-center justify-between bg-white px-6 py-3 border-b border-gray-200 w-full h-[60px]">
+    <div className="hidden lg:flex items-center justify-between bg-white px-6 py-3 border-b border-gray-200 w-full h-[60px]">
       <div className="flex items-center gap-4">
-        <button className="text-gray-500 hover:text-gray-800 transition-colors focus:outline-none">
+       <button
+          onClick={onToggleMenu} 
+          className="text-gray-500 hover:text-gray-800"
+        >
           <Menu className="w-5 h-5" />
         </button>
         <h1 className="text-[19px] font-semibold text-gray-800">{getHeading()}</h1>
@@ -86,15 +106,15 @@ export default function TopHeader() {
             className="w-10 h-10 rounded-full bg-gradient-to-tr from-orange-400 to-orange-600 flex items-center justify-center overflow-hidden border-2 border-white shadow-md focus:outline-none"
           >
             {profile.picture_url ? (
-              <img 
-                src={profile.picture_url} 
-                alt="Avatar" 
+              <img
+                src={profile.picture_url}
+                alt="Avatar"
                 className="w-full h-full object-cover"
                 onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
               />
             ) : null}
-            
-            <div 
+
+            <div
               style={{ display: profile.picture_url ? 'none' : 'flex' }}
               className="w-full h-full items-center justify-center text-white font-bold text-sm"
             >

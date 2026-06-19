@@ -6,9 +6,9 @@ import {
 } from "lucide-react";
 import { useLocation, NavLink } from "react-router-dom";
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, setIsOpen }) {
   const location = useLocation();
-  const [isOpen, setIsOpen] = useState(false);
+
 
   // State to handle live profile sync (Image, Name, and Designation)
   const [profile, setProfile] = useState({
@@ -20,6 +20,8 @@ export default function Sidebar() {
   // Sync profile data dynamically from storage
   const syncProfile = () => {
     const storedProfile = localStorage.getItem("user_profile");
+    const storedUser = localStorage.getItem("user");
+
     if (storedProfile) {
       const parsed = JSON.parse(storedProfile);
       setProfile({
@@ -27,16 +29,16 @@ export default function Sidebar() {
         picture_url: parsed.picture_url || parsed.user_pic || "",
         designation: parsed.designation || parsed.department || "Billing Executive"
       });
-    } else {
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) {
-        const parsedUser = JSON.parse(storedUser);
-        setProfile({
-          user_name: parsedUser.user_name || parsedUser.name || "User",
-          picture_url: parsedUser.picture_url || parsedUser.user_pic || "",
-          designation: parsedUser.designation || parsedUser.department || "Billing Executive"
-        });
-      }
+    } else if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      const dynamicName = parsedUser.user_name || parsedUser.name || parsedUser.data?.user_name || "User";
+      const dynamicPic = parsedUser.picture_url || parsedUser.user_pic || parsedUser.data?.picture_url || "";
+
+      setProfile({
+        user_name: dynamicName,
+        picture_url: dynamicPic,
+        designation: parsedUser.designation || parsedUser.department || "Billing Executive"
+      });
     }
   };
 
@@ -46,7 +48,7 @@ export default function Sidebar() {
     // Catch real-time update triggers from MyProfile without reloading the screen
     window.addEventListener("storage", syncProfile);
     window.addEventListener("profileUpdate", syncProfile);
-    
+
     return () => {
       window.removeEventListener("storage", syncProfile);
       window.removeEventListener("profileUpdate", syncProfile);
@@ -80,22 +82,22 @@ export default function Sidebar() {
           </button>
           <span className="text-white font-bold">{currentPage}</span>
         </div>
-        
+
         {/* Dynamic Mobile Profile Circle */}
         <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-orange-500 to-amber-300 p-0.5 flex items-center justify-center border border-white/30 overflow-hidden">
           <div className="w-full h-full rounded-full bg-[#111827] flex items-center justify-center overflow-hidden">
             {profile.picture_url ? (
-              <img 
-                src={profile.picture_url} 
-                alt="Profile" 
-                className="w-full h-full object-cover" 
+              <img
+                src={profile.picture_url}
+                alt="Profile"
+                className="w-full h-full object-cover"
                 onError={(e) => {
                   e.target.style.display = 'none';
                   e.target.nextSibling.style.display = 'flex';
                 }}
               />
             ) : null}
-            <div 
+            <div
               style={{ display: profile.picture_url ? 'none' : 'flex' }}
               className="w-full h-full items-center justify-center text-orange-500 font-bold text-sm select-none"
             >
@@ -111,6 +113,7 @@ export default function Sidebar() {
         w-64 min-h-screen bg-[#082cbb] text-white p-4 flex flex-col
         transition-transform duration-300 ease-in-out
         ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+        ${!isOpen ? "lg:hidden" : "lg:flex"}
       `}>
 
         <div className="flex justify-center items-center w-full">
@@ -126,9 +129,9 @@ export default function Sidebar() {
           <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-orange-500 to-amber-300 p-0.5 flex items-center justify-center overflow-hidden">
             <div className="w-full h-full rounded-full bg-[#111827] flex items-center justify-center overflow-hidden">
               {profile.picture_url ? (
-                <img 
-                  src={profile.picture_url} 
-                  alt="Dynamic User Avatar" 
+                <img
+                  src={profile.picture_url}
+                  alt="Dynamic User Avatar"
                   className="w-full h-full object-cover rounded-full"
                   onError={(e) => {
                     // Photo corrupt or down break safety hook
@@ -139,7 +142,7 @@ export default function Sidebar() {
               ) : null}
 
               {/* CENTER CAPITAL INITIAL FALLBACK: Jab photo nahi hai to naam ka pehla akshar dikhega */}
-              <div 
+              <div
                 style={{ display: profile.picture_url ? 'none' : 'flex' }}
                 className="w-full h-full items-center justify-center text-orange-500 font-bold text-2xl select-none"
               >
@@ -147,7 +150,7 @@ export default function Sidebar() {
               </div>
             </div>
           </div>
-          
+
           <h3 className="mt-4 font-bold text-lg text-center truncate w-full px-2">
             {profile.user_name}
           </h3>
@@ -165,7 +168,7 @@ export default function Sidebar() {
                 key={item.path}
                 to={item.path}
                 end={item.path === "/billing"}
-                onClick={() => setIsOpen(false)}
+                OnClick={() => setIsOpen(false)}
                 className={({ isActive }) =>
                   `flex items-center gap-3 p-3 rounded-md transition-all ${isActive
                     ? "bg-white text-[#4F6EEA] shadow-md"

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { NavLink, useLocation, Link } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { NavLink, Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
@@ -7,58 +7,109 @@ import {
   FileText,
   Menu,
   X,
-  ChevronDown,
+  User,
 } from "lucide-react";
-import logo from "../../assets/images/logo.png";
+
+import Dashboardlogo from "../../assets/images/Dashboardlogo.png";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  const dropdownRef = useRef(null);
   const location = useLocation();
 
-  // Logic to determine if we are on the Prescription page
-  const isPrescriptionPage = location.pathname === "/doctor/add-prescription";
+    const handleLogout = () => {
+    sessionStorage.clear();
+    localStorage.clear();
 
-  const hideLogoPaths = ["/doctor/dashboard", "/doctor/patient", "/doctor/upcoming"];
+    if (typeof setAuth === "function") {
+      setAuth(false);
+    }
+
+    window.location.href = "/login";
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
+        setProfileOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const isPrescriptionPage =
+    location.pathname === "/doctor/add-prescription";
+
+  const hideLogoPaths = [
+    "/doctor/dashboard",
+    "/doctor/patient",
+    "/doctor/upcoming",
+  ];
+
   const showLogo = !hideLogoPaths.includes(location.pathname);
 
   const navLinks = [
-    { name: "Dashboard", icon: <LayoutDashboard size={20} />, path: "/doctor/dashboard" },
-    { name: "Patients", icon: <Users size={20} />, path: "/doctor/patient" },
-    { name: "Upcoming", icon: <Calendar size={20} />, path: "/doctor/upcoming" },
-    { name: "Prescription", icon: <FileText size={20} />, path: "/doctor/add-prescription" },
+    {
+      name: "Dashboard",
+      icon: <LayoutDashboard size={20} />,
+      path: "/doctor/dashboard",
+    },
+    {
+      name: "Patients",
+      icon: <Users size={20} />,
+      path: "/doctor/patient",
+    },
+    {
+      name: "Upcoming",
+      icon: <Calendar size={20} />,
+      path: "/doctor/upcoming",
+    },
+    {
+      name: "Prescription",
+      icon: <FileText size={20} />,
+      path: "/doctor/add-prescription",
+    },
   ];
 
-
-  const responsiveVisibility = !isPrescriptionPage ? "hidden lg:flex" : "flex";
+  const responsiveVisibility = !isPrescriptionPage
+    ? "hidden lg:flex"
+    : "flex";
 
   return (
-    <nav className="sticky top-0 w-full bg-white/80 backdrop-blur-xl border-b border-slate-100 shadow-sm">
-      <div className="mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        
-   
+    <nav className="sticky top-0 z-50 w-full bg-white border-b shadow-sm">
+      <div className="h-16 px-4 sm:px-6 flex items-center justify-between">
+        {/* Logo */}
         <div className={`w-48 ${responsiveVisibility} items-center`}>
           {showLogo && (
-            <div className="flex items-center gap-3">
-              <img
-                src={logo}
-                alt="HMS Logo"
-                className="h-9 w-auto hover:opacity-80 transition cursor-pointer"
-              />
-            </div>
+            <img
+              src={Dashboardlogo}
+              alt="Logo"
+              className="h-9 w-auto cursor-pointer"
+            />
           )}
         </div>
 
-        {/* CENTER: Desktop Navigation (Always visible on Desktop) */}
-        <div className="hidden lg:flex items-center gap-4 justify-center">
+        {/* Desktop Navigation */}
+        <div className="hidden lg:flex items-center gap-3">
           {navLinks.map((link) => (
             <NavLink
               key={link.name}
               to={link.path}
               className={({ isActive }) =>
-                `w-full flex items-center gap-3 mx-2 px-4 py-3 rounded-md text-sm font-semibold transition ${
-                  isActive
-                    ? "bg-orange-500 text-white"
-                    : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-100"
+                `flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold transition ${isActive
+                  ? "bg-orange-500 text-white"
+                  : "bg-white border text-gray-700 hover:bg-gray-50"
                 }`
               }
             >
@@ -67,48 +118,114 @@ const Navbar = () => {
             </NavLink>
           ))}
         </div>
-    <div className="flex-1 flex items-center justify-end gap-3">
+
+        {/* Right Side */}
+        <div className="flex items-center gap-1">
+          {/* Profile */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setProfileOpen(!profileOpen)}
+              className="w-10 h-10 md:w-11 md:h-11 rounded-full bg-gradient-to-tr from-orange-400 to-orange-600 flex items-center justify-center border-2 border-white shadow-md"
+            >
+              <User className="text-white w-5 h-5" />
+            </button>
+
+            {profileOpen && (
+              <div className="absolute right-0 mt-3 w-52 bg-white border rounded-md shadow-xl z-50 overflow-hidden">
+                {/* User */}
+                <div className="px-3 py-2 border-b bg-gray-50">
+                  <p className="text-xs text-gray-500">Logged in as</p>
+                  <p className="font-semibold text-gray-800">
+                    Doctor Name
+                  </p>
+                </div>
 
 
-       
-        <div className={`${responsiveVisibility} ite items-center gap-2 bg-slate-50 px-2 py-1.5 rounded-full border border-slate-100 hover:border-orange-200 cursor-pointer transition group`}>
-          <img
-            src="https://ui-avatars.com/api/?name=Doc+User&background=334155&color=fff"
-            alt="Avatar"
-            className="w-8 h-8 rounded-full object-cover shadow-sm group-hover:ring-2 group-hover:ring-orange-300"
-          />
-          <div className="hidden sm:block leading-tight">
-            <p className="text-xs font-bold text-slate-800">Dr. Watson</p>
-            <p className="text-[10px] text-slate-400 font-semibold">Surgeon</p>
+                {/* Menu */}
+
+                <Link
+                  to="/doctor/profile"
+                  onClick={() => setProfileOpen(false)}
+                  className="block px-3 py-2 hover:bg-gray-100 text-sm"
+                >
+                  My Profile
+                </Link>
+
+                <Link
+                  to="/doctor/change-password"
+                  onClick={() => setProfileOpen(false)}
+                  className="block px-3 py-2 hover:bg-gray-100 text-sm"
+                >
+                  Change Password
+                </Link>
+
+
+                {/* Stats */}
+                <div className="px-4 py-3 border-b  space-y-2 hover:bg-red-50 text-black text-sm">
+                  <div className="flex justify-between">
+                    <span>Total</span>
+                    <span className="text-red-500 font-semibold">0</span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span>New</span>
+                    <span className="text-green-600 font-semibold">
+                      0/0
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span>Old</span>
+                    <span className="text-orange-500 font-semibold">
+                      0/0
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span>Cancel</span>
+                    <span className="text-red-500 font-semibold">0</span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span>Review</span>
+                    <span className="text-cyan-600 font-semibold">0</span>
+                  </div>
+                </div>
+
+                <p
+                  className="px-3 py-2 text-sm hover:bg-orange-50 cursor-pointer text-red-600 font-semibold border-t border-gray-100 transition-colors"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </p>
+              </div>
+            )}
           </div>
-          <ChevronDown size={14} className="text-slate-400 group-hover:text-orange-500" />
-        </div>
-            </div>
 
-    
-        {isPrescriptionPage && (
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-2 rounded-lg hover:bg-slate-100 transition"
-          >
-            {isOpen ? <X size={26} /> : <Menu size={26} />}
-          </button>
-        )}
+          {/* Mobile Menu */}
+          {isPrescriptionPage && (
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="lg:hidden p-2 rounded-lg hover:bg-gray-100"
+            >
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* MOBILE DRAWER: Only logic for Prescription page */}
+      {/* Mobile Drawer */}
       {isOpen && isPrescriptionPage && (
-        <div className="lg:hidden bg-white border-t border-slate-100 shadow-xl px-4 py-4 space-y-2">
+        <div className="lg:hidden border-t bg-white p-4 space-y-2">
           {navLinks.map((link) => (
             <NavLink
               key={link.name}
               to={link.path}
               onClick={() => setIsOpen(false)}
               className={({ isActive }) =>
-                `w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition ${
-                  isActive
-                    ? "bg-orange-50 text-orange-600"
-                    : "text-slate-600 hover:bg-slate-50"
+                `flex items-center gap-3 px-4 py-3 rounded-lg text-sm ${isActive
+                  ? "bg-orange-100 text-orange-600"
+                  : "hover:bg-gray-100 text-gray-700"
                 }`
               }
             >

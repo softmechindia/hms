@@ -1,6 +1,8 @@
 import { proxyApiRequest } from "../apiglobal/apiProxy";
 
 
+//================Billing API===============//
+ 
 //  LOGIN FUNCTION
 export const loginUser = async (UserID, Password) => {
     const loginData = { user_id: UserID, password: Password };
@@ -133,3 +135,23 @@ export const updateProfile = (payload) => {
     return proxyApiRequest("/updateProfile", "POST",payload);
 };
 
+
+
+//================Doctor API===============//
+
+
+export const DoctorChangePassword = (payload) => {
+    return proxyApiRequest("/changePassword", "POST", payload);
+};
+
+export const DoctorMyProfile = (payload) => {
+    return proxyApiRequest("/getMyProfile","POST", payload);
+};
+
+export const doctorupdateProfileImage = (payload) => {
+    return proxyApiRequest("/updateProfileImage", "POST", payload);
+};
+
+export const DoctorupdateProfile = (payload) => {
+    return proxyApiRequest("/updateProfile", "POST",payload);
+};

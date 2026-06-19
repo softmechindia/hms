@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 
 function Collections() {
-  
+
   // Helper to extract system local ISO Date dynamically
   const getLiveDateString = () => {
     const today = new Date();
@@ -70,7 +70,7 @@ function Collections() {
     try {
       const res = await getCollections(payload);
       console.log("[DEBUG] Raw API Response:", res);
-      
+
       let rawRecords = [];
       if (res && Array.isArray(res.data)) {
         rawRecords = res.data;
@@ -103,11 +103,11 @@ function Collections() {
   }, []);
 
 
-useEffect(() => {
+  useEffect(() => {
 
-  fetchCollectionsDataset(currentLiveDate, currentLiveDate); 
-  fetchDoctorsData();
-}, [fetchCollectionsDataset, fetchDoctorsData, currentLiveDate]);
+    fetchCollectionsDataset(currentLiveDate, currentLiveDate);
+    fetchDoctorsData();
+  }, [fetchCollectionsDataset, fetchDoctorsData, currentLiveDate]);
 
   // 3. Form Submission Handler
   const handleSearch = (e) => {
@@ -127,7 +127,7 @@ useEffect(() => {
   const filteredData = useMemo(() => {
     if (!appointments || appointments.length === 0) return [];
     if (searchClickedDoctor === "All Doctor") return appointments;
-    
+
     return appointments.filter((item) => {
       const docName = item.doctor_name || "";
       return docName.toLowerCase().trim() === searchClickedDoctor.toLowerCase().trim();
@@ -159,20 +159,20 @@ useEffect(() => {
       selector: (row) => row.doctor_name,
       cell: (row) => <span className="font-semibold text-gray-600">{row.doctor_name || "N/A"}</span>
     },
-{
-  name: "DATE & TIME",
-  selector: (row) => row.created_date, 
-  cell: (row) => (
-    <div className="py-2">
-  
-      <div className="font-bold text-xs text-gray-800">
-        {row.created_date || "N/A"}
-      </div>
-      
-   
-    </div>
-  )
-},
+    {
+      name: "DATE & TIME",
+      selector: (row) => row.created_date,
+      cell: (row) => (
+        <div className="py-2">
+
+          <div className="font-bold text-xs text-gray-800">
+            {row.created_date || "N/A"}
+          </div>
+
+
+        </div>
+      )
+    },
     {
       name: "AMOUNT",
       selector: (row) => row.grand_total,
@@ -212,10 +212,13 @@ useEffect(() => {
   };
 
   return (
-   <div className="w-full min-h-screen p-4">
-      
+    <div className="w-full min-h-screen">
+
       {/* FILTER SECTION */}
-      <form onSubmit={handleSearch} className="bg-white p-4 rounded-md border border-gray-200 flex flex-col md:flex-row gap-4 items-end">
+      <form
+        onSubmit={handleSearch}
+        className="bg-white p-4 rounded-md border border-gray-200 grid grid-cols-1 md:grid-cols-4 gap-4 items-end"
+      >
         <div className="flex-1 w-full">
           <label className="block text-xs text-gray-500 mb-1 font-semibold">From Date</label>
           <div className="relative">
@@ -271,7 +274,7 @@ useEffect(() => {
       {/* KPI METRICS VIEW AREA */}
       <div className="mt-4">
         <div className="bg-white p-4 rounded-sm border border-gray-200 flex flex-col md:flex-row items-center justify-between gap-4">
-          
+
           {/* Total Collections */}
           <div className="flex items-center gap-4 w-full">
             <div className="w-14 h-14 rounded-xl bg-purple-100 flex items-center justify-center">

@@ -18,7 +18,7 @@ const customStyles = {
       fontWeight: "800",
       fontSize: "12px",
       color: "#ffffff",
-     
+
     },
   },
   pagination: {
@@ -72,47 +72,58 @@ function PatientSearch() {
   const [filteredData, setFilteredData] = useState(initialData);
 
   return (
-      <div className="w-full h-[100vh]    overflow-hidden ">
-       <div className=" bg-white rounded-md shadow-sm border border-gray-200 p-6">  
-      <h1 className="text-xl font-black font-roboto text-gray-800 mb-6 tracking-tight uppercase text-center md:text-left">
 
-        Patient Details
-      </h1>
-    
-    {/* Search & Filter */}
-      <div className="p-4 mb-6 bg-white  shadow-sm border border-gray-100 flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-4">
-        <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center w-full sm:w-auto">
-          <label className="font-bold text-gray-800">Search</label>
-          <input
-            type="text"
-            placeholder="Patient ID/Mobile/Name"
-            className="border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-orange-400 w-full sm:w-64"
-          />
+
+    <div className="w-full min-h-screen p-4 bg-white ">
+
+      <div className="max-w-6xl mx-auto">
+   
+
+        <div className="p-4 mb-6 bg-white shadow-sm border border-gray-100 rounded-md flex flex-wrap items-center justify-between gap-4">
+
+          {/* Grouping the input and date pickers together on the left */}
+          <div className="flex flex-wrap items-center gap-6">
+            {/* Search Input */}
+            <input
+              type="text"
+              placeholder="Search Patient ID/Mobile/Name"
+              className="border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-orange-400 w-full sm:w-64"
+            />
+
+            {/* From Date */}
+            <div className="flex items-center gap-2">
+              <label className="text-gray-700 font-medium whitespace-nowrap">From Date</label>
+              <input
+                type="date"
+                defaultValue="2026-01-26"
+                className="border border-gray-300 px-3 py-2 rounded focus:outline-none text-gray-600"
+              />
+            </div>
+
+            {/* To Date */}
+            <div className="flex items-center gap-2">
+              <label className="text-gray-700 font-medium whitespace-nowrap">To Date</label>
+              <input
+                type="date"
+                defaultValue="2026-02-25"
+                className="border border-gray-300 px-3 py-2 rounded focus:outline-none text-gray-600"
+              />
+            </div>
+          </div>
+
+          {/* Search Button sits naturally on the right because of justify-between */}
+          <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded flex items-center gap-2 transition-colors font-medium">
+            <Search size={18} /> Search
+          </button>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center w-full sm:w-auto">
-          <label className="text-gray-700">From Date</label>
-          <input
-            type="date"
-            defaultValue="2026-01-26"
-            className="border border-gray-300 px-3 py-2 rounded focus:outline-none text-gray-600"
-          />
-        </div>
 
-        <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center w-full sm:w-auto">
-          <label className="text-gray-700">To Date</label>
-          <input
-            type="date"
-            defaultValue="2026-02-25"
-            className="border border-gray-300 px-3 py-2 rounded focus:outline-none text-gray-600"
-          />
-        </div>
 
-        <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded flex items-center gap-2 transition-colors font-medium">
-          <Search size={18} /> Search
-        </button>
-   </div>
-         </div>
+
+
+
+
+      </div>
       {/* Desktop DataTable */}
       <div className="hidden md:block">
         <DataTable

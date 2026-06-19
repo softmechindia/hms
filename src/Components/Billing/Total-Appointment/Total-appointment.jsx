@@ -127,7 +127,7 @@ function Totalapp() {
     {
       name: "PATIENT",
       selector: (row) => row.patient_name,
-       cell: (row) => <span className="font-semibold text-gray-600 text-xs">{row.patient_name || "N/A"}</span>,
+      cell: (row) => <span className="font-semibold text-gray-600 text-xs">{row.patient_name || "N/A"}</span>,
     },
     {
       name: "DOCTOR",
@@ -184,8 +184,12 @@ function Totalapp() {
   };
 
   return (
-    <div className="w-full min-h-screen p-1">
-      <form onSubmit={handleSearch} className="bg-white p-4 rounded-md border border-gray-200 flex flex-col md:flex-row gap-4 items-end">
+    <div className=" min-h-screen ">
+      <form
+        onSubmit={handleSearch}
+        className="bg-white p-4 rounded-md border border-gray-200 grid grid-cols-1 md:grid-cols-4 gap-4 items-end"
+      >
+
         <div className="flex-1 w-full">
           <label className="block text-xs text-gray-500 mb-1 font-semibold">From Date</label>
           <div className="relative">
