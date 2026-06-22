@@ -12,14 +12,14 @@ import {
 
 import Dashboardlogo from "../../assets/images/Dashboardlogo.png";
 
-const Navbar = () => {
+const Navbar = ({ setAuth }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
 
   const dropdownRef = useRef(null);
   const location = useLocation();
 
-    const handleLogout = () => {
+  const handleLogout = () => {
     sessionStorage.clear();
     localStorage.clear();
 
@@ -42,14 +42,12 @@ const Navbar = () => {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
-  const isPrescriptionPage =
-    location.pathname === "/doctor/add-prescription";
+  const isPrescriptionPage = location.pathname === "/doctor/add-prescription";
 
   const hideLogoPaths = [
     "/doctor/dashboard",
@@ -62,170 +60,162 @@ const Navbar = () => {
   const navLinks = [
     {
       name: "Dashboard",
-      icon: <LayoutDashboard size={20} />,
+      icon: <LayoutDashboard size={18} />,
       path: "/doctor/dashboard",
     },
     {
       name: "Patients",
-      icon: <Users size={20} />,
+      icon: <Users size={18} />,
       path: "/doctor/patient",
     },
     {
       name: "Upcoming",
-      icon: <Calendar size={20} />,
+      icon: <Calendar size={18} />,
       path: "/doctor/upcoming",
     },
     {
       name: "Prescription",
-      icon: <FileText size={20} />,
+      icon: <FileText size={18} />,
       path: "/doctor/add-prescription",
     },
   ];
 
-  const responsiveVisibility = !isPrescriptionPage
-    ? "hidden lg:flex"
-    : "flex";
-
   return (
     <nav className="sticky top-0 z-50 w-full bg-white border-b shadow-sm">
-      <div className="h-16 px-4 sm:px-6 flex items-center justify-between">
-        {/* Logo */}
-        <div className={`w-48 ${responsiveVisibility} items-center`}>
-          {showLogo && (
-            <img
-              src={Dashboardlogo}
-              alt="Logo"
-              className="h-9 w-auto cursor-pointer"
-            />
-          )}
-        </div>
+  
+      <div className="max-w-7xl mx-auto h-16 px-4 md:px-6 lg:px-8 flex items-center justify-between">
+        
+        {/* Left Side: Logo */}
+        {showLogo && (
+          <div className={`items-center shrink-0 md:ml-0 lg:-ml-10 ${isPrescriptionPage ? "flex" : "hidden md:flex"}`}>
+            <Link to="/doctor/dashboard" className="block py-1">
+              <img
+                src={Dashboardlogo}
+                alt="Logo"
+                className="h-8 md:h-9 w-auto object-contain block"
+              />
+            </Link>
+          </div>
+        )}
 
-        {/* Desktop Navigation */}
-        <div className="hidden lg:flex items-center gap-3">
+      
+        <div className="hidden md:flex items-center gap-2 lg:gap-6 xl:gap-8">
           {navLinks.map((link) => (
             <NavLink
               key={link.name}
               to={link.path}
               className={({ isActive }) =>
-                `flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold transition ${isActive
-                  ? "bg-orange-500 text-white"
-                  : "bg-white border text-gray-700 hover:bg-gray-50"
+                `flex items-center gap-1.5 px-2.5 py-2 lg:px-4 rounded-md text-xs lg:text-sm font-semibold transition-all ${
+                  isActive
+                    ? "bg-orange-500 text-white shadow-sm"
+                    : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
                 }`
               }
             >
               {link.icon}
-              {link.name}
+              <span>{link.name}</span>
             </NavLink>
           ))}
         </div>
 
-        {/* Right Side */}
-        <div className="flex items-center gap-1">
-          {/* Profile */}
-          <div className="relative" ref={dropdownRef}>
+        {/* Right Side: Profile & Mobile Toggle */}
+        <div className="flex items-center gap-2 md:gap-3">
+          
+          {/* Profile Dropdown */}
+          <div className="relative py-1" ref={dropdownRef}>
             <button
               onClick={() => setProfileOpen(!profileOpen)}
-              className="w-10 h-10 md:w-11 md:h-11 rounded-full bg-gradient-to-tr from-orange-400 to-orange-600 flex items-center justify-center border-2 border-white shadow-md"
+              className="w-9 h-9 md:w-10 md:h-10 lg:-mr-10 md:-mr-1.5 rounded-full bg-gradient-to-tr from-orange-400 to-orange-600 flex items-center justify-center border-2 border-white shadow-md hover:scale-105 transition-transform"
             >
-              <User className="text-white w-5 h-5" />
+              <User className="text-white w-4 h-4" />
             </button>
 
             {profileOpen && (
-              <div className="absolute right-0 mt-3 w-52 bg-white border rounded-md shadow-xl z-50 overflow-hidden">
-                {/* User */}
-                <div className="px-3 py-2 border-b bg-gray-50">
-                  <p className="text-xs text-gray-500">Logged in as</p>
-                  <p className="font-semibold text-gray-800">
-                    Doctor Name
-                  </p>
+              <div className="absolute right-0 mt-3 w-56 bg-white border border-gray-100 rounded-lg shadow-xl z-50 overflow-hidden ring-1 ring-black ring-opacity-5">
+                {/* User info */}
+                <div className="px-4 py-2.5 border-b bg-gray-50/70">
+                  <p className="text-[11px] font-medium uppercase tracking-wider text-gray-400">Logged in as</p>
+                  <p className="font-semibold text-gray-800 text-sm truncate">Doctor Name</p>
                 </div>
 
+                {/* Profile Links */}
+                <div className="py-1">
+                  <Link
+                    to="/doctor/profile"
+                    onClick={() => setProfileOpen(false)}
+                    className="block px-4 py-2 hover:bg-gray-50 text-sm text-gray-700 transition-colors"
+                  >
+                    My Profile
+                  </Link>
+                  <Link
+                    to="/doctor/change-password"
+                    onClick={() => setProfileOpen(false)}
+                    className="block px-4 py-2 hover:bg-gray-50 text-sm text-gray-700 transition-colors"
+                  >
+                    Change Password
+                  </Link>
+                </div>
 
-                {/* Menu */}
-
-                <Link
-                  to="/doctor/profile"
-                  onClick={() => setProfileOpen(false)}
-                  className="block px-3 py-2 hover:bg-gray-100 text-sm"
-                >
-                  My Profile
-                </Link>
-
-                <Link
-                  to="/doctor/change-password"
-                  onClick={() => setProfileOpen(false)}
-                  className="block px-3 py-2 hover:bg-gray-100 text-sm"
-                >
-                  Change Password
-                </Link>
-
-
-                {/* Stats */}
-                <div className="px-4 py-3 border-b  space-y-2 hover:bg-red-50 text-black text-sm">
-                  <div className="flex justify-between">
-                    <span>Total</span>
-                    <span className="text-red-500 font-semibold">0</span>
+                {/* Stats Grid */}
+                <div className="px-4 py-3 border-t border-b border-gray-100 bg-gray-50/30 space-y-2 text-xs text-gray-600">
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium">Total</span>
+                    <span className="text-red-500 font-bold bg-red-50 px-1.5 py-0.5 rounded">0</span>
                   </div>
-
-                  <div className="flex justify-between">
-                    <span>New</span>
-                    <span className="text-green-600 font-semibold">
-                      0/0
-                    </span>
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium">New</span>
+                    <span className="text-green-600 font-bold bg-green-50 px-1.5 py-0.5 rounded">0/0</span>
                   </div>
-
-                  <div className="flex justify-between">
-                    <span>Old</span>
-                    <span className="text-orange-500 font-semibold">
-                      0/0
-                    </span>
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium">Old</span>
+                    <span className="text-orange-500 font-bold bg-orange-50 px-1.5 py-0.5 rounded">0/0</span>
                   </div>
-
-                  <div className="flex justify-between">
-                    <span>Cancel</span>
-                    <span className="text-red-500 font-semibold">0</span>
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium">Cancel</span>
+                    <span className="text-red-500 font-bold bg-red-50 px-1.5 py-0.5 rounded">0</span>
                   </div>
-
-                  <div className="flex justify-between">
-                    <span>Review</span>
-                    <span className="text-cyan-600 font-semibold">0</span>
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium">Review</span>
+                    <span className="text-cyan-600 font-bold bg-cyan-50 px-1.5 py-0.5 rounded">0</span>
                   </div>
                 </div>
 
-                <p
-                  className="px-3 py-2 text-sm hover:bg-orange-50 cursor-pointer text-red-600 font-semibold border-t border-gray-100 transition-colors"
+                {/* Action */}
+                <button
+                  className="w-full text-left px-4 py-2.5 text-sm hover:bg-red-50 cursor-pointer text-red-600 font-semibold transition-colors"
                   onClick={handleLogout}
                 >
                   Logout
-                </p>
+                </button>
               </div>
             )}
           </div>
 
-          {/* Mobile Menu */}
-          {isPrescriptionPage && (
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="lg:hidden p-2 rounded-lg hover:bg-gray-100"
-            >
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          )}
+          {/* Hamburger Menu Icon (Visible on mobile/tablet screens when rules require it) */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+            aria-label="Toggle navigation menu"
+          >
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+
         </div>
       </div>
 
-      {/* Mobile Drawer */}
-      {isOpen && isPrescriptionPage && (
-        <div className="lg:hidden border-t bg-white p-4 space-y-2">
+      {/* Mobile & Small Tablet Drawer Navigation */}
+      {isOpen && (
+        <div className="md:hidden border-t border-gray-100 bg-white px-4 py-3 space-y-1.5 shadow-inner">
           {navLinks.map((link) => (
             <NavLink
               key={link.name}
               to={link.path}
               onClick={() => setIsOpen(false)}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-lg text-sm ${isActive
-                  ? "bg-orange-100 text-orange-600"
-                  : "hover:bg-gray-100 text-gray-700"
+                `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                  isActive
+                    ? "bg-orange-50 text-orange-600 font-semibold"
+                    : "hover:bg-gray-50 text-gray-700"
                 }`
               }
             >

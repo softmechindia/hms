@@ -4,14 +4,21 @@ import { Search } from "lucide-react";
 function DoctorHeader() {
   return (
     <div className="w-full">
+      {/* 
+        Removed hidden mobile classes. 
+        Using flex-row and min-w structural layouts ensures it preserves the desktop layout even on smaller screens.
+      */}
+      <div className="bg-[#4F6EEA] h-12 rounded-t-sm flex items-center shadow-sm px-4">
+        <div className="flex w-full items-center justify-between gap-5">
+          
+          {/* Spacer that pushes the search box to the right side */}
+          <div className="flex-grow"></div>
 
-      <div className="bg-gradient-to-r from-[#4F6EEA] to-[#6FA8FF] h-12 rounded-t-sm flex items-center px-6 shadow-sm">
-
-        <div className="flex w-full items-center justify-between lg:gap-6">
-
-          <div className="hidden lg:block lg:flex-grow"></div>
-
-          <div className="w-full lg:w-[calc(22%-24px)] min-w-[340px] flex items-center">
+          {/* 
+            Search box: Replaced 'lg:w-[calc(22%-24px)]' with a constant width/max-width.
+            Using 340px ensures it exactly matches the width of your right-side patient queue table from image_708c85.png.
+          */}
+          <div className="w-[340px] flex items-center">
             <div className="flex items-center bg-white border border-slate-200 rounded-sm shadow-sm px-3 py-1.5 w-full">
               <Search size={18} className="text-slate-400 mr-2 flex-shrink-0" />
               <input

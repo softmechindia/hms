@@ -37,8 +37,8 @@ export default function TopHeader({ toggleSidebar, title }) {
       </div>
 
       {/* Right Side: Profile */}
-      <div className="flex items-center gap-4">
-        <div className="relative" ref={dropdownRef}>
+      <div className="flex items-center gap-4 ">
+        <div className="relative mr-12" ref={dropdownRef}>
           <button
             onClick={() => setProfileOpen(!profileOpen)}
             className="w-10 h-10 rounded-full bg-gradient-to-tr from-orange-400 to-orange-600 flex items-center justify-center border-2 border-white shadow-md"

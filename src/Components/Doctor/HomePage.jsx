@@ -17,7 +17,7 @@ function HomePage() {
 
 
       <div className="">
-        <div className="flex flex-col lg:flex-row">
+        <div className="flex flex-col lg:flex-row   ">
 
           <div className="w-full lg:w-[78%]">
             <Form />

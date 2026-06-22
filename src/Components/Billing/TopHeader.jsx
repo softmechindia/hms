@@ -66,7 +66,7 @@ const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     sessionStorage.clear();
     localStorage.clear();
 
-    if(typeof setAuth === "function"){x`  `
+    if(typeof setAuth === "function"){x` `
       setAuth(false);
     }
 

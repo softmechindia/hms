@@ -300,7 +300,7 @@ function Form() {
       setHasTodayAppointment(false);
     }
 
-    if (value.length < 3) {
+    if (value.length < 2 ) {
       setSearchResults([]);
       setShowSearchDropdown(false);
       return;
@@ -562,8 +562,7 @@ function Form() {
       (doc) => doc.userID === selectedDoctorId
     );
 
-    // 2. Extract their fees dynamically. Adjust 'doc.fees' or 'doc.consulting_fees' 
-    // based on your exact API key structure.
+
     const fetchedFees = selectedDoctorObj?.fees || selectedDoctorObj?.consulting_fees || "0";
 
     // 3. Clear errors related to doctor field if present

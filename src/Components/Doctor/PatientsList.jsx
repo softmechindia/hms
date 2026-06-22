@@ -75,7 +75,7 @@ function PatientList() {
   );
 
   return (
-    <div className="p-4"> 
+    <div className="w-full mt-4  px-4 md:px-6 lg:px-0 lg:pr-4 box-border">
    
         <Table />
  
