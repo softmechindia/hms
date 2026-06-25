@@ -1,16 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import logo from "../../../assets/images/logo.png";
-import { Calendar, FileText, LayoutDashboard, LogOut, Users, Menu, X } from "lucide-react";
-import { FaKey, FaUser } from "react-icons/fa";
+import { Calendar, FileText, LayoutDashboard, Users, Menu, X } from "lucide-react";
+import { FaUser } from "react-icons/fa";
 
-function Sidebar() {
+// ACCEPT PROPS FROM PARENT LAYOUT
+function Sidebar({ isOpen, setIsOpen }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const [isOpen, setIsOpen] = useState(false);
-
-
-
 
   const menu = [
     { label: "Dashboard", icon: <LayoutDashboard size={20} />, path: "/doctor/dashboard" },
@@ -18,8 +15,6 @@ function Sidebar() {
     { label: "Upcoming", icon: <Calendar size={20} />, path: "/doctor/upcoming" },
     { label: "Prescription", icon: <FileText size={20} />, path: "/doctor/add-prescription" },
     { label: "My Patient", icon: <FaUser size={20} />, path: "/my-patient" },
-
-
   ];
 
   const currentPage = menu.find(item => item.path === location.pathname)?.label || "HMS";
@@ -28,7 +23,6 @@ function Sidebar() {
     <>
       {/* --- MOBILE TOP BAR --- */}
       <div className="lg:hidden fixed top-0 right-0 left-0 h-16 bg-[#4F6EEA] flex items-center justify-between px-4 z-[50] shadow-md">
-
         <div className="flex items-center gap-3">
           <button
             onClick={() => setIsOpen(true)}
@@ -44,11 +38,15 @@ function Sidebar() {
       </div>
 
       {/* --- SIDEBAR MAIN --- */}
+      {/* Updated conditional classes: handles hidden state cleanly for both Desktop & Mobile */}
       <div className={`
         fixed lg:static inset-y-0 left-0 z-50
-        w-64 min-h-screen bg-[#082cbb] text-white p-4 flex flex-col
-        transition-transform duration-300 ease-in-out
-        ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+        min-h-screen bg-[#082cbb] text-white flex flex-col
+        transition-all duration-300 ease-in-out
+        ${isOpen 
+          ? "w-64 p-4 translate-x-0" 
+          : "w-0 p-0 overflow-hidden -translate-x-full lg:translate-x-0 lg:w-0 lg:p-0"
+        }
       `}>
 
         {/* Mobile Close Button */}
@@ -59,45 +57,51 @@ function Sidebar() {
           <X size={24} />
         </button>
 
-        <div className="flex justify-center items-center gap-3 mt-2">
-          <img
-            src={logo}
-            alt="HMS Logo"
-            className="h-9 w-auto hover:opacity-80 transition cursor-pointer"
-            onClick={() => navigate("/doctor/dashboard")}
-          />
-        </div>
+        {/* Sidebar Content (Wrapped in visibility protection for clean collapses) */}
+        <div className={`${isOpen ? "opacity-100 block" : "opacity-0 hidden"} transition-opacity duration-200 flex flex-col h-full w-full`}>
+          <div className="flex justify-center items-center gap-3 mt-2">
+            <img
+              src={logo}
+              alt="HMS Logo"
+              className="h-9 w-auto hover:opacity-80 transition cursor-pointer"
+              onClick={() => navigate("/doctor/dashboard")}
+            />
+          </div>
 
-        <div className="flex flex-col items-center mt-6">
-          <div className="relative mb-2">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-orange-500 to-amber-300 p-0.5">
-              <div className="w-full h-full rounded-full bg-[#111827] flex items-center justify-center">
-                <FaUser size={24} className="text-orange-500" />
+          <div className="flex flex-col items-center mt-6">
+            <div className="relative mb-2">
+              <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-orange-500 to-amber-300 p-0.5">
+                <div className="w-full h-full rounded-full bg-[#111827] flex items-center justify-center">
+                  <FaUser size={24} className="text-orange-500" />
+                </div>
               </div>
             </div>
+            <span className="text-white font-semibold">Dr. John Doe</span>
+            <span className="text-white/70 text-sm">Cardiologist</span>
           </div>
-          <span className="text-white font-semibold">Dr. John Doe</span>
-          <span className="text-white/70 text-sm">Cardiologist</span>
-        </div>
 
-        <nav className="flex-1 mt-8 space-y-2 overflow-y-auto">
-          {menu.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              onClick={() => setIsOpen(false)}
-              className={({ isActive }) =>
-                `flex items-center gap-3 p-3 rounded-md transition-all ${isActive
-                  ? "bg-white text-[#4F6EEA] shadow-md border-l-4 border-white"
-                  : "text-white hover:bg-white/10"
-                }`
-              }
-            >
-              {item.icon}
-              <span className="text-sm font-medium">{item.label}</span>
-            </NavLink>
-          ))}
-        </nav>
+          <nav className="flex-1 mt-8 space-y-2 overflow-y-auto">
+            {menu.map((item) => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                onClick={() => {
+                  // Only auto-close on mobile screens when a link is clicked
+                  if (window.innerWidth < 1024) setIsOpen(false);
+                }}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 p-3 rounded-md transition-all ${isActive
+                    ? "bg-white text-[#4F6EEA] shadow-md border-l-4 border-white"
+                    : "text-white hover:bg-white/10"
+                  }`
+                }
+              >
+                {item.icon}
+                <span className="text-sm font-medium">{item.label}</span>
+              </NavLink>
+            ))}
+          </nav>
+        </div>
       </div>
 
       {/* --- OVERLAY --- */}

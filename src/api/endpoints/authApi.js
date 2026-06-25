@@ -139,7 +139,6 @@ export const updateProfile = (payload) => {
 
 //================Doctor API===============//
 
-
 export const DoctorChangePassword = (payload) => {
     return proxyApiRequest("/changePassword", "POST", payload);
 };
@@ -155,3 +154,8 @@ export const doctorupdateProfileImage = (payload) => {
 export const DoctorupdateProfile = (payload) => {
     return proxyApiRequest("/updateProfile", "POST",payload);
 };
+
+
+export const getCurrentAppointment = (payload) => {
+  return proxyApiRequest("/getCurrentAppointments", "POST", payload);
+};  

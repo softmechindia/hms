@@ -134,7 +134,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                   alt="Dynamic User Avatar"
                   className="w-full h-full object-cover rounded-full"
                   onError={(e) => {
-                    // Photo corrupt or down break safety hook
+                    
                     e.target.style.display = 'none';
                     e.target.nextSibling.style.display = 'flex';
                   }}

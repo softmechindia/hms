@@ -4,7 +4,7 @@ import { Menu, User, X } from "lucide-react";
 
 export default function TopHeader({ toggleSidebar, title }) {
   const [profileOpen, setProfileOpen] = useState(false);
-  const [isOpen, setIsOpen] = useState(false); // Mobile menu state
+  const [isOpen, setIsOpen] = useState(false); 
   const dropdownRef = useRef(null);
   const location = useLocation();
 
