@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { FaCalendarXmark } from "react-icons/fa6";
 import CancelAppointmentModal from "../Doctor/Popup/Cancel-appointment-popup";
 import { getCurrentAppointment } from "../../api/endpoints/authApi";
 
@@ -20,21 +21,18 @@ function PatientList({ doctorId = "DR0001" }) {
 
         console.log("--- RAW PROXY RESPONSE ---", response);
 
-        // Standardizing extraction from response.fullData or falling back directly to response
-        const apiData = response?.fullData || response; 
+        const apiData = response?.fullData || response;
 
-        // If the proxy's internal catch-block triggered, intercept it here
         if (response && response.status === false) {
           setPatients([]);
           setError(response.message || "Request failed");
           return;
         }
 
-        // Parse valid dataset matching your success response schema
         if (apiData && apiData.success === 1 && Array.isArray(apiData.data)) {
           const formattedPatients = apiData.data.map((item) => ({
             id: item.id,
-            name: item.patient_name,
+            name: item.patient_name, // Full Name mapped dynamically from backend
             visit: item.visit_time,
             time: item.appointment_time,
           }));
@@ -42,7 +40,8 @@ function PatientList({ doctorId = "DR0001" }) {
           setPatients(formattedPatients);
         } else {
           setPatients([]);
-          setError(apiData?.message || response?.message || "No appointments found.");
+          // Handles dynamic empty message: "No Current Appointment Found"
+          setError(apiData?.message || response?.message || "No Appointments Found");
         }
       } catch (err) {
         console.error("--- PatientList Component Catch Error ---", err);
@@ -57,7 +56,6 @@ function PatientList({ doctorId = "DR0001" }) {
     }
   }, [doctorId]);
 
-  // Remove patient state updater
   const removePatient = (id) => {
     setPatients((prevPatients) =>
       prevPatients.filter((patient) => patient.id !== id)
@@ -66,42 +64,67 @@ function PatientList({ doctorId = "DR0001" }) {
     setSelectedPatient(null);
   };
 
-  // Modal display router
   const openCancelModal = (patient) => {
     setSelectedPatient(patient);
     setShowCancelModal(true);
   };
 
-  // Cleaned up Table component view
+  // Sub-component Table View Layout
   const Table = () => (
-    <div className="bg-white rounded-md shadow-sm overflow-hidden">
-      <table className="w-full text-sm text-left">
-        <thead className="bg-gradient-to-r from-[#4F6EEA] to-[#6FA8FF] text-white text-xs">
-          <tr>
-            <th className="px-4 py-1 whitespace-nowrap">Name</th>
-            <th className="px-3 py-1 whitespace-nowrap">Visit</th>
-            <th className="px-3 py-1 whitespace-nowrap">Time</th>
-            <th className="px-3 py-1 whitespace-nowrap text-center">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {patients.map((patient) => (
-            <tr key={patient.id} className="border-b hover:bg-gray-50">
-              <td className="px-3 py-1 font-medium whitespace-nowrap">{patient.name}</td>
-              <td className="px-3 py-1 whitespace-nowrap">{patient.visit}</td>
-              <td className="px-3 py-1 whitespace-nowrap">{patient.time}</td>
-              <td className="px-3 py-1 text-center whitespace-nowrap">
-                <button
-                  onClick={() => openCancelModal(patient)}
-                  className="text-red-600 hover:text-red-800 font-bold text-lg"
-                >
-                  &times;
-                </button>
-              </td>
+    <div className="bg-white rounded-md shadow-sm overflow-hidden min-h-[500px] flex flex-col justify-between">
+      <div className="w-full overflow-x-auto">
+      <table className="w-full text-sm text-left table-auto">
+          <thead className="bg-gradient-to-r from-[#4F6EEA] to-[#6FA8FF] text-white text-xs sticky top-0">
+            <tr>
+              <th className="px-4 py-3 whitespace-nowrap w-1/4">Name</th>
+              <th className="px-3 py-3 whitespace-nowrap w-1/4">Visit</th>
+              <th className="px-3 py-3 whitespace-nowrap w-1/4">Time</th>
+              <th className="px-3 py-3 whitespace-nowrap text-center w-1/4">Action</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          {/* Table Body */}
+          {!loading && patients.length > 0 && (
+            <tbody>
+              {patients.map((patient) => (
+                <tr key={patient.id} className="border-b hover:bg-gray-50 gap-3">
+                  <td className="px-3 py-1 font-medium whitespace-nowrap">{patient.name}</td>
+                  <td className="px-3 py-1 whitespace-nowrap">{patient.visit}</td>
+                  <td className="px-3 py-1 whitespace-nowrap">{patient.time}</td>
+                  <td className="px-3 py-1 text-center whitespace-nowrap">
+                    <button
+                      onClick={() => openCancelModal(patient)}
+                      className="text-red-600 hover:text-red-800 font-bold text-lg"
+                    >
+                      &times;
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          )}
+        </table>
+      </div>
+
+      {/* 1. Loading UI Wrapper */}
+      {loading && (
+        <div className="flex-1 flex flex-col items-center justify-center py-20 text-gray-400 font-medium">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4F6EEA] mb-2"></div>
+          Loading appointments...
+        </div>
+      )}
+
+      {/* 2. Dynamic Center Empty/Error Screen */}
+      {!loading && (patients.length === 0 || error) && (
+        <div className="flex-1 flex flex-col items-center justify-center py-16 px-4">
+          <div className="bg-blue-50 p-6 rounded-full mb-4 flex items-center justify-center aspect-square shadow-sm">
+            <FaCalendarXmark className="text-[#6FA8FF] text-6xl" />
+          </div>
+          <h3 className="text-[#2C3E50] font-bold text-base tracking-wide text-center">
+            {error || "No Appointments Found"}
+          </h3>
+        </div>
+      )}
     </div>
   );
 
@@ -109,7 +132,6 @@ function PatientList({ doctorId = "DR0001" }) {
     <div className="w-full mt-4 px-4 md:px-6 lg:px-0 lg:pr-4 box-border">
       <Table />
 
-      {/* Rendered cleanly down here in the main return layout block */}
       <CancelAppointmentModal
         isOpen={showCancelModal}
         onClose={() => setShowCancelModal(false)}

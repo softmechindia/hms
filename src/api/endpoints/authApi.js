@@ -158,4 +158,16 @@ export const DoctorupdateProfile = (payload) => {
 
 export const getCurrentAppointment = (payload) => {
   return proxyApiRequest("/getCurrentAppointments", "POST", payload);
-};  
+}; 
+
+
+export const DoctorCancelAppointment = (payload) => {
+  return proxyApiRequest("/doctorCancelAppointment", "POST", payload);
+}; 
+
+
+
+
+export const GetCancelReasons = async () => {
+  return await proxyApiRequest("/getCancelReasons", "GET");
+};

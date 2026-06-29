@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   X,
   AlertTriangle,
@@ -6,6 +6,7 @@ import {
   Calendar,
   Clock,
 } from "lucide-react";
+import { GetCancelReasons } from "../../../api/endpoints/authApi";
 
 export default function CancelAppointmentModal({
   isOpen = false,
@@ -13,10 +14,36 @@ export default function CancelAppointmentModal({
   patient,
   removePatient,
 }) {
+  // 1. All Hooks are strictly at the top and will execute EVERY render
   const [reason, setReason] = useState("");
   const [additionalReason, setAdditionalReason] = useState("");
+  const [reasonsList, setReasonsList] = useState([]);
 
-  if (!isOpen) return null;
+useEffect(() => {
+    const fetchReasons = async () => {
+      if (!isOpen) return;
+
+      try {
+        console.log("🔥 API CALL STARTED");
+
+        const res = await GetCancelReasons();
+
+        console.log("RAW RESPONSE:", res);
+
+        // ✅ FINAL FIX (based on your screenshot)
+        const list = res?.fullData?.data || [];
+
+        console.log("FINAL EXTRACTED LIST:", list);
+
+        setReasonsList(list);
+      } catch (error) {
+        console.error("API ERROR:", error);
+        setReasonsList([]);
+      }
+    };
+
+    fetchReasons();
+  }, [isOpen]);
 
   const handleCancelSubmit = () => {
     if (!reason) return;
@@ -29,31 +56,36 @@ export default function CancelAppointmentModal({
     }
   };
 
+  if (!isOpen) return null;
+
+
+
+
+
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
-      {/* Modal */}
+      {/* Modal Container */}
       <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
+
         {/* Header */}
         <div className="flex items-start justify-between px-5 pt-5 pb-4 border-b border-gray-100">
           <div className="flex gap-3">
             <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
               <AlertTriangle size={20} className="text-red-500" />
             </div>
-
             <div>
               <h2 className="text-xl font-bold text-gray-900">
                 Cancel Appointment
               </h2>
-
               <p className="text-xs text-gray-500 mt-0.5">
                 Please confirm cancellation of this appointment.
               </p>
             </div>
           </div>
-
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition"
+            className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 transition"
           >
             <X size={18} />
           </button>
@@ -61,17 +93,16 @@ export default function CancelAppointmentModal({
 
         {/* Body */}
         <div className="p-5 space-y-4">
+
           {/* Patient Card */}
           <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
             <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center text-white">
               <User size={18} />
             </div>
-
             <div>
               <span className="text-[10px] uppercase font-semibold tracking-wide text-blue-600">
                 Patient Profile
               </span>
-
               <h3 className="font-semibold text-base text-gray-800">
                 {patient?.name || "Unknown Patient"}
               </h3>
@@ -81,14 +112,9 @@ export default function CancelAppointmentModal({
           {/* Time Cards */}
           <div className="grid grid-cols-2 gap-3">
             <div className="flex items-center gap-2 p-3 rounded-xl border border-gray-100 bg-slate-50">
-              <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm">
-                <Clock size={15} className="text-gray-500" />
-              </div>
-
+              <Clock size={15} className="text-gray-500" />
               <div>
-                <p className="text-[11px] text-gray-400">
-                  Visit Time
-                </p>
+                <p className="text-[11px] text-gray-400">Visit Time</p>
                 <p className="font-semibold text-sm text-gray-800">
                   {patient?.visit || "--:--"}
                 </p>
@@ -96,14 +122,9 @@ export default function CancelAppointmentModal({
             </div>
 
             <div className="flex items-center gap-2 p-3 rounded-xl border border-gray-100 bg-slate-50">
-              <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm">
-                <Calendar size={15} className="text-gray-500" />
-              </div>
-
+              <Calendar size={15} className="text-gray-500" />
               <div>
-                <p className="text-[11px] text-gray-400">
-                  Appt. Time
-                </p>
+                <p className="text-[11px] text-gray-400">Appt. Time</p>
                 <p className="font-semibold text-sm text-gray-800">
                   {patient?.time || "--:--"}
                 </p>
@@ -111,61 +132,39 @@ export default function CancelAppointmentModal({
             </div>
           </div>
 
-          {/* Cancellation Reason */}
+          {/* Cancellation Reason Dropdown */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Cancellation Reason{" "}
-              <span className="text-red-500">*</span>
+              Cancellation Reason <span className="text-red-500">*</span>
             </label>
-
             <div className="relative">
               <select
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                className="w-full h-11 px-4 border border-gray-200 rounded-xl text-sm text-gray-700 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 appearance-none"
+                className="w-full h-11 pl-4 pr-10 border border-gray-200 rounded-xl text-sm text-gray-700 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 cursor-pointer"
               >
-                <option value="">
-                  Select cancellation reason...
-                </option>
-                <option value="Patient Request">
-                  Patient Request
-                </option>
-                <option value="Doctor Unavailable">
-                  Doctor Unavailable
-                </option>
-                <option value="Emergency">
-                  Emergency
-                </option>
-                <option value="Other">Other</option>
+                <option value="">Select cancellation reason...</option>
+                {reasonsList && reasonsList.length > 0 ? (
+                  reasonsList.map((item) => (
+                    <option key={item.id} value={item.reason_name}>
+                      {item.reason_name}
+                    </option>
+                  ))
+                ) : (
+                  <option disabled value="">
+                    Loading reasons...
+                  </option>
+                )}
               </select>
-
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                <svg
-                  className="w-4 h-4 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </div>
             </div>
           </div>
 
-          {/* Additional Reason */}
+          {/* Additional Reason Textarea */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Additional Reason{" "}
-              <span className="text-gray-400 font-normal">
-                (Optional)
-              </span>
+              <span className="text-gray-400 font-normal">(Optional)</span>
             </label>
-
             <textarea
               rows={3}
               value={additionalReason}
@@ -176,7 +175,7 @@ export default function CancelAppointmentModal({
           </div>
         </div>
 
-        {/* Footer */}
+        {/* Footer Actions */}
         <div className="flex items-center justify-center gap-3 px-5 pb-5">
           <button
             onClick={onClose}
@@ -184,7 +183,6 @@ export default function CancelAppointmentModal({
           >
             Close
           </button>
-
           <button
             onClick={handleCancelSubmit}
             disabled={!reason}
@@ -193,6 +191,7 @@ export default function CancelAppointmentModal({
             Cancel Appointment
           </button>
         </div>
+
       </div>
     </div>
   );
