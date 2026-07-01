@@ -2,7 +2,7 @@ import { proxyApiRequest } from "../apiglobal/apiProxy";
 
 
 //================Billing API===============//
- 
+
 //  LOGIN FUNCTION
 export const loginUser = async (UserID, Password) => {
     const loginData = { user_id: UserID, password: Password };
@@ -41,24 +41,24 @@ export const getCity = async () => {
 }
 
 export const saveOccupation = async (payload) => {
-   
+
     return proxyApiRequest("/aeOccupation", "POST", payload);
 };
 
 export const saveEducation = async (payload) => {
-    
+
     return proxyApiRequest("/aeEducation", "POST", payload);
 };
 
 export const saveCity = async (payload) => {
-    
+
     return proxyApiRequest("/aeCity", "POST", payload);
 };
 
 // Search Patient
-export const searchPatient = async(payload) => {
+export const searchPatient = async (payload) => {
     return proxyApiRequest("/searchPatient", "POST", payload);
-};  
+};
 
 //Patient History
 export const searchHistory = async (payload) => {
@@ -72,7 +72,7 @@ export const cancelAppointment = async (payload) => {
 
 // Get doctors list
 export const getDoctors = () => {
-  return proxyApiRequest("/getDoctors", "GET");
+    return proxyApiRequest("/getDoctors", "GET");
 };
 
 //  My-Patient Get-My-Bookings
@@ -86,9 +86,9 @@ export const GetMyBookings = (payload) => {
 export const billingDashboardData = (payload) => {
     return proxyApiRequest("/billingDashboardData", "POST", payload);
 };
-  //get-Total-Appointments
+//get-Total-Appointments
 export const getTotalAppointments = (payload) => {
-     return proxyApiRequest("/getTotalAppointments", "POST", payload);
+    return proxyApiRequest("/getTotalAppointments", "POST", payload);
 
 };
 
@@ -101,7 +101,7 @@ export const getCollections = (payload) => {
 
 //   List of  getCunsultancy
 export const getConsultancy = async () => {
-    return proxyApiRequest("/getConsultancy","GET"); 
+    return proxyApiRequest("/getConsultancy", "GET");
 };
 
 //getPendingAppointments
@@ -111,20 +111,20 @@ export const getPendingAppointments = (payload) => {
 
 //getTodayConfirmed
 export const getTodayConfirmed = (payload) => {
-    return proxyApiRequest("/getTodayConfirmed" ,"POST");
+    return proxyApiRequest("/getTodayConfirmed", "POST");
 };
 
 
 export const getCancelledAppointments = (payload) => {
-   
-    return proxyApiRequest("/getCancelledAppointments", "POST", payload); 
+
+    return proxyApiRequest("/getCancelledAppointments", "POST", payload);
 };
 
 export const changePassword = (payload) => {
     return proxyApiRequest("/changePassword", "POST", payload);
 }
 export const getMyProfile = (payload) => {
-    return proxyApiRequest("/getMyProfile","POST", payload);
+    return proxyApiRequest("/getMyProfile", "POST", payload);
 };
 
 export const updateProfileImage = (payload) => {
@@ -132,7 +132,7 @@ export const updateProfileImage = (payload) => {
 };
 
 export const updateProfile = (payload) => {
-    return proxyApiRequest("/updateProfile", "POST",payload);
+    return proxyApiRequest("/updateProfile", "POST", payload);
 };
 
 
@@ -144,7 +144,7 @@ export const DoctorChangePassword = (payload) => {
 };
 
 export const DoctorMyProfile = (payload) => {
-    return proxyApiRequest("/getMyProfile","POST", payload);
+    return proxyApiRequest("/getMyProfile", "POST", payload);
 };
 
 export const doctorupdateProfileImage = (payload) => {
@@ -152,22 +152,24 @@ export const doctorupdateProfileImage = (payload) => {
 };
 
 export const DoctorupdateProfile = (payload) => {
-    return proxyApiRequest("/updateProfile", "POST",payload);
+    return proxyApiRequest("/updateProfile", "POST", payload);
 };
 
 
 export const getCurrentAppointment = (payload) => {
-  return proxyApiRequest("/getCurrentAppointments", "POST", payload);
-}; 
+    return proxyApiRequest("/getCurrentAppointments", "POST", payload);
+};
 
 
 export const DoctorCancelAppointment = (payload) => {
-  return proxyApiRequest("/doctorCancelAppointment", "POST", payload);
-}; 
-
-
-
+    return proxyApiRequest("/doctorCancelAppointment", "POST", payload);
+};
 
 export const GetCancelReasons = async () => {
-  return await proxyApiRequest("/getCancelReasons", "GET");
+    return await proxyApiRequest("/getCancelReasons", "GET");
 };
+
+export const SearchPatients = async (payload) => {
+    return await proxyApiRequest("/searchPatients", "POST", payload);
+}
+

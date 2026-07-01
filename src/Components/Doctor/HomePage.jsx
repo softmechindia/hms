@@ -1,7 +1,7 @@
 import React from "react";
 import Form from "./Form";
-import DoctorHeader from "../Doctor/DoctorHeader";
-import PatientList from "../../Components/Doctor/PatientsList";
+import DoctorHeader from "./Search-Patients-Header";
+import CurrentPatientList from "./Current-PatientsList";
 import Navbar from "./Navbar";
 
 function HomePage() {
@@ -24,7 +24,7 @@ function HomePage() {
           </div>
 
           <div className="w-full lg:flex-1">
-            <PatientList />
+            <CurrentPatientList />
           </div>
 
         </div>

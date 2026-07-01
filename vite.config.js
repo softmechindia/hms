@@ -7,10 +7,10 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://health.softmechsolutions.com',
+        target: 'https://health.softmechsolutions.com/api',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path
+        rewrite: (path) => path.replace(/^\/api/, '')
       }
     }
   }

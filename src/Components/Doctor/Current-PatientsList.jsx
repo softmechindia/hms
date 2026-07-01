@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { FaCalendarXmark } from "react-icons/fa6";
-import CancelAppointmentModal from "../Doctor/Popup/Cancel-appointment-popup";
+import CancelAppointmentModal from "./Popup/Cancel-appointment-popup";
 import { getCurrentAppointment } from "../../api/endpoints/authApi";
 
-function PatientList({ doctorId = "DR0001" }) {
+function CurrentPatientList({ doctorId = "DR0002" }) {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,7 +32,7 @@ function PatientList({ doctorId = "DR0001" }) {
         if (apiData && apiData.success === 1 && Array.isArray(apiData.data)) {
           const formattedPatients = apiData.data.map((item) => ({
             id: item.id,
-            name: item.patient_name, // Full Name mapped dynamically from backend
+            name: item.patient_name, 
             visit: item.visit_time,
             time: item.appointment_time,
           }));
@@ -69,9 +69,9 @@ function PatientList({ doctorId = "DR0001" }) {
     setShowCancelModal(true);
   };
 
-  // Sub-component Table View Layout
+
   const Table = () => (
-    <div className="bg-white rounded-md shadow-sm overflow-hidden min-h-[500px] flex flex-col justify-between">
+    <div className="w-full max-w-full md:max-w-[450] lg:max-w-[380] rounded-sm bg-white shadow-sm overflow-hidden min-h-[450] flex flex-col justify-between">
       <div className="w-full overflow-x-auto">
       <table className="w-full text-sm text-left table-auto">
           <thead className="bg-gradient-to-r from-[#4F6EEA] to-[#6FA8FF] text-white text-xs sticky top-0">
@@ -120,7 +120,7 @@ function PatientList({ doctorId = "DR0001" }) {
           <div className="bg-blue-50 p-6 rounded-full mb-4 flex items-center justify-center aspect-square shadow-sm">
             <FaCalendarXmark className="text-[#6FA8FF] text-6xl" />
           </div>
-          <h3 className="text-[#2C3E50] font-bold text-base tracking-wide text-center">
+          <h3 className="text-[#2C3E50]  font-bold text-[12px] text-center">
             {error || "No Appointments Found"}
           </h3>
         </div>
@@ -142,4 +142,4 @@ function PatientList({ doctorId = "DR0001" }) {
   );
 }
 
-export default PatientList;
+export default CurrentPatientList;
