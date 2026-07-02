@@ -171,5 +171,9 @@ export const GetCancelReasons = async () => {
 
 export const SearchPatients = async (payload) => {
     return await proxyApiRequest("/searchPatients", "POST", payload);
-}
+};
+
+export const GetDoctorDashboardData = async (payload) => {
+    return await proxyApiRequest("getDoctorDashboardData", "POST", payload);
+};
 

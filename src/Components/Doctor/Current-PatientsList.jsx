@@ -3,7 +3,7 @@ import { FaCalendarXmark } from "react-icons/fa6";
 import CancelAppointmentModal from "./Popup/Cancel-appointment-popup";
 import { getCurrentAppointment } from "../../api/endpoints/authApi";
 
-function CurrentPatientList({ doctorId = "DR0002" }) {
+function CurrentPatientList({ doctorId = "DR0001" }) {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
