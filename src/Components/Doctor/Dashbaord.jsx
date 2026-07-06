@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import { GetDoctorDashboardData } from "../../api/endpoints/authApi";
-import { Users, Calendar, CheckCircle, Clock, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, LayoutDashboard, FileText } from "lucide-react";
+import {
+  Users,
+  Calendar,
+  CheckCircle,
+  Clock,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight
+} from "lucide-react";
 
 const customStyles = {
   headRow: {
@@ -22,8 +31,6 @@ const customStyles = {
     },
   },
 };
-
-
 
 // Table Columns
 const columns = [
@@ -89,7 +96,7 @@ function Dashboard() {
     completed: 0
   });
 
-  useEffect(() => {
+useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
@@ -100,15 +107,14 @@ function Dashboard() {
         };
 
         const response = await GetDoctorDashboardData(payload);
-        console.log("Aapka Dynamic Data Aa Gaya:", response);
+        console.log("Dashbaord Response:", response);
 
+        // Extracting target object (whether axios structure or direct payload)
         const dataObj = response?.data ? response.data : response;
 
-        
         if (dataObj) {
+          // Normalizes data whether it resides in a 'fullData' nested property or at the root level
           const actualData = dataObj.fullData ? dataObj.fullData : dataObj;
-
-          console.log("Success! Extracted from fullData:", actualData);
 
           setScheduleData(actualData.schedule || []);
           setSummary({
@@ -116,16 +122,7 @@ function Dashboard() {
             confirmed: actualData.summary?.confirmed ?? 0,
             completed: actualData.summary?.completed ?? 0,
           });
-        } else if (dataObj && dataObj.summary) {
-      
-          setScheduleData(dataObj.schedule || []);
-          setSummary({
-            total_appointments: dataObj.summary?.total_appointments ?? 0,
-            confirmed: dataObj.summary?.confirmed ?? 0,
-            completed: dataObj.summary?.completed ?? 0,
-          });
         }
-
       } catch (error) {
         console.error("API Error:", error);
       } finally {
@@ -138,9 +135,7 @@ function Dashboard() {
 
   return (
     <div className="w-full min-h-screen p-4 bg-white">
-
       <div className="max-w-6xl mx-auto">
-
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -149,8 +144,7 @@ function Dashboard() {
           <StatCard count={summary.completed} label="Completed" icon={<Users className="text-amber-600" />} color="bg-amber-50" />
         </div>
 
-
-        {/* Table Section */}
+        {/* Table Section Header */}
         <div className="bg-white rounded-t-md shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
           <div className="flex items-center justify-between p-4 border-b border-slate-100">
             <h2 className="text-lg font-bold text-slate-800">Today's Schedule</h2>
@@ -160,10 +154,12 @@ function Dashboard() {
           </div>
         </div>
 
+        {/* Data Table */}
         <DataTable
           columns={columns}
-          data={scheduleData}
+          data={scheduleData} // 🎯 Fixed: Swapped filteredData out for scheduleData
           customStyles={customStyles}
+          progressPending={loading} // Optional: Shows React Data Table native loader if provided
           pagination
           paginationPerPage={5}
           paginationComponentOptions={{
@@ -185,9 +181,6 @@ function Dashboard() {
         />
       </div>
     </div>
-
-
-
   );
 }
 
@@ -199,7 +192,6 @@ const StatCard = ({ count, label, icon, color }) => (
     </div>
     <div className={`p-2 rounded-lg ${color}`}>{React.cloneElement(icon, { size: 20 })}</div>
   </div>
-
 );
 
 export default Dashboard;

@@ -177,3 +177,7 @@ export const GetDoctorDashboardData = async (payload) => {
     return await proxyApiRequest("getDoctorDashboardData", "POST", payload);
 };
 
+export const DoctorGetPatientList = async(payload) => {
+    return await proxyApiRequest("getPatientList", "POST", payload);
+}
+
