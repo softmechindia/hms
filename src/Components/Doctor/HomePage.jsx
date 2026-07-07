@@ -6,7 +6,7 @@ import Navbar from "./Navbar";
 
 function HomePage() {
   return (
-
+    
 <div className=" h-[100vh] ">
 
 

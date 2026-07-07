@@ -82,9 +82,9 @@ const Navbar = ({ setAuth }) => {
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-white border-b shadow-sm">
-  
-      <div className="max-w-7xl mx-auto h-16 px-4 md:px-6 lg:px-8 flex items-center justify-between">
-        
+
+      <div className="max-w-7xl mx-auto h-16 px-4 flex items-center justify-between">
+
         {/* Left Side: Logo */}
         {showLogo && (
           <div className={`items-center shrink-0 md:ml-0 lg:-ml-10 ${isPrescriptionPage ? "flex" : "hidden md:flex"}`}>
@@ -98,17 +98,16 @@ const Navbar = ({ setAuth }) => {
           </div>
         )}
 
-      
-        <div className="hidden md:flex items-center gap-2 lg:gap-6 xl:gap-8">
+
+        <div className="hidden md:flex items-center gap-x-2 lg:gap-6">
           {navLinks.map((link) => (
             <NavLink
               key={link.name}
               to={link.path}
               className={({ isActive }) =>
-                `flex items-center gap-1.5 px-2.5 py-2 lg:px-4 rounded-md text-xs lg:text-sm font-semibold transition-all ${
-                  isActive
-                    ? "bg-orange-500 text-white shadow-sm"
-                    : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
+                `flex items-center gap-1.5 px-2.5 py-3 rounded-md text-xs lg:text-sm font-semibold transition-all ${isActive
+                  ? "bg-orange-500 text-white shadow-sm"
+                  : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
                 }`
               }
             >
@@ -120,13 +119,12 @@ const Navbar = ({ setAuth }) => {
 
         {/* Right Side: Profile & Mobile Toggle */}
         <div className="flex items-center gap-2 md:gap-3">
-          
+
           {/* Profile Dropdown */}
           <div className="relative py-1" ref={dropdownRef}>
             <button
               onClick={() => setProfileOpen(!profileOpen)}
-              className="w-9 h-9 md:w-10 md:h-10 lg:-mr-10 md:-mr-1.5 rounded-full bg-gradient-to-tr from-orange-400 to-orange-600 flex items-center justify-center border-2 border-white shadow-md hover:scale-105 transition-transform"
-            >
+              className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-gradient-to-tr from-orange-400 to-orange-600 flex items-center justify-center border-2 border-white shadow-md hover:scale-105 transition-transform"            >
               <User className="text-white w-4 h-4" />
             </button>
 
@@ -212,10 +210,9 @@ const Navbar = ({ setAuth }) => {
               to={link.path}
               onClick={() => setIsOpen(false)}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                  isActive
-                    ? "bg-orange-50 text-orange-600 font-semibold"
-                    : "hover:bg-gray-50 text-gray-700"
+                `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${isActive
+                  ? "bg-orange-50 text-orange-600 font-semibold"
+                  : "hover:bg-gray-50 text-gray-700"
                 }`
               }
             >

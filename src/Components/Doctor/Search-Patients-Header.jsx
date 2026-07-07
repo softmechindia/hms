@@ -61,14 +61,14 @@ function DoctorHeader() {
           <div className="flex-grow"></div>
 
           {/* Search Box Wrapper Container (Responsive Width) */}
-          <div className="relative w-full sm:w-[320px] md:w-[380px]">
+          <div className="relative w-full sm:w-[320px] md:w-[280px]">
             <div className="flex items-center bg-white border border-slate-200 rounded-sm shadow-sm px-3 py-1.5 w-full">
               <Search size={18} className="text-slate-400 mr-2 flex-shrink-0" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
-                placeholder="Search Patient ID & Mobile Number..."
+                placeholder="Search Patient ID & Mobile No..."
                 className="bg-transparent outline-none text-sm w-full text-slate-700 font-medium placeholder:text-slate-400"
               />
               
