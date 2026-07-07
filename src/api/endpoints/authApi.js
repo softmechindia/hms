@@ -178,10 +178,11 @@ export const GetDoctorDashboardData = async (payload) => {
 };
 
 export const DoctorGetPatientList = async (payload) => {
-    return await proxyApiRequest("getPatientList", "POST", payload);
+    return  proxyApiRequest("getPatientList", "POST", payload);
 };
 
 export const GetUpcomingAppointments = async (payload) => {
     return proxyApiRequest("getUpcomingAppointments", "POST", payload)
 };
+
 
