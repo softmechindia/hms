@@ -300,7 +300,7 @@ function Form() {
       setHasTodayAppointment(false);
     }
 
-    if (value.length < 2 ) {
+    if (value.length < 2) {
       setSearchResults([]);
       setShowSearchDropdown(false);
       return;
@@ -449,9 +449,9 @@ function Form() {
         const generatedApptId = parsedRes?.Appointment_id || response?.Appointment_id || "APT-" + Date.now();
         const generatedUserId = parsedRes?.user_id || response?.user_id || currentId || parsedRes?.patient_id || "PAT-NEW";
 
-        setTimeout(() => {
-          appbooking_print(generatedApptId, generatedUserId, parsedRes?.invoice_no || "");
-        }, 5000);
+        // REMOVE THE setTimeout AND CALL DIRECTLY
+        appbooking_print(generatedApptId, generatedUserId, parsedRes?.invoice_no || "");
+
         if (triggerRefresh) triggerRefresh();
       }
       else {
@@ -770,52 +770,52 @@ function Form() {
             </div>
 
             {/* Bottom Section Controls */}
-        {/* Bottom Section Controls */}
-<div className="flex text-black flex-col lg:flex-row items-stretch lg:items-center gap-2">
-  <div className="flex-grow">
-    <textarea 
-      name="address" 
-      value={formData.address} 
-      onChange={handleInputChange} 
-      rows={1} 
-      className="w-full px-2 py-1 text-xs border border-gray-300 rounded outline-none resize-none min-h-[32px] placeholder-gray-500" 
-      placeholder="Full Address" 
-    />
-  </div>
-  <div className="flex flex-row items-center justify-center sm:justify-end gap-1 sm:gap-2">
-    <div className="flex items-center gap-2 sm:gap-4 bg-gray-50 px-2 sm:px-4 py-1 border border-gray-200 rounded-sm">
-      <label className="flex items-center gap-1 font-bold text-gray-700 text-xs">
-        <input 
-          type="checkbox" 
-          name="reserved" 
-          checked={formData.reserved === "Yes" || formData.reserved === true} 
-          onChange={handleInputChange} 
-          className="w-3.5 h-3.5 text-xs accent-blue-600" 
-        />
-        Reserved
-      </label>
-      <div className="w-[1px] h-4 sm:h-5 bg-gray-300"></div>
-      <label className="flex items-center gap-1 font-bold text-gray-700 text-xs whitespace-nowrap">
-        <input 
-          type="checkbox" 
-          name="review_patient" 
-          checked={formData.review_patient === "Yes" || formData.review_patient === true} 
-          onChange={handleInputChange} 
-          className="w-3.5 h-3.5 text-xs accent-blue-600" 
-        />
-        Review
-      </label>
-    </div>
-    <button 
-      type="button" 
-      onClick={handleSave} 
-      className={`cursor-pointer text-white px-3 py-1.5 text-xs font-bold rounded-sm whitespace-nowrap flex items-center justify-center transition shadow-sm ${hasTodayAppointment ? "bg-amber-500" : "bg-[#22C55E]"}`}
-    >
-      {hasTodayAppointment ? "Update Info" : "Save & Print"}
-    </button>
-  </div>
-</div>
-            
+            {/* Bottom Section Controls */}
+            <div className="flex text-black flex-col lg:flex-row items-stretch lg:items-center gap-2">
+              <div className="flex-grow">
+                <textarea
+                  name="address"
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  rows={1}
+                  className="w-full px-2 py-1 text-xs border border-gray-300 rounded outline-none resize-none min-h-[32px] placeholder-gray-500"
+                  placeholder="Full Address"
+                />
+              </div>
+              <div className="flex flex-row items-center justify-center sm:justify-end gap-1 sm:gap-2">
+                <div className="flex items-center gap-2 sm:gap-4 bg-gray-50 px-2 sm:px-4 py-1 border border-gray-200 rounded-sm">
+                  <label className="flex items-center gap-1 font-bold text-gray-700 text-xs">
+                    <input
+                      type="checkbox"
+                      name="reserved"
+                      checked={formData.reserved === "Yes" || formData.reserved === true}
+                      onChange={handleInputChange}
+                      className="w-3.5 h-3.5 text-xs accent-blue-600"
+                    />
+                    Reserved
+                  </label>
+                  <div className="w-[1px] h-4 sm:h-5 bg-gray-300"></div>
+                  <label className="flex items-center gap-1 font-bold text-gray-700 text-xs whitespace-nowrap">
+                    <input
+                      type="checkbox"
+                      name="review_patient"
+                      checked={formData.review_patient === "Yes" || formData.review_patient === true}
+                      onChange={handleInputChange}
+                      className="w-3.5 h-3.5 text-xs accent-blue-600"
+                    />
+                    Review
+                  </label>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  className={`cursor-pointer text-white px-3 py-1.5 text-xs font-bold rounded-sm whitespace-nowrap flex items-center justify-center transition shadow-sm ${hasTodayAppointment ? "bg-amber-500" : "bg-[#22C55E]"}`}
+                >
+                  {hasTodayAppointment ? "Update Info" : "Save & Print"}
+                </button>
+              </div>
+            </div>
+
           </form>
         </div>
 

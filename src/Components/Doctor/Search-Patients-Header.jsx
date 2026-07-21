@@ -61,7 +61,7 @@ function DoctorHeader() {
           <div className="flex-grow"></div>
 
           {/* Search Box Wrapper Container (Responsive Width) */}
-          <div className="relative w-full sm:w-[320px] md:w-[280px]">
+          <div className="relative w-full sm:w-[320px] md:w-[290px]">
             <div className="flex items-center bg-white border border-slate-200 rounded-sm shadow-sm px-3 py-1.5 w-full">
               <Search size={18} className="text-slate-400 mr-2 flex-shrink-0" />
               <input

@@ -1,20 +1,49 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import logo from "../../../assets/images/logo.png";
-import { Calendar, FileText, LayoutDashboard, Users, Menu, X } from "lucide-react";
+import { Calendar, FileText, LayoutDashboard, Users, Menu, X, LogOut } from "lucide-react";
 import { FaUser } from "react-icons/fa";
 
 // ACCEPT PROPS FROM PARENT LAYOUT
 function Sidebar({ isOpen, setIsOpen }) {
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : { user_name: "Dr. User" };
+
+  });
+  // Helper function for the initial
+  const getInitial = (name) => {
+    if (!name) return "U";
+    return name.trim().charAt(0).toUpperCase();
+  }
+
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      const updatedUser = JSON.parse(localStorage.getItem("user"));
+      if (updatedUser) setUser(updatedUser);
+    };
+
+    // Listen for the custom event dispatched in MyProfile.js
+    window.addEventListener("profileUpdate", handleProfileUpdate);
+
+    // Also listen for storage changes (in case of multi-tab updates)
+    window.addEventListener("storage", handleProfileUpdate);
+
+    return () => {
+      window.removeEventListener("profileUpdate", handleProfileUpdate);
+      window.removeEventListener("storage", handleProfileUpdate);
+    };
+  }, []);
+
   const location = useLocation();
   const navigate = useNavigate();
 
   const menu = [
     { label: "Dashboard", icon: <LayoutDashboard size={20} />, path: "/doctor/dashboard" },
-    { label: "Patients", icon: <Users size={20} />, path: "/doctor/patient" },
-    { label: "Upcoming", icon: <Calendar size={20} />, path: "/doctor/upcoming" },
+    { label: "My Patients", icon: <Users size={20} />, path: "/doctor/patient" },
+    { label: "Upcoming Appointment", icon: <Calendar size={20} />, path: "/doctor/upcoming" },
     { label: "Prescription", icon: <FileText size={20} />, path: "/doctor/add-prescription" },
-    { label: "My Patient", icon: <FaUser size={20} />, path: "/my-patient" },
+    { label: "Logout", icon: <LogOut size={20} />, path: "/my-patient" },
   ];
 
   const currentPage = menu.find(item => item.path === location.pathname)?.label || "HMS";
@@ -43,8 +72,8 @@ function Sidebar({ isOpen, setIsOpen }) {
         fixed lg:static inset-y-0 left-0 z-50
         min-h-screen bg-[#082cbb] text-white flex flex-col
         transition-all duration-300 ease-in-out
-        ${isOpen 
-          ? "w-64 p-4 translate-x-0" 
+        ${isOpen
+          ? "w-64 p-4 translate-x-0"
           : "w-0 p-0 overflow-hidden -translate-x-full lg:translate-x-0 lg:w-0 lg:p-0"
         }
       `}>
@@ -70,15 +99,31 @@ function Sidebar({ isOpen, setIsOpen }) {
 
           <div className="flex flex-col items-center mt-6">
             <div className="relative mb-2">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-orange-500 to-amber-300 p-0.5">
-                <div className="w-full h-full rounded-full bg-[#111827] flex items-center justify-center">
-                  <FaUser size={24} className="text-orange-500" />
+
+              <div className="relative mb-2">
+                <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-orange-500 to-amber-300 p-0.5">
+
+
+                  <div className="w-full h-full rounded-full bg-[#111827] flex items-center justify-center overflow-hidden">                    {(user.picture_url || user.user_pic) ? (
+                    <img
+                      src={user.picture_url || user.user_pic}
+                      alt="Profile"
+
+                      className="w-full h-full object-cover"
+                      onError={(e) => { e.target.style.display = 'none'; }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-orange-500 font-bold text-3xl">
+                      {getInitial(user.user_name)}
+                    </div>
+                  )}
+                  </div>
                 </div>
               </div>
+
             </div>
-            <span className="text-white font-semibold">Dr. John Doe</span>
-            <span className="text-white/70 text-sm">Cardiologist</span>
-          </div>
+            <span className="text-white font-semibold">{user.user_name || "Doctor"}</span>
+            <span className="text-white/70 text-sm">{user.designation || "Cardiologist"}</span>          </div>
 
           <nav className="flex-1 mt-8 space-y-2 overflow-y-auto">
             {menu.map((item) => (

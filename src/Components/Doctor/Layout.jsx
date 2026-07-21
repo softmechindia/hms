@@ -17,7 +17,7 @@ export default function Layouts() {
     switch (location.pathname) {
       case "/doctor/dashboard": return "Dashboard";
       case "/doctor/patient": return "Patients";
-      case "/doctor/upcoming": return "Upcoming";
+      case "/doctor/upcoming": return "Upcoming Appointments";
       case "/doctor/change-password": return "Change Password";
       case "/doctor/profile": return "MyProfile";
       default: return "";

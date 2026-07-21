@@ -3,7 +3,7 @@ import { FaCalendarXmark } from "react-icons/fa6";
 import CancelAppointmentModal from "./Popup/Cancel-appointment-popup";
 import { getCurrentAppointment } from "../../api/endpoints/authApi";
 
-function CurrentPatientList({ doctorId = "DR0002" }) {
+function CurrentPatientList() {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,7 +16,14 @@ function CurrentPatientList({ doctorId = "DR0002" }) {
         setLoading(true);
         setError(null);
 
-        const payload = { doctor_id: doctorId };
+        const loggedInDoctorId = localStorage.getItem("doctorId");
+        if (!loggedInDoctorId) {
+          setError("Doctor ID not found. Please login again.");
+          setLoading(false);
+          return;
+        }
+
+        const payload = { doctor_id: loggedInDoctorId };
         const response = await getCurrentAppointment(payload);
 
         console.log("--- RAW PROXY RESPONSE ---", response);
@@ -32,7 +39,8 @@ function CurrentPatientList({ doctorId = "DR0002" }) {
         if (apiData && apiData.success === 1 && Array.isArray(apiData.data)) {
           const formattedPatients = apiData.data.map((item) => ({
             id: item.id,
-            name: item.patient_name, 
+            name: item.patient_name,
+            user_id:item.user_id,
             visit: item.visit_time,
             time: item.appointment_time,
           }));
@@ -51,10 +59,10 @@ function CurrentPatientList({ doctorId = "DR0002" }) {
       }
     };
 
-    if (doctorId) {
-      fetchAppointments();
-    }
-  }, [doctorId]);
+
+    fetchAppointments();
+
+  }, []);
 
   const removePatient = (id) => {
     setPatients((prevPatients) =>
@@ -73,7 +81,7 @@ function CurrentPatientList({ doctorId = "DR0002" }) {
   const Table = () => (
     <div className="w-full max-w-full md:max-w-[450] lg:max-w-[380] rounded-sm bg-white shadow-sm overflow-hidden min-h-[450] flex flex-col justify-between">
       <div className="w-full overflow-x-auto">
-      <table className="w-full text-sm text-left table-auto">
+        <table className="w-full text-sm text-left table-auto">
           <thead className="bg-gradient-to-r from-[#4F6EEA] to-[#6FA8FF] text-white text-xs sticky top-0">
             <tr>
               <th className="px-4 py-3 whitespace-nowrap w-1/4">Name</th>
@@ -88,7 +96,9 @@ function CurrentPatientList({ doctorId = "DR0002" }) {
             <tbody>
               {patients.map((patient) => (
                 <tr key={patient.id} className="border-b hover:bg-gray-50 gap-3">
-                  <td className="px-3 py-1 font-medium whitespace-nowrap">{patient.name}</td>
+                  <td className="px-3 py-1 font-medium whitespace-nowrap">{patient.name}
+                    <span className="block text-[10px] text-gray-500">{patient.user_id}</span>
+                  </td>
                   <td className="px-3 py-1 whitespace-nowrap">{patient.visit}</td>
                   <td className="px-3 py-1 whitespace-nowrap">{patient.time}</td>
                   <td className="px-3 py-1 text-center whitespace-nowrap">

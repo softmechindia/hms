@@ -16,6 +16,36 @@ const Navbar = ({ setAuth }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
 
+  // Initialize user state
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : { user_name: "Doctor" };
+  });
+
+
+  // Helper for Initial
+  const getInitial = (name) => {
+    if (!name) return "";
+    return name.trim().charAt(0).toUpperCase();
+  };
+
+
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      const updatedUser = JSON.parse(localStorage.getItem("user"));
+      if (updatedUser) setUser(updatedUser);
+    };
+    window.addEventListener("profileUpdate", handleProfileUpdate);
+    window.addEventListener("storage", handleProfileUpdate);
+
+    return () => {
+      window.removeEventListener("profileUpdate", handleProfileUpdate);
+      window.removeEventListener("storage", handleProfileUpdate);
+    };
+  }, []);
+
+
+
   const dropdownRef = useRef(null);
   const location = useLocation();
 
@@ -124,8 +154,19 @@ const Navbar = ({ setAuth }) => {
           <div className="relative py-1" ref={dropdownRef}>
             <button
               onClick={() => setProfileOpen(!profileOpen)}
-              className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-gradient-to-tr from-orange-400 to-orange-600 flex items-center justify-center border-2 border-white shadow-md hover:scale-105 transition-transform"            >
-              <User className="text-white w-4 h-4" />
+              className="w-10 h-10 rounded-full bg-gradient-to-tr from-orange-400 to-orange-600 flex items-center justify-center border-2 border-white shadow-md overflow-hidden"
+            >
+              {(user.picture_url || user.user_pic) ? (
+                <img
+                  src={user.picture_url || user.user_pic}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-white font-bold text-lg">
+                  {user.user_name ? getInitial(user.user_name) : <User className="w-5 h-5" />}
+                </span>
+              )}
             </button>
 
             {profileOpen && (
