@@ -79,9 +79,9 @@ function CurrentPatientList() {
 
 
   const Table = () => (
-    <div className="w-full max-w-full md:max-w-[450] lg:max-w-[380] rounded-sm bg-white shadow-sm overflow-hidden min-h-[450] flex flex-col justify-between">
-      <div className="w-full overflow-x-auto">
-        <table className="w-full text-sm text-left table-auto">
+<div className="w-full bg-white shadow-sm overflow-hidden min-h-[450px] flex flex-col justify-between border-l border-slate-200">      <div className="w-full overflow-x-auto">
+       <div className="w-full overflow-x-auto">
+           <table className="w-full text-sm text-left table-auto">
           <thead className="bg-gradient-to-r from-[#4F6EEA] to-[#6FA8FF] text-white text-xs sticky top-0">
             <tr>
               <th className="px-4 py-3 whitespace-nowrap w-1/4">Name</th>
@@ -114,6 +114,10 @@ function CurrentPatientList() {
             </tbody>
           )}
         </table>
+
+       </div>
+       
+     
       </div>
 
       {/* 1. Loading UI Wrapper */}
