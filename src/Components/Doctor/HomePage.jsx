@@ -23,9 +23,9 @@ function HomePage() {
             <Form />
           </div>
 
-          <div className="w-full lg:flex-1">
-            <CurrentPatientList />
-          </div>
+            <div className="w-full lg:flex-1">
+              <CurrentPatientList />
+            </div>
 
         </div>
       </div>

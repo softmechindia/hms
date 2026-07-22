@@ -21,23 +21,26 @@ function DoctorHeader() {
       const payload = { search_by: value };
       const response = await SearchPatients(payload);
 
-      console.log("API RESP", response);
+      const apiData = response?.fullData || response?.data || response;
+      
+      const patientList = Array.isArray(apiData) 
+        ? apiData 
+        : Array.isArray(apiData?.data) 
+        ? apiData.data 
+        : [];
 
-      const apiData = response?.fullData || response;
-
-      if (apiData && apiData.success === 1 && Array.isArray(apiData.data)) {
-        const formatted = apiData.data.map((patient) => ({
-          id: patient.userID,
-          name: patient.user_name,
-          mobile: patient.mobile_no,
-          gender: patient.gender,
-          age: patient.age
+      if (patientList.length > 0) {
+        const formatted = patientList.map((patient) => ({
+          id: patient.userID || patient.id || patient.patient_id || "N/A",
+          name: patient.user_name || patient.patient_name || patient.name || patient.full_name || "",
+          mobile: patient.mobile_no || patient.mobile || patient.phone || "N/A",
+          gender: patient.gender || "",
+          age: patient.age || ""
         }));
 
         setDropdownPatients(formatted);
       } else {
         setDropdownPatients([]);
-        console.warn("API structure match failed or success !== 1");
       }
     } catch (err) {
       console.error("Error fetching patients:", err);
@@ -48,26 +51,25 @@ function DoctorHeader() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row  ">
-      <div className="bg-[#4F6EEA] w-full py-1 px-4 flex-1 lg:w-[78%]"></div>
+    /* h-10 (40px) set kar ke poore header container ki height lock kar di */
+    <div className="flex flex-row w-full items-center h-10 overflow-visible z-30">
+      
+      {/* BLUE BAR: Left side (Exact same height h-full) */}
+      <div className="bg-[#4F6EEA] h-full w-full lg:w-[78%] shrink-0"></div>
 
-
-
-
-
-
-      <div className="bg-[#4F6EEA] w-full py-1 px-2 sm:px-4 flex items-center justify-end w-auto lg:flex-1">
-
-        <div className="relative w-[180px] sm:w-[260px] md:w-[290px]">
-
-          <div className="flex items-center bg-white border border-slate-200 rounded-sm shadow-sm px-3 py-1.5 w-full">
-            <Search size={18} className="text-slate-400 mr-2 flex-shrink-0" />
+      {/* RED BAR: Right side (Exact same height h-full + items-center) */}
+      <div className="bg-[#4F6EEA]  h-full px-2 flex items-center justify-center w-full lg:flex-1 min-w-0">
+        <div className="relative w-full">
+          
+          {/* Input container inside Red bar */}
+          <div className="flex items-center bg-white border border-slate-200 rounded-sm shadow-sm px-2 py-0.5 w-full h-7">
+            <Search size={15} className="text-slate-400 mr-1.5 flex-shrink-0" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
               placeholder="Search Patient ID & Mobile No..."
-              className="bg-transparent outline-none text-sm w-full text-slate-700 font-medium placeholder:text-slate-400"
+              className="bg-transparent outline-none text-xs sm:text-sm w-full text-slate-700 font-medium placeholder:text-slate-400 min-w-0"
             />
 
             {/* Internal Loading Indicator */}
@@ -88,21 +90,20 @@ function DoctorHeader() {
                     setSearchQuery(patient.name);
                     setDropdownPatients([]);
                   }}
-                  className="px-4 py-2.5 hover:bg-blue-50 cursor-pointer border-b last:border-0 text-sm flex flex-col gap-0.5 group transition-colors"
+                  className="px-3 py-2 hover:bg-blue-50 cursor-pointer border-b last:border-0 text-xs sm:text-sm flex flex-col gap-0.5 group transition-colors"
                 >
                   <div className="flex justify-between items-center">
-                    {/* FIX 2: Fixed incorrect keys, used mapping formatted names */}
-                    <span className="text-sm font-semibold text-slate-800 group-hover:text-[#4F6EEA]">
+                    <span className="font-semibold text-slate-800 group-hover:text-[#4F6EEA] truncate">
                       {patient.name || "Unknown Name"}
                     </span>
-                    <span className="text-[11px] font-mono text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
+                    <span className="text-[10px] font-mono text-slate-400 bg-slate-100 px-1 py-0.5 rounded shrink-0 ml-1">
                       ID: {patient.id}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center text-xs text-slate-500">
-                    <span>Mob: {patient.mobile || "N/A"}</span>
+                  <div className="flex justify-between items-center text-[11px] text-slate-500">
+                    <span>Mob: {patient.mobile}</span>
                     <span>
-                      {patient.age ? `${patient.age} Yrs (${patient.gender})` : ""}
+                      {patient.age ? `${patient.age} Yrs ${patient.gender ? `(${patient.gender})` : ""}` : ""}
                     </span>
                   </div>
                 </div>
@@ -110,11 +111,7 @@ function DoctorHeader() {
             </div>
           )}
 
-
         </div>
-
-
-
       </div>
     </div>
   );
