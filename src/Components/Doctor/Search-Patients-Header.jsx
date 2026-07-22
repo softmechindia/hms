@@ -58,7 +58,7 @@ function DoctorHeader() {
       <div className="bg-[#4F6EEA] h-full w-full lg:w-[78%] shrink-0"></div>
 
 
-      <div className="bg-[#39be1e]  h-full px-2 flex items-center justify-center w-full lg:flex-1 min-w-0">
+      <div className="bg-[#4F6EEA]  h-full px-2 flex items-center justify-center w-full lg:flex-1 min-w-0">
         <div className="relative w-full">
           
           {/* Input container inside Red bar */}
