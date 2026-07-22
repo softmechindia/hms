@@ -111,25 +111,24 @@ const Navbar = ({ setAuth }) => {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-white border-b shadow-sm">
-
-      <div className="max-w-7xl mx-auto h-16 px-4 flex items-center justify-between">
+    <nav className="w-full bg-white sticky top-0 z-50 shadow-sm">
+<div className="mx-auto px-4 h-16 flex items-center justify-between">
 
         {/* Left Side: Logo */}
         {showLogo && (
-          <div className={`items-center shrink-0 md:ml-0 lg:-ml-10 ${isPrescriptionPage ? "flex" : "hidden md:flex"}`}>
-            <Link to="/doctor/dashboard" className="block py-1">
+          <div className={`w-[250px] flex items-center ${isPrescriptionPage ? "flex" : "hidden md:flex"}`}>
+            <Link to="/doctor/dashboard" className="w-[250px] flex items-center">
               <img
                 src={Dashboardlogo}
                 alt="Logo"
-                className="h-8 md:h-9 w-auto object-contain block"
+                 className="h-auto w-[60%]"
               />
             </Link>
           </div>
         )}
 
 
-        <div className="hidden md:flex items-center gap-x-2 lg:gap-6">
+      <div className="hidden md:flex flex-1 justify-center gap-3 xl:gap-6">
           {navLinks.map((link) => (
             <NavLink
               key={link.name}

@@ -9,8 +9,8 @@ function DoctorHeader() {
   const [loading, setLoading] = useState(false);
 
   const handleSearch = async (value) => {
-    setSearchQuery(value); 
-    
+    setSearchQuery(value);
+
     if (!value.trim()) {
       setDropdownPatients([]);
       return;
@@ -48,79 +48,73 @@ function DoctorHeader() {
   };
 
   return (
-    <div className="w-full">
-      {/* Navbar Container */}
-      <div className="bg-[#4F6EEA] min-h-12 py-2 rounded-t-sm flex items-center shadow-sm px-4">
-        <div className="flex w-full flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-5">
-          
-          {/* Logo / Title Space placeholder */}
-          <div className="flex-shrink-0 text-white font-bold text-sm">
-            HMS Dashboard
-          </div>
+    <div className="flex flex-col lg:flex-row  ">
+      <div className="bg-[#4F6EEA] w-full py-1 px-4 flex-1 lg:w-[78%]"></div>
 
-          <div className="flex-grow"></div>
 
-          {/* Search Box Wrapper Container (Responsive Width) */}
-          <div className="relative w-full sm:w-[320px] md:w-[290px]">
-            <div className="flex items-center bg-white border border-slate-200 rounded-sm shadow-sm px-3 py-1.5 w-full">
-              <Search size={18} className="text-slate-400 mr-2 flex-shrink-0" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
-                placeholder="Search Patient ID & Mobile No..."
-                className="bg-transparent outline-none text-sm w-full text-slate-700 font-medium placeholder:text-slate-400"
-              />
-              
-              {/* Internal Loading Indicator */}
-              {loading && (
-                <div className="text-xs text-gray-400 animate-pulse ml-1">
-                  ...
-                </div>
-              )}
-            </div>
 
-            {/* Dropdown Card Options List */}
-            {!loading && dropdownPatients.length > 0 && (
-              <div className="absolute top-full left-0 w-full bg-white border border-slate-200 rounded-sm shadow-lg max-h-60 overflow-y-auto z-50 mt-1">
-                {dropdownPatients.map((patient) => (
-                  <div
-                    key={patient.id}
-                    onClick={() => {
-                      setSearchQuery(patient.name);
-                      setDropdownPatients([]);
-                    }}
-                    className="px-4 py-2.5 hover:bg-blue-50 cursor-pointer border-b last:border-0 text-sm flex flex-col gap-0.5 group transition-colors"
-                  >
-                    <div className="flex justify-between items-center">
-                      {/* FIX 2: Fixed incorrect keys, used mapping formatted names */}
-                      <span className="text-sm font-semibold text-slate-800 group-hover:text-[#4F6EEA]">
-                        {patient.name || "Unknown Name"}
-                      </span>
-                      <span className="text-[11px] font-mono text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
-                        ID: {patient.id}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center text-xs text-slate-500">
-                      <span>Mob: {patient.mobile || "N/A"}</span>
-                      <span>
-                        {patient.age ? `${patient.age} Yrs (${patient.gender})` : ""}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+
+
+
+      <div className="bg-[#4F6EEA] w-full py-1 px-2 sm:px-4 flex items-center justify-end w-auto lg:flex-1">
+
+        <div className="relative w-[180px] sm:w-[260px] md:w-[290px]">
+
+          <div className="flex items-center bg-white border border-slate-200 rounded-sm shadow-sm px-3 py-1.5 w-full">
+            <Search size={18} className="text-slate-400 mr-2 flex-shrink-0" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => handleSearch(e.target.value)}
+              placeholder="Search Patient ID & Mobile No..."
+              className="bg-transparent outline-none text-sm w-full text-slate-700 font-medium placeholder:text-slate-400"
+            />
+
+            {/* Internal Loading Indicator */}
+            {loading && (
+              <div className="text-xs text-gray-400 animate-pulse ml-1">
+                ...
               </div>
             )}
-
-            {/* No Result Found Popup Message */}
-            {/* {!loading && searchQuery && dropdownPatients.length === 0 && (
-              <div className="absolute top-full left-0 w-full mt-1 bg-white border border-slate-200 rounded-sm shadow-lg p-3 text-center text-xs text-gray-400 z-50">
-                No match found
-              </div>
-            )} */}
           </div>
 
+          {/* Dropdown Card Options List */}
+          {!loading && dropdownPatients.length > 0 && (
+            <div className="absolute top-full left-0 w-full bg-white border border-slate-200 rounded-sm shadow-lg max-h-60 overflow-y-auto z-50 mt-1">
+              {dropdownPatients.map((patient) => (
+                <div
+                  key={patient.id}
+                  onClick={() => {
+                    setSearchQuery(patient.name);
+                    setDropdownPatients([]);
+                  }}
+                  className="px-4 py-2.5 hover:bg-blue-50 cursor-pointer border-b last:border-0 text-sm flex flex-col gap-0.5 group transition-colors"
+                >
+                  <div className="flex justify-between items-center">
+                    {/* FIX 2: Fixed incorrect keys, used mapping formatted names */}
+                    <span className="text-sm font-semibold text-slate-800 group-hover:text-[#4F6EEA]">
+                      {patient.name || "Unknown Name"}
+                    </span>
+                    <span className="text-[11px] font-mono text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
+                      ID: {patient.id}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs text-slate-500">
+                    <span>Mob: {patient.mobile || "N/A"}</span>
+                    <span>
+                      {patient.age ? `${patient.age} Yrs (${patient.gender})` : ""}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+
         </div>
+
+
+
       </div>
     </div>
   );
