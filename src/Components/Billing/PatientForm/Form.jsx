@@ -77,11 +77,7 @@ function Form() {
     setDisplayData(filtered);
   };
 
-
-
-
-
-  const initialFormState = {
+const initialFormState = {
     patient_id: "",
     doctor_fees: "0",
     name: "",

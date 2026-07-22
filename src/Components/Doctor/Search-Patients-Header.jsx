@@ -55,14 +55,14 @@ function DoctorHeader() {
     <div className="flex flex-row w-full items-center h-10 overflow-visible z-30">
       
 
-      <div className="bg-[#4F6EEA] h-full w-full lg:w-[78%] shrink-0"></div>
+      <div className="bg-[#4F6EEA] h-full w-full lg:w-[78%] shrink-0 "></div>
 
 
-      <div className="bg-[#4F6EEA]  h-full px-2 flex items-center justify-center w-full lg:flex-1 min-w-0">
+      <div className="bg-[#4F6EEA]  h-full px-2 flex items-center justify-center w-full lg:flex-1 min-w-0 ">
         <div className="relative w-full">
           
           {/* Input container inside Red bar */}
-          <div className="flex items-center bg-white border border-slate-200 rounded-sm shadow-sm px-2 py-0.5 w-full h-7">
+         <div className="flex items-center bg-white border border-slate-200 rounded-sm shadow-sm px-2 py-0.5 w-full h-8 -ml-2">
             <Search size={15} className="text-slate-400 mr-1.5 flex-shrink-0" />
             <input
               type="text"
