@@ -40,7 +40,7 @@ function CurrentPatientList() {
           const formattedPatients = apiData.data.map((item) => ({
             id: item.id,
             name: item.patient_name,
-            user_id:item.user_id,
+            user_id: item.user_id,
             visit: item.visit_time,
             time: item.appointment_time,
           }));
@@ -79,10 +79,10 @@ function CurrentPatientList() {
 
 
   const Table = () => (
-<div className="w-full bg-white shadow-sm overflow-hidden min-h-[450px] flex flex-col justify-between border-l border-slate-200">      <div className="w-full overflow-x-auto">
-       <div className="w-full overflow-x-auto">
-           <table className="w-full text-sm text-left table-auto">
-          <thead className="bg-gradient-to-r from-[#4F6EEA] to-[#6FA8FF] text-white text-xs sticky top-0">
+    <div className="w-full bg-white shadow-sm overflow-hidden min-h-[450px] flex flex-col justify-between border-l border-slate-200">      <div className="w-full overflow-x-auto">
+      <div className="w-full overflow-x-auto">
+        <table className="w-full text-sm text-left table-auto ">
+          <thead className="bg-gradient-to-r from-[#4F6EEA]  to-[#6FA8FF] text-white text-xs sticky top-0">
             <tr>
               <th className="px-4 py-3 whitespace-nowrap w-1/4">Name</th>
               <th className="px-3 py-3 whitespace-nowrap w-1/4">Visit</th>
@@ -95,7 +95,7 @@ function CurrentPatientList() {
           {!loading && patients.length > 0 && (
             <tbody>
               {patients.map((patient) => (
-                <tr key={patient.id} className="border-b hover:bg-gray-50 gap-3">
+                <tr key={patient.id} className="border-b hover:bg-gray-50 gap-3 cursor-pointer">
                   <td className="px-3 py-1 font-medium whitespace-nowrap">{patient.name}
                     <span className="block text-[10px] text-gray-500">{patient.user_id}</span>
                   </td>
@@ -104,9 +104,11 @@ function CurrentPatientList() {
                   <td className="px-3 py-1 text-center whitespace-nowrap">
                     <button
                       onClick={() => openCancelModal(patient)}
-                      className="text-red-600 hover:text-red-800 font-bold text-lg"
+                      className="  text-red-600  flex items-center justify-center transition-colors cursor-pointer mx-auto"
                     >
-                      &times;
+                      <span className="text-3xl font-bold leading-none select-none translate-y-[-1px]">
+                        &times;
+                      </span>
                     </button>
                   </td>
                 </tr>
@@ -115,10 +117,10 @@ function CurrentPatientList() {
           )}
         </table>
 
-       </div>
-       
-     
       </div>
+
+
+    </div>
 
       {/* 1. Loading UI Wrapper */}
       {loading && (

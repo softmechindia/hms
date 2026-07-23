@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { NavLink, Link, useLocation } from "react-router-dom";
+
 import {
   LayoutDashboard,
   Users,
@@ -16,12 +17,17 @@ const Navbar = ({ setAuth }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
 
-  // Initialize user state
-  const [user, setUser] = useState(() => {
+
+// Helper function to read profile data from LocalStorage
+  const getUserFromStorage = () => {
+    const savedProfile = localStorage.getItem("user_profile");
+    if (savedProfile) return JSON.parse(savedProfile);
+
     const savedUser = localStorage.getItem("user");
     return savedUser ? JSON.parse(savedUser) : { user_name: "Doctor" };
-  });
-
+  };
+  // Initialize user state dynamically from localStorage
+  const [user, setUser] = useState(getUserFromStorage);
 
   // Helper for Initial
   const getInitial = (name) => {
@@ -128,7 +134,7 @@ const Navbar = ({ setAuth }) => {
         )}
 
 
-      <div className="hidden md:flex flex-1 justify-center gap-3 xl:gap-6">
+      <div className="hidden md:flex flex-1 justify-center gap-3 xl:gap-6 ">
           {navLinks.map((link) => (
             <NavLink
               key={link.name}
@@ -147,13 +153,13 @@ const Navbar = ({ setAuth }) => {
         </div>
 
         {/* Right Side: Profile & Mobile Toggle */}
-        <div className="flex items-center gap-2 md:gap-3">
+        <div className="flex items-center gap-2 md:gap-3 cursor-cell">
 
           {/* Profile Dropdown */}
-          <div className="relative py-1" ref={dropdownRef}>
+          <div className="relative py-1 " ref={dropdownRef}>
             <button
               onClick={() => setProfileOpen(!profileOpen)}
-              className="w-10 h-10 rounded-full bg-gradient-to-tr from-orange-400 to-orange-600 flex items-center justify-center border-2 border-white shadow-md overflow-hidden"
+              className="w-10 h-10 rounded-full cursor-pointer bg-gradient-to-tr from-orange-400 to-orange-600 flex items-center justify-center border-2 border-white shadow-md overflow-hidden"
             >
               {(user.picture_url || user.user_pic) ? (
                 <img
@@ -173,7 +179,7 @@ const Navbar = ({ setAuth }) => {
                 {/* User info */}
                 <div className="px-4 py-2.5 border-b bg-gray-50/70">
                   <p className="text-[11px] font-medium uppercase tracking-wider text-gray-400">Logged in as</p>
-                  <p className="font-semibold text-gray-800 text-sm truncate">Doctor Name</p>
+                  <p className="font-semibold text-gray-800 text-sm truncate">{user.user_name || "Doctor"}</p>
                 </div>
 
                 {/* Profile Links */}
@@ -195,26 +201,26 @@ const Navbar = ({ setAuth }) => {
                 </div>
 
                 {/* Stats Grid */}
-                <div className="px-4 py-3 border-t border-b border-gray-100 bg-gray-50/30 space-y-2 text-xs text-gray-600">
+                <div className="px-4 py-3 border-t border-b border-gray-400 bg-gray-50/30 space-y-2 text-xs text-gray-600">
                   <div className="flex justify-between items-center">
-                    <span className="font-medium">Total</span>
-                    <span className="text-red-500 font-bold bg-red-50 px-1.5 py-0.5 rounded">0</span>
+                    <span className=" text-[15px] font-bold">Total</span>
+                    <span className="text-red-500 font-bold text-[15px]  bg-red-50 px-1.5 py-0.5 rounded">0</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="font-medium">New</span>
-                    <span className="text-green-600 font-bold bg-green-50 px-1.5 py-0.5 rounded">0/0</span>
+                    <span className="text-[15px] font-bold">New</span>
+                    <span className="text-green-600 text-[15px] font-bold  bg-green-50 px-1.5 py-0.5 rounded">0/0</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="font-medium">Old</span>
-                    <span className="text-orange-500 font-bold bg-orange-50 px-1.5 py-0.5 rounded">0/0</span>
+                    <span className="text-[15px] font-bold">Old</span>
+                    <span className="text-orange-500 text-[15px] font-bold bg-orange-50 px-1.5 py-0.5 rounded">0/0</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="font-medium">Cancel</span>
-                    <span className="text-red-500 font-bold bg-red-50 px-1.5 py-0.5 rounded">0</span>
+                    <span className="text-[15px] font-bold">Cancel</span>
+                    <span className="text-red-500 text-[15px] font-bold bg-red-50 px-1.5 py-0.5 rounded">0</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="font-medium">Review</span>
-                    <span className="text-cyan-600 font-bold bg-cyan-50 px-1.5 py-0.5 rounded">0</span>
+                    <span className="text-[15px] font-bold">Review</span>
+                    <span className="text-cyan-600 text-[15px] font-bold bg-cyan-50 px-1.5 py-0.5 rounded">0</span>
                   </div>
                 </div>
 

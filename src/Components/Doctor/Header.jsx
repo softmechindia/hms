@@ -13,23 +13,30 @@ export default function TopHeader({ toggleSidebar, title }) {
   localStorage.clear();
 
   if (typeof setAuth === "function") {
-    setAuth(false);
+    setAuth(false); 
   }
 
   window.location.href = "/login";
 };
 
-  // Initialize user state
-  const [user, setUser] = useState(() => {
+  // Helper function to read profile data from LocalStorage
+  const getUserFromStorage = () => {
+    const savedProfile = localStorage.getItem("user_profile");
+    if (savedProfile) return JSON.parse(savedProfile);
+
     const savedUser = localStorage.getItem("user");
     return savedUser ? JSON.parse(savedUser) : { user_name: "Doctor" };
-  });
+
+  };
+
+  const [user, setUser] = useState(getUserFromStorage);
 
   // Helper for Initial
   const getInitial = (name) => {
-    if (!name) return "";
+    if(!name) return "";
     return name.trim().charAt(0).toUpperCase();
   };
+
 
   // Listen for profile changes
   useEffect(() => {
@@ -100,12 +107,10 @@ export default function TopHeader({ toggleSidebar, title }) {
           {profileOpen && (
             <div className="absolute right-0 mt-3 w-52 bg-white border rounded-md shadow-xl z-50 overflow-hidden">
               {/* User */}
-              <div className="px-3 py-2 border-b bg-gray-50">
-                <p className="text-xs text-gray-500">Logged in as</p>
-                <p className="font-semibold text-gray-800">
-                  Doctor Name
-                </p>
-              </div>
+               <div className="px-4 py-2.5 border-b bg-gray-50/70">
+                  <p className="text-[11px] font-medium uppercase tracking-wider text-gray-400">Logged in as</p>
+                  <p className="font-semibold text-gray-800 text-sm truncate">{user.user_name || "Doctor"}</p>
+                </div>
 
 
               {/* Menu */}
@@ -128,37 +133,28 @@ export default function TopHeader({ toggleSidebar, title }) {
 
 
               {/* Stats */}
-              <div className="px-4 py-3 border-b  space-y-2 hover:bg-red-50 text-black text-sm">
-                <div className="flex justify-between">
-                  <span>Total</span>
-                  <span className="text-red-500 font-semibold">0</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>New</span>
-                  <span className="text-green-600 font-semibold">
-                    0/0
-                  </span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Old</span>
-                  <span className="text-orange-500 font-semibold">
-                    0/0
-                  </span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Cancel</span>
-                  <span className="text-red-500 font-semibold">0</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Review</span>
-                  <span className="text-cyan-600 font-semibold">0</span>
-                </div>
-              </div>
-
+             <div className="px-4 py-3 border-t border-b border-gray-400 bg-gray-50/30 space-y-2 text-xs text-gray-600">
+                  <div className="flex justify-between items-center">
+                    <span className=" text-[15px] font-bold">Total</span>
+                    <span className="text-red-500 font-bold text-[15px]  bg-red-50 px-1.5 py-0.5 rounded">0</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[15px] font-bold">New</span>
+                    <span className="text-green-600 text-[15px] font-bold  bg-green-50 px-1.5 py-0.5 rounded">0/0</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[15px] font-bold">Old</span>
+                    <span className="text-orange-500 text-[15px] font-bold bg-orange-50 px-1.5 py-0.5 rounded">0/0</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[15px] font-bold">Cancel</span>
+                    <span className="text-red-500 text-[15px] font-bold bg-red-50 px-1.5 py-0.5 rounded">0</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[15px] font-bold">Review</span>
+                    <span className="text-cyan-600 text-[15px] font-bold bg-cyan-50 px-1.5 py-0.5 rounded">0</span>
+                  </div>
+                </div>  
                     <button
                 className="w-full text-left px-4 py-2.5 text-sm hover:bg-red-50 cursor-pointer text-red-600 font-semibold transition-colors"
                 onClick={handleLogout}
