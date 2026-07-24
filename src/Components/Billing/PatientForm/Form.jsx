@@ -77,7 +77,7 @@ function Form() {
     setDisplayData(filtered);
   };
 
-const initialFormState = {
+  const initialFormState = {
     patient_id: "",
     doctor_fees: "0",
     name: "",
@@ -626,12 +626,40 @@ const initialFormState = {
                   className="w-full  text-xs h-10 px-3 border border-gray-400 rounded outline-none text-black focus:ring-2 focus:ring-orange-400"
                 />
                 {showSearchDropdown && searchResults.length > 0 && (
-                  <div className="absolute top-11 left-0 w-full bg-white border border-gray-300 shadow-2xl z-[9999] rounded-md max-h-60 overflow-y-auto">
-                    {searchResults.map((p, idx) => (
-                      <div key={idx} onClick={() => selectPatient(p)} className="p-2 hover:bg-gray-300 cursor-pointer flex justify-between items-center">
-                        <p className="text-sm text-black">{p.user_name}-{p.mobile_no}-{p.userID}</p>
-                      </div>
-                    ))}
+                  <div className="absolute top-11 left-0 w-full bg-white border border-gray-300 shadow-2xl z-[9999] rounded-md max-h-64 overflow-y-auto divide-y divide-gray-200">
+                    {searchResults.map((p, idx) => {
+                      const patientId = p.userID || p.id || "N/A";
+                      const name = p.user_name || p.name || "N/A";
+                      const mobile = p.mobile_no || "N/A";
+                      const age = p.age ? `${p.age} Yrs` : "";
+                      const gender = p.gender ? `(${p.gender})` : "";
+
+                      return (
+                        <div
+                          key={idx}
+                          onClick={() => selectPatient(p)}
+                          className="p-2 hover:bg-gray-50 cursor-pointer transition-colors duration-150 flex flex-col "
+                        >
+                          {/* Top Row: Name and ID Badge */}
+                          <div className="flex justify-between items-center">
+                            <span className="font-semibold text-gray-800 text-sm">
+                              {name}
+                            </span>
+                            <span className="bg-gray-100 text-gray-500 font-mono text-[11px] px-2 py-0.5 rounded tracking-wide">
+                              ID: {patientId}
+                            </span>
+                          </div>
+
+                          {/* Bottom Row: Mobile Number and Age/Gender */}
+                          <div className="flex justify-between items-center text-xs text-gray-500">
+                            <span>Mob: {mobile}</span>
+                            <span>
+                              {age} {gender}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>

@@ -82,7 +82,7 @@ function DoctorHeader() {
 
           {/* Dropdown Card Options List */}
           {!loading && dropdownPatients.length > 0 && (
-            <div className="absolute top-full left-0 w-full bg-white border border-slate-200 rounded-sm shadow-lg max-h-60 overflow-y-auto z-50 mt-1">
+                  <div className="absolute top-11 left-0 w-full bg-white border border-gray-300 shadow-2xl z-[9999] rounded-md max-h-60 overflow-y-auto">
               {dropdownPatients.map((patient) => (
                 <div
                   key={patient.id}
