@@ -39,6 +39,7 @@ function CurrentPatientList() {
         if (apiData && apiData.success === 1 && Array.isArray(apiData.data)) {
           const formattedPatients = apiData.data.map((item) => ({
             id: item.id,
+            appointment_id: item.appointment_id || item.id, 
             name: item.patient_name,
             user_id: item.user_id,
             visit: item.visit_time,
@@ -153,6 +154,7 @@ function CurrentPatientList() {
         onClose={() => setShowCancelModal(false)}
         patient={selectedPatient}
         removePatient={removePatient}
+        doctorId={localStorage.getItem("doctorId")}
       />
     </div>
   );
