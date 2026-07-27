@@ -20,6 +20,9 @@ function Form() {
   const [cityList, setCityList] = useState([]);
   const [consultancyList, setConsultancyList] = useState();
 
+ // Calculate today's date string in YYYY-MM-DD format (Local Time)
+  const todayDateString = new Date().toLocaleDateString('en-CA');
+
   // SEARCH & DROPDOWN STATES 
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -573,13 +576,22 @@ function Form() {
       doctor_fees: fetchedFees.toString(), // Internal assignment
     }));
 
-    // 5. Console logs to verify the internal data flow
-    console.group("Doctor Selection Synced");
-    console.log("Selected Doctor ID :", selectedDoctorId);
-    console.log("Doctor Full Object :", selectedDoctorObj);
-    console.log("Mapped Patient Fee :", fetchedFees);
-    console.groupEnd();
+// Reject selection if past date
+    if (name === "appointment_date" && value < todayDateString) {
+      setErrorMessage("Appointment date cannot be in the past.");
+      return;
+    }
+
+
+    // console.group("Doctor Selection Synced");
+    // console.log("Selected Doctor ID :", selectedDoctorId);
+    // console.log("Doctor Full Object :", selectedDoctorObj);
+    // console.log("Mapped Patient Fee :", fetchedFees);
+    // console.groupEnd();
   };
+
+
+
   return (
     <div className="rounded-md h-fit bg-white   --text-xs">
       <div className="flex flex-col items-center gap-4">
@@ -643,20 +655,12 @@ function Form() {
                           {/* Top Row: Name and ID Badge */}
                           <div className="flex justify-between items-center">
                             <span className="font-semibold text-gray-800 text-sm">
-                              {name}
+                              {name} - {patientId} - {mobile}
                             </span>
-                            <span className="bg-gray-100 text-gray-500 font-mono text-[11px] px-2 py-0.5 rounded tracking-wide">
-                              ID: {patientId}
-                            </span>
+
                           </div>
 
-                          {/* Bottom Row: Mobile Number and Age/Gender */}
-                          <div className="flex justify-between items-center text-xs text-gray-500">
-                            <span>Mob: {mobile}</span>
-                            <span>
-                              {age} {gender}
-                            </span>
-                          </div>
+
                         </div>
                       );
                     })}
@@ -730,7 +734,8 @@ function Form() {
 
               {/* Date & Time Selection */}
               <div className={`flex items-center bg-white border rounded transition-all duration-200 ${getBorderClass("appointment_time")}`}>
-                <input type="date" name="appointment_date" value={formData.appointment_date} onChange={handleInputChange} className="w-1/2 px-2 py-1 text-xs outline-none border-r border-gray-300" />
+                <input type="date" name="appointment_date" min={todayDateString} value={formData.appointment_date} onChange={handleInputChange} className="w-1/2 px-2 py-1 text-xs outline-none border-r border-gray-300" />
+
                 <div className="relative w-1/2" ref={dropdownRef}>
                   <div onClick={() => setIsTimeOpen(!isTimeOpen)} className={`px-2 py-1 text-xs cursor-pointer flex justify-between items-center ${formData.appointment_time ? "text-black" : "text-gray-500"}`}>
                     {formData.appointment_time || "Select Time"}

@@ -43,7 +43,7 @@ const Nav = ({ setAuth }) => {
   const location = useLocation();
 
 
-const syncProfileData = () => {
+  const syncProfileData = () => {
     const storedProfile = localStorage.getItem("user_profile");
     const storedUser = localStorage.getItem("user");
 
@@ -57,7 +57,7 @@ const syncProfileData = () => {
       const parsedUser = JSON.parse(storedUser);
       const dynamicName = parsedUser.user_name || parsedUser.name || parsedUser.data?.user_name || "User";
       const dynamicPic = parsedUser.picture_url || parsedUser.user_pic || parsedUser.data?.picture_url || "";
-      
+
       setProfile({
         user_name: dynamicName,
         picture_url: dynamicPic
@@ -91,13 +91,20 @@ const syncProfileData = () => {
           apiData = response;
         }
 
-        if (apiData && (apiData.total_appointments !== undefined || apiData.pending_appointments !== undefined)) {
+        if (apiData) {
+          // Extract collection dynamically: summary object ya direct property
+          const rawCollections =
+            apiData.summary?.total_collections ??
+            apiData.summary?.cash_collection ??
+            apiData.collections ??
+            0;
+
           setCounts({
             total: Number(apiData.total_appointments) || 0,
             pending: Number(apiData.pending_appointments) || 0,
             today: Number(apiData.today_completed) || 0,
             cancel: Number(apiData.cancel_appointments) || 0,
-            collections: Number(apiData.collections) || 0,
+            collections: Number(rawCollections) || 0,
           });
         }
       } catch (error) {
@@ -107,7 +114,6 @@ const syncProfileData = () => {
 
     fetchDashboardData();
     syncProfileData();
-
 
     window.addEventListener("storage", syncProfileData);
     return () => window.removeEventListener("storage", syncProfileData);
@@ -196,7 +202,7 @@ const syncProfileData = () => {
                   <span className="whitespace-nowrap">{item.name}</span>
                 </div>
                 <span className="text-xs px-2 py-0.5 rounded-full bg-orange-500 text-white">
-                  {item.name === "Collections" ? `₹${item.count}` : item.count}
+                  {item.name === "Collections" ? `₹${item.count.toLocaleString("en-IN")}` : item.count}
                 </span>
               </NavLink>
             ))}
@@ -243,7 +249,7 @@ const syncProfileData = () => {
                 <p
                   className="px-3 py-2 text-sm hover:bg-orange-50 cursor-pointer transition-colors text-gray-700"
                   onClick={() => {
-                    navigate("/billing/my-profile"); 
+                    navigate("/billing/my-profile");
                     setProfileOpen(false);
                   }}
                 >
