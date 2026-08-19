@@ -107,7 +107,7 @@ function Sidebar({ isOpen, setIsOpen }) {
                   <div className="w-full h-full rounded-full bg-[#111827] flex items-center justify-center overflow-hidden">                    {(user.picture_url || user.user_pic) ? (
                     <img
                       src={user.picture_url || user.user_pic}
-                      alt="Profile"
+                   
 
                       className="w-full h-full object-cover"
                       onError={(e) => { e.target.style.display = 'none'; }}

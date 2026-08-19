@@ -11,43 +11,43 @@ function Login({ setAuth }) {
   const navigate = useNavigate();
 
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-try {
-    const response = await loginUser(userID, password);
-    const apiData = response.fullData;
+    try {
+      const response = await loginUser(userID, password);
+      const apiData = response.fullData;
 
-    if (apiData && apiData.success === 1) {
-      const user = apiData.user_data[0];
-      localStorage.setItem("user", JSON.stringify(user));
+      if (apiData && apiData.success === 1) {
+        const user = apiData.user_data[0];
+        localStorage.setItem("user", JSON.stringify(user));
 
-      // DYNAMIC ID SAVE LOGIC
-      if (user.user_type.toLowerCase() === "doctor") {
-        const dId = user.userID;
-        console.log("Saving Doctor ID:", dId);
-        localStorage.setItem("doctorId", dId);
-        console.log("Login Success - Saved Doctor ID:", dId);
+        // DYNAMIC ID SAVE LOGIC
+        if (user.user_type.toLowerCase() === "doctor") {
+          const dId = user.userID;
+          console.log("Saving Doctor ID:", dId);
+          localStorage.setItem("doctorId", dId);
+          console.log("Login Success - Saved Doctor ID:", dId);
+        }
+
+        // ... (rest of your logic remains same)
+        const role = user.user_type.toLowerCase();
+        sessionStorage.setItem("userRole", role);
+        localStorage.setItem("userRole", role);
+
+        setAuth(true);
+        if (role === "doctor") navigate("/doctor");
+        // ...
+      } else {
+        alert(apiData?.message || "Login Failed");
       }
-
-      // ... (rest of your logic remains same)
-      const role = user.user_type.toLowerCase();
-      sessionStorage.setItem("userRole", role);
-      localStorage.setItem("userRole", role);
-      
-      setAuth(true);
-      if (role === "doctor") navigate("/doctor");
-      // ...
-    } else {
-      alert(apiData?.message || "Login Failed");
+    } catch (error) {
+      alert("Server error!");
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    alert("Server error!");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
   return (
     <div className="min-h-screen flex items-center justify-center font-sans"
       style={{

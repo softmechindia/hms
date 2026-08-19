@@ -70,6 +70,11 @@ export const cancelAppointment = async (payload) => {
     return proxyApiRequest("/cancelAppointment", "POST", payload);
 };
 
+// Update Appointment
+export const updateAppointment = async (payload) => {
+    return proxyApiRequest("/updateAppointment", "POST", payload);
+};
+
 // Get doctors list
 export const getDoctors = () => {
     return proxyApiRequest("/getDoctors", "GET");
@@ -178,7 +183,7 @@ export const GetDoctorDashboardData = async (payload) => {
 };
 
 export const DoctorGetPatientList = async (payload) => {
-    return  proxyApiRequest("getPatientList", "POST", payload);
+    return proxyApiRequest("getPatientList", "POST", payload);
 };
 
 export const GetUpcomingAppointments = async (payload) => {
@@ -189,4 +194,10 @@ export const DoctorDashboardData = (payload) => {
     return proxyApiRequest("/billingDashboardData", "POST", payload);
 };
 
+
+//================PHARMACY API===============//
+
+export const PharmacygetMyProfile = (payload) => {
+    return proxyApiRequest("getMyProfile", "POST", payload);
+}
 

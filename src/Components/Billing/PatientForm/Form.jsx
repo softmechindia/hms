@@ -20,7 +20,7 @@ function Form() {
   const [cityList, setCityList] = useState([]);
   const [consultancyList, setConsultancyList] = useState();
 
- // Calculate today's date string in YYYY-MM-DD format (Local Time)
+  // Calculate today's date string in YYYY-MM-DD format (Local Time)
   const todayDateString = new Date().toLocaleDateString('en-CA');
 
   // SEARCH & DROPDOWN STATES 
@@ -52,6 +52,7 @@ function Form() {
   const [hasTodayAppointment, setHasTodayAppointment] = useState(false);
   const [doctorsList, setDoctorsList] = useState([]);
   const [todayUpdatedIDs, setTodayUpdatedIDs] = useState([]);
+  const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
 
   // Track list for fields where user started typing
   const [touchedFields, setTouchedFields] = useState({});
@@ -59,7 +60,7 @@ function Form() {
   const handleSearchFilter = () => {
 
     if (!formData.fromDate || !formData.toDate || !formData.doctor) {
-      alert("Please select From Date, To Date, and Doctor first!");
+      setErrorMessage("Please select From Date, To Date, and Doctor first!");
       return;
     }
 
@@ -147,7 +148,9 @@ function Form() {
     const printWindow = window.open("", "_blank", "width=600,height=800");
 
     if (!printWindow) {
-      alert(" Browser blocked the print window! Please allow popups for this website in your browser settings to print receipts.");
+      setErrorMessage(
+        "Browser blocked the print window! Please allow popups to print receipts."
+      );
       return;
     }
 
@@ -333,9 +336,20 @@ function Form() {
     }
   };
 
+  // Check if patient has an active appointment today from history array
+  const checkTodayActiveFromHistory = (historyList) => {
+    const todayStr = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
+    const activeStatuses = ["booking", "confirmed", "pending"];
+    return historyList.some((appt) => {
+      const apptDate = (appt.appointment_date || appt.date || "").split(" ")[0];
+      const status = (appt.vstatus || appt.status || "").toLowerCase();
+      return apptDate === todayStr && activeStatuses.includes(status);
+    });
+  };
+
   // EXISTING PATIENT SELECT FUNCTION
   const selectPatient = (patient) => {
-    const pId = patient.userID || patient.id || "";
+    const pId = patient.userID || patient.id || patient.patient_id || "";
     setFormData(prev => ({
       ...prev,
       patient_id: pId,
@@ -354,14 +368,10 @@ function Form() {
     setSelectedPatientId(pId);
     setShowSearchDropdown(false);
 
-    const todayStr = new Date().toISOString().split("T")[0];
-    const appointmentsArray = patient.appointment_data || [];
-    const checkTodayRecord = appointmentsArray.some(appt => {
-      const recordDate = appt.appointment_date || appt.date;
-      return recordDate && recordDate.split(" ")[0] === todayStr;
-    });
-
-    if (checkTodayRecord || todayUpdatedIDs.includes(pId)) {
+    // Check today's active appointment from history in API response
+    const historyList = patient.history || patient.appointment_data || [];
+    const hasActive = checkTodayActiveFromHistory(historyList);
+    if (hasActive || todayUpdatedIDs.includes(pId)) {
       setHasTodayAppointment(true);
     } else {
       setHasTodayAppointment(false);
@@ -420,8 +430,7 @@ function Form() {
 
     try {
       if (hasTodayAppointment || (currentId && todayUpdatedIDs.includes(currentId))) {
-        setSuccessMessage("Patient data updated!");
-        if (triggerRefresh) triggerRefresh();
+        setErrorMessage("Active appointment already exists for today. Cancel it first to re-book.");
         return;
       }
 
@@ -441,6 +450,7 @@ function Form() {
           setTodayUpdatedIDs(prev => [...prev, currentId]);
         }
         setHasTodayAppointment(true);
+        setHistoryRefreshKey(prev => prev + 1); // auto-refresh history
 
         const updatedSlots = await getAvailableSlots(formData.appointment_date);
         setAvailableSlots(updatedSlots?.fullData?.slots || updatedSlots?.slots || []);
@@ -448,17 +458,21 @@ function Form() {
         const generatedApptId = parsedRes?.Appointment_id || response?.Appointment_id || "APT-" + Date.now();
         const generatedUserId = parsedRes?.user_id || response?.user_id || currentId || parsedRes?.patient_id || "PAT-NEW";
 
-        // REMOVE THE setTimeout AND CALL DIRECTLY
         appbooking_print(generatedApptId, generatedUserId, parsedRes?.invoice_no || "");
 
         if (triggerRefresh) triggerRefresh();
       }
       else {
-        alert(`Warning: ${parsedRes?.message || "Unable to process dynamic response execution layer."}`);
+        setErrorMessage(
+          parsedRes?.message || "Unable to process the request."
+        );
       }
     } catch (err) {
       console.error("Booking Core Failure:", err);
-      alert("Server response execution crashed or connectivity failed.");
+
+      setErrorMessage(
+        "Server response execution failed. Please try again."
+      );
     }
   };
 
@@ -535,20 +549,20 @@ function Form() {
 
   const handleEditClick = (fieldName) => {
     if (fieldName === "occupation") {
-      if (!formData.occupation) return alert("Select First occupation");
+      if (!formData.occupation) return setErrorMessage("Select First occupation");
       const selected = occupationsList.find((item) => item.occupation_name === formData.occupation);
       if (selected) { setSelectedOccupation(selected); setShowEditOccupations(true); }
     }
   };
 
   const handleEditEducation = () => {
-    if (!formData.education) return alert("Select first education");
+    if (!formData.education) return setErrorMessage("Select First educations");
     const selected = educationList.find((item) => item.education_name === formData.education);
     if (selected) { setSelectedEducation(selected); setShowEditEducations(true); }
   };
 
   const handleEditCity = () => {
-    if (!formData.city) return alert("Please select a city first");
+    if (!formData.city) return setErrorMessage("Please select a city first");
     const selected = cityList.find((item) => item.city_name?.trim().toLowerCase() === formData.city?.trim().toLowerCase());
     if (selected) { setSelectedCity(selected); setShowEditCities(true); }
   };
@@ -576,7 +590,7 @@ function Form() {
       doctor_fees: fetchedFees.toString(), // Internal assignment
     }));
 
-// Reject selection if past date
+    // Reject selection if past date
     if (name === "appointment_date" && value < todayDateString) {
       setErrorMessage("Appointment date cannot be in the past.");
       return;
@@ -849,7 +863,14 @@ function Form() {
         </div>
 
         <div className="w-full mt-1">
-          <PatientsHistory userID={selectedPatientId} />
+          <PatientsHistory
+            userID={selectedPatientId}
+            refreshKey={historyRefreshKey}
+            onHistoryLoaded={(list) => {
+              const hasActive = checkTodayActiveFromHistory(list);
+              setHasTodayAppointment(hasActive);
+            }}
+          />
         </div>
 
         {/* Dynamic Metadata Modification Modals */}

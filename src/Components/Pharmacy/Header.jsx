@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, LogOut, Bell, Menu } from "lucide-react"; // Added Bell for the notification
+import { User, LogOut, Bell, Menu } from "lucide-react"; 
+import { LuCalculator } from "react-icons/lu";
 
 // Mock Notification component
 const Notification = () => (
@@ -14,6 +15,17 @@ function Header({ onToggleSidebar }) {
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    sessionStorage.clear();
+    localStorage.clear();
+
+    if (typeof setAuth === "function") {
+      setAuth(false);
+    }
+
+    window.location.href = "/login";
+  };
 
 
   //Close dropdown when clicking outside
@@ -66,10 +78,10 @@ function Header({ onToggleSidebar }) {
                 {/* My Profile */}
                 <div
                   className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 cursor-pointer transition-colors"
-                  onClick={() => {
-                    navigate("/my-profile");
-                    setProfileOpen(false);
-                  }}
+             onClick={() => {
+  navigate("/Pharmacy/my-profile");
+  setProfileOpen(false);
+}}
                 >
                   <User size={18} className="text-gray-400" />
                   <span className="font-medium">My Profile</span>
@@ -85,7 +97,12 @@ function Header({ onToggleSidebar }) {
                   }}
                 >
                   <LogOut size={18} className="text-red-500" />
-                  <span className="font-medium">Logout</span>
+                  <button
+                    className="w-full text-left px-4 py-2.5 text-sm hover:bg-red-50 cursor-pointer text-red-600 font-semibold transition-colors"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </button>
                 </div>
               </div>
             )}

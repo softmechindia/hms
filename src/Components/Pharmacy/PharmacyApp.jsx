@@ -15,10 +15,11 @@ import Payments from "../Pharmacy/Pages/Payments";
 import SupplierLedger from "../Pharmacy/Pages/Supplier-Ledger";
 import Layout from "../Pharmacy/Layout";
 import Notifications from "../Pharmacy/Pages/Notifications";
+import MyProfile from "../Pharmacy/Pages/MyProfile";
 function PharmacyApp() {
     return (
         <Routes>
-              <Route element={<Layout />}>
+            <Route element={<Layout />}>
                 <Route path="/" element={<PharmacyHome />} />
                 <Route path="/Medicine-bought" element={<Medicinebought />} />
                 <Route path="/patient-list" element={<PatientList />} />
@@ -33,6 +34,8 @@ function PharmacyApp() {
                 <Route path="/supplier-ledger" element={<SupplierLedger />} />
                 <Route path="/totalCollections" element={<TotalCollections />} />
                 <Route path="/notifications" element={<Notifications />} />
+                <Route path="/my-profile" element={<MyProfile />} />
+
 
             </Route>
         </Routes>
