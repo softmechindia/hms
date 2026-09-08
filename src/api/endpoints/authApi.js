@@ -195,9 +195,31 @@ export const DoctorDashboardData = (payload) => {
 };
 
 
+
+//================DOCTOR API===============//
+export const refByData = (payload) => {
+    return proxyApiRequest("/getReferences", "POST", payload);
+};
+
+export const SplInstructionCategories = () => {
+    return proxyApiRequest("getSplInstructionCategories", "GET");
+}
+
+export const SplInstructions = (payload) => {
+    return proxyApiRequest("/getSplInstructions", "POST", payload);
+};
+
+
+export const TreatmentList = () => {
+    return proxyApiRequest("getTreatmentList", "GET")
+
+};
+
+
+
 //================PHARMACY API===============//
 
 export const PharmacygetMyProfile = (payload) => {
     return proxyApiRequest("getMyProfile", "POST", payload);
-}
+};
 
