@@ -259,7 +259,7 @@ function Form() {
   // Treatment display helper
   const getTreatmentName = (item) => {
     if (typeof item === "object" && item !== null) {
-      return item.treatment_name || item.name || item.title || "";
+      return item.treatment_name || "";
     }
     return String(item || "");
   };
