@@ -215,6 +215,14 @@ export const TreatmentList = () => {
 
 };
 
+export const InvestigationList = () => {
+    return proxyApiRequest("/getInvestigationList", "GET");
+};
+
+export const FollowupList = () => {
+    return proxyApiRequest("/getFollowupList", "GET");
+}
+
 
 
 //================PHARMACY API===============//

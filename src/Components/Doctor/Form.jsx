@@ -6,7 +6,9 @@ import {
   refByData,
   SplInstructionCategories,
   SplInstructions,
-  TreatmentList
+  TreatmentList,
+  InvestigationList,
+  FollowupList
 } from "../../api/endpoints/authApi";
 import SendLetterModal from "../../Components/Doctor/Popup/Send-Letter-Popup";
 
@@ -48,9 +50,8 @@ const CustomSelect = ({ options, value, onChange, placeholder, getLabel }) => {
         />
         <svg
           onClick={() => setIsOpen(!isOpen)}
-          className={`w-3 h-3 absolute right-2 text-gray-500 cursor-pointer transition-transform ${
-            isOpen ? "rotate-180" : ""
-          }`}
+          className={`w-3 h-3 absolute right-2 text-gray-500 cursor-pointer transition-transform ${isOpen ? "rotate-180" : ""
+            }`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -100,6 +101,11 @@ function Form() {
     ref_by: "",
     review_patient: "No",
     spl_instruction: "",
+    selected_tests: "",
+
+    diagnosis: "",
+    notes: "",
+    self_notes: "",
   };
 
   const [formData, setFormData] = useState(initialFormState);
@@ -109,11 +115,24 @@ function Form() {
   const [referencesList, setReferencesList] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Special Instructions dynamic states
+  // Special Instructions dynamic states (multi-select categories)
   const [categories, setCategories] = useState([]);
-  const [activeCatId, setActiveCatId] = useState(null);
-  const [subInstructions, setSubInstructions] = useState([]);
-  const [loadingSub, setLoadingSub] = useState(false);
+  const [activeCatIds, setActiveCatIds] = useState([]); // array of currently selected category ids
+  const [subInstructionsMap, setSubInstructionsMap] = useState({}); // { [catId]: items[] }
+  const [loadingCatId, setLoadingCatId] = useState(null); // which category is currently being fetched
+  const [insertedTextByCategory, setInsertedTextByCategory] = useState({}); // { [catId]: exact text string inserted into the textarea for that category }
+
+  // Tests dynamic states (multi-select, same pattern as Spl. Instruction categories)
+  const [testsList, setTestsList] = useState([]); // [{ id, inv_code, inv_tests, items: [...] }]
+  const [activeTestIds, setActiveTestIds] = useState([]);
+  const [insertedTextByTest, setInsertedTextByTest] = useState({}); // { [testId]: exact text string inserted into the Select Test input }
+
+
+  // Followup dynamic states (searchable + free-typable dropdown)
+  const [followupList, setFollowupList] = useState([]);
+  const [followupValue, setFollowupValue] = useState("");
+  const [showFollowupDropdown, setShowFollowupDropdown] = useState(false);
+  const followupDropdownRef = useRef(null);
 
   // Treatment Dropdown States
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -172,13 +191,15 @@ function Form() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [eduRes, occRes, citRes, refRes, catRes, treatRes] = await Promise.all([
+        const [eduRes, occRes, citRes, refRes, catRes, treatRes, invRes, followupRes] = await Promise.all([
           getEducations().catch(() => []),
           getOccupations().catch(() => []),
           getCity().catch(() => []),
           refByData({}).catch(() => []),
           SplInstructionCategories().catch(() => []),
-          TreatmentList ? TreatmentList().catch(() => []) : Promise.resolve([])
+          TreatmentList ? TreatmentList().catch(() => []) : Promise.resolve([]),
+          InvestigationList ? InvestigationList().catch(() => []) : Promise.resolve([]),
+          FollowupList ? FollowupList().catch(() => []) : Promise.resolve([])
         ]);
 
         setEducationsList(extractData(eduRes));
@@ -187,6 +208,9 @@ function Form() {
         setReferencesList(extractData(refRes));
         setCategories(extractData(catRes));
         setAllTreatments(extractData(treatRes));
+        setTestsList(extractData(invRes));
+        setAllTreatments(extractData(treatRes));
+        setFollowupList(extractData(followupRes));
       } catch (error) {
         console.error("Error fetching form options:", error);
       }
@@ -206,39 +230,82 @@ function Form() {
     return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, []);
 
-  // Special Instruction Category handler
+  // Special Instruction Category handler — supports multiple active categories at once
   const handleCategoryClick = async (cat) => {
     const catId = cat.id || cat._id;
 
-    if (activeCatId === catId) {
-      setActiveCatId(null);
-      setSubInstructions([]);
+    // Turning OFF: remove the red/active highlight AND remove exactly this
+    // category's own text from the textarea (other active categories' text
+    // and anything typed manually stays untouched)
+    if (activeCatIds.includes(catId)) {
+      setActiveCatIds((prev) => prev.filter((id) => id !== catId));
+      removeCategoryTextFromTextarea(catId);
       return;
     }
 
-    setActiveCatId(catId);
-    setLoadingSub(true);
+    // Turning ON: add this category to the active list, keeping others active
+    setActiveCatIds((prev) => [...prev, catId]);
 
+    // If we've already fetched this category's instructions before, just
+    // re-insert them (addCategoryTextToTextarea guards against duplicates)
+    if (subInstructionsMap[catId]) {
+      addCategoryTextToTextarea(catId, subInstructionsMap[catId]);
+      return;
+    }
+
+    setLoadingCatId(catId);
     try {
       const res = await SplInstructions({ cat_id: String(catId) });
       const fetchedData = extractData(res);
-      setSubInstructions(fetchedData);
+      setSubInstructionsMap((prev) => ({ ...prev, [catId]: fetchedData }));
+      // Directly write this category's instructions into the textarea —
+      // no separate preview list, placeholder disappears as soon as text is added
+      addCategoryTextToTextarea(catId, fetchedData);
     } catch (err) {
       console.error("Error fetching sub instructions:", err);
-      setSubInstructions([]);
+      setSubInstructionsMap((prev) => ({ ...prev, [catId]: [] }));
     } finally {
-      setLoadingSub(false);
+      setLoadingCatId(null);
     }
   };
 
-  // Special Instruction Option click handler
-  const handleOptionClick = (item) => {
-    const textToAdd =
-      typeof item === "string"
-        ? item
-        : item.spl_instruction || item.instruction || item.name || item.title || "";
+  // Pulls plain label text out of API items (string or object shapes)
+  const getLabelsFromItems = (items) =>
+    (items || [])
+      .map((item) =>
+        typeof item === "string"
+          ? item
+          : item.spl_instruction || item.instruction || item.name || item.title || ""
+      )
+      .map((label) => label.trim())
+      .filter(Boolean);
 
-    if (!textToAdd.trim()) return;
+
+  const removeSubstringWithSeparator = (fullText, substring) => {
+    if (!fullText || !substring) return fullText || "";
+    if (fullText === substring) return "";
+    if (fullText.startsWith(`${substring}, `)) {
+      return fullText.slice(substring.length + 2);
+    }
+    if (fullText.endsWith(`, ${substring}`)) {
+      return fullText.slice(0, fullText.length - substring.length - 2);
+    }
+    const middle = `, ${substring}, `;
+    const idx = fullText.indexOf(middle);
+    if (idx !== -1) {
+      return fullText.slice(0, idx) + ", " + fullText.slice(idx + middle.length);
+    }
+    return fullText; // not found (e.g. user edited it manually) — leave as-is
+  };
+
+
+  const addCategoryTextToTextarea = (catId, items) => {
+    if (insertedTextByCategory[catId]) return;
+
+    const labels = getLabelsFromItems(items);
+    if (labels.length === 0) return;
+
+    const textToAdd = labels.join(", ");
 
     setFormData((prev) => ({
       ...prev,
@@ -246,6 +313,81 @@ function Form() {
         ? `${prev.spl_instruction}, ${textToAdd}`
         : textToAdd,
     }));
+
+    setInsertedTextByCategory((prev) => ({ ...prev, [catId]: textToAdd }));
+  };
+
+  // Removes exactly the text that was inserted for this category
+  const removeCategoryTextFromTextarea = (catId) => {
+    const textToRemove = insertedTextByCategory[catId];
+    if (!textToRemove) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      spl_instruction: removeSubstringWithSeparator(prev.spl_instruction || "", textToRemove),
+    }));
+
+    setInsertedTextByCategory((prev) => {
+      const next = { ...prev };
+      delete next[catId];
+      return next;
+    });
+  };
+
+
+  const getLabelsFromInvTests = (invTests) =>
+    (invTests || "")
+      .split(",")
+      .map((label) => label.trim())
+      .filter(Boolean);
+
+  const addTestTextToInput = (testId, invTests) => {
+    if (insertedTextByTest[testId]) return; // already inserted, skip
+
+    const labels = getLabelsFromInvTests(invTests);
+    if (labels.length === 0) return;
+
+    const textToAdd = labels.join(", ");
+
+    setFormData((prev) => ({
+      ...prev,
+      selected_tests: prev.selected_tests
+        ? `${prev.selected_tests}, ${textToAdd}`
+        : textToAdd,
+    }));
+
+    setInsertedTextByTest((prev) => ({ ...prev, [testId]: textToAdd }));
+  };
+
+  const removeTestTextFromInput = (testId) => {
+    const textToRemove = insertedTextByTest[testId];
+    if (!textToRemove) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      selected_tests: removeSubstringWithSeparator(prev.selected_tests || "", textToRemove),
+    }));
+
+    setInsertedTextByTest((prev) => {
+      const next = { ...prev };
+      delete next[testId];
+      return next;
+    });
+  };
+
+  const handleTestClick = (test) => {
+    const testId = test.id || test._id;
+
+
+    if (activeTestIds.includes(testId)) {
+      setActiveTestIds((prev) => prev.filter((id) => id !== testId));
+      removeTestTextFromInput(testId);
+      return;
+    }
+
+    // Turning ON: add this test to the active list, keeping others active
+    setActiveTestIds((prev) => [...prev, testId]);
+    addTestTextToInput(testId, test.inv_tests);
   };
 
   const handleFormInputChange = (e) => {
@@ -272,6 +414,13 @@ function Form() {
     setSearchTerm("");
 
     if (treatment && typeof treatment === "object") {
+
+      setFormData((prev) => ({
+        ...prev,
+        diag_name: treatment.diag_name || "",
+        notes: treatment.notes || "",
+        self_notes: treatment.add_notes || "",
+      }));
       // 1. Agar treatment object me medicines array maujood ho
       if (Array.isArray(treatment.medicines) && treatment.medicines.length > 0) {
         const formattedRows = treatment.medicines.map((med, idx) => ({
@@ -279,9 +428,10 @@ function Form() {
           medicine: med.medicine_name || med.medicine || "",
           description: med.generic_name || med.description || "",
           remark: med.remark || med.notes || "",
+
         }));
         setRows(formattedRows);
-      } 
+      }
       // 2. Agar object me single medicine data direct fields me ho
       else if (treatment.medicine_name || treatment.generic_name) {
         setRows([
@@ -301,6 +451,20 @@ function Form() {
     const name = getTreatmentName(treatment);
     return name.toLowerCase().includes((searchTerm || "").toLowerCase());
   });
+  // Followup dropdown filtered list
+  const getFollowupLabel = (item) =>
+    typeof item === "object"
+      ? item.followup_name ||
+      item.followup ||
+      item.name ||
+      item.title ||
+      item.description ||
+      ""
+      : String(item);
+
+  const filteredFollowups = (followupList || []).filter((item) =>
+    getFollowupLabel(item).toLowerCase().includes(followupValue.toLowerCase())
+  );
 
   return (
     <div className="w-full min-h-screen max-w-full mx-auto flex flex-col gap-1 p-4 bg-slate-50">
@@ -381,11 +545,10 @@ function Form() {
                 review_patient: prev.review_patient === "Yes" ? "No" : "Yes",
               }))
             }
-            className={`border px-4 py-1 rounded-full text-xs font-semibold transition-colors ${
-              formData.review_patient === "Yes"
-                ? "bg-blue-600 text-white border-blue-600"
-                : "border-gray-300 text-gray-500 bg-white hover:bg-gray-50"
-            }`}
+            className={`border px-4 py-1 rounded-full text-xs font-semibold transition-colors ${formData.review_patient === "Yes"
+              ? "bg-blue-600 text-white border-blue-600"
+              : "border-gray-300 text-gray-500 bg-white hover:bg-gray-50"
+              }`}
           >
             + REVIEW
           </button>
@@ -462,6 +625,9 @@ function Form() {
               </td>
               <td className="py-1">
                 <textarea
+                  name="diagnosis"
+                  value={formData.diag_name}
+                  onChange={handleFormInputChange}
                   placeholder="Enter Diagnosis"
                   rows={1}
                   className="w-full outline-none border-b border-gray-300 focus:border-orange-500 pb-0.5 text-xs leading-normal transition-all bg-transparent placeholder:text-slate-400 resize-y"
@@ -475,6 +641,9 @@ function Form() {
               </td>
               <td className="py-1">
                 <textarea
+                  name="Notes"
+                  value={formData.notes}
+                  onChange={handleFormInputChange}
                   placeholder="Enter Notes"
                   rows={1}
                   className="w-full outline-none border-b border-gray-300 focus:border-orange-500 pb-0.5 text-xs leading-normal transition-all bg-transparent placeholder:text-slate-400 resize-y"
@@ -488,6 +657,9 @@ function Form() {
               </td>
               <td className="py-1">
                 <textarea
+                  name="Self Notes"
+                  value={formData.self_notes}
+                  onChange={handleFormInputChange}
                   placeholder="Enter Self Notes"
                   rows={1}
                   className="w-full outline-none border-b border-gray-300 focus:border-orange-500 pb-0.5 text-xs leading-normal transition-all bg-transparent placeholder:text-slate-400 resize-y"
@@ -505,18 +677,17 @@ function Form() {
                   {categories.map((cat, index) => {
                     const catId = cat.id || cat._id;
                     const catName = cat.category_name || cat.name || cat.title || cat.spl_title;
-                    const isActive = activeCatId === catId;
+                    const isActive = activeCatIds.includes(catId);
 
                     return (
                       <button
                         key={catId || index}
                         type="button"
                         onClick={() => handleCategoryClick(cat)}
-                        className={`text-[11px] font-bold border px-3 py-1 rounded-full transition-all shadow-sm ${
-                          isActive
-                            ? "bg-red-500 text-white border-red-500"
-                            : "bg-white text-red-600 border-red-200 hover:bg-red-500 hover:text-white"
-                        }`}
+                        className={`text-[11px] font-bold border px-3 py-1 rounded-full transition-all shadow-sm ${isActive
+                          ? "bg-red-500 text-white border-red-500"
+                          : "bg-white text-red-600 border-red-200 hover:bg-red-500 hover:text-white"
+                          }`}
                       >
                         {catName}
                       </button>
@@ -524,31 +695,12 @@ function Form() {
                   })}
                 </div>
 
-                {loadingSub ? (
-                  <div className="w-full border border-slate-200 rounded-lg p-3 bg-slate-50/50 mb-2 text-xs text-slate-400 italic">
-                    Loading instructions...
-                  </div>
-                ) : subInstructions.length > 0 ? (
-                  <div className="w-full border border-slate-200 rounded-lg p-2.5 bg-slate-50/40 mb-2 min-h-[42px] flex flex-wrap gap-2 items-center">
-                    {subInstructions.map((item, idx) => {
-                      const label =
-                        typeof item === "string"
-                          ? item
-                          : item.spl_instruction || item.instruction || item.name || item.title;
-
-                      return (
-                        <button
-                          key={item.id || item._id || idx}
-                          type="button"
-                          onClick={() => handleOptionClick(item)}
-                          className="bg-white border border-red-300 text-red-600 hover:bg-red-500 hover:text-white text-xs font-medium px-3 py-1 rounded-full shadow-sm transition-colors cursor-pointer text-left leading-tight"
-                        >
-                          {label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                ) : null}
+                {/* No separate preview list anymore — clicking a category
+                    directly writes its instructions into the textarea below,
+                    so the placeholder disappears the moment text is added. */}
+                {loadingCatId && (
+                  <span style={{ fontSize: "12px" }}>Loading instructions...</span>
+                )}
 
                 <textarea
                   name="spl_instruction"
@@ -725,19 +877,31 @@ function Form() {
             </label>
             <div className="flex flex-col w-full min-w-0">
               <div className="flex gap-2 mb-2 overflow-x-auto no-scrollbar whitespace-nowrap pb-1">
-                {["1", "2", "Oa", "Fm", "An", "Scl", "Vaginitis", "RA", "PIVD", "Gout", "PIVD L"].map((test, index) => (
-                  <span
-                    key={index}
-                    className="bg-white border border-orange-200 text-orange-600 text-[11px] font-semibold px-3 py-0.5 rounded-full shadow-sm hover:bg-orange-500 hover:text-white cursor-pointer transition-all flex-shrink-0"
-                  >
-                    {test}
-                  </span>
-                ))}
+                {testsList.map((test) => {
+                  const testId = test.id || test._id;
+                  const isActive = activeTestIds.includes(testId);
+
+                  return (
+                    <span
+                      key={testId}
+                      onClick={() => handleTestClick(test)}
+                      className={`text-[11px] font-semibold px-3 py-0.5 rounded-full shadow-sm cursor-pointer transition-all flex-shrink-0 border ${isActive
+                        ? "bg-orange-500 text-white border-orange-500"
+                        : "bg-white text-orange-600 border-orange-200 hover:bg-orange-500 hover:text-white"
+                        }`}
+                    >
+                      {test.inv_code}
+                    </span>
+                  );
+                })}
               </div>
 
               <div className="relative w-full">
                 <input
                   type="text"
+                  name="selected_tests"
+                  value={formData.selected_tests || ""}
+                  onChange={handleFormInputChange}
                   placeholder="Select Test"
                   className="w-full outline-none border-b border-gray-300 focus:border-orange-500 pb-0.5 text-xs transition-all bg-transparent placeholder:text-slate-400"
                 />
@@ -756,16 +920,82 @@ function Form() {
             />
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 py-2">
+
+          <div
+            className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 py-2"
+            ref={followupDropdownRef}
+          >
             <label className="text-xs w-full sm:w-32 shrink-0 font-bold text-gray-800">
               Followup
             </label>
-            <input
-              type="text"
-              placeholder="Enter Diagnosis"
-              className="w-full outline-none border-b border-gray-300 focus:border-orange-500 pb-0.5 text-xs leading-none transition-all bg-transparent placeholder:text-slate-400"
-            />
+
+            <div className="relative w-full">
+              {/* Editable Input */}
+              <div className="relative flex items-center">
+                <input
+                  type="text"
+                  value={followupValue}
+                  placeholder="Select or enter Followup"
+                  onFocus={() => setShowFollowupDropdown(true)}
+                  onChange={(e) => {
+                    setFollowupValue(e.target.value);
+                    setShowFollowupDropdown(true);
+                  }}
+                  className="w-full outline-none border-b border-gray-300 focus:border-orange-500 pb-0.5 pr-6 text-xs leading-none transition-all bg-transparent placeholder:text-slate-400"
+                />
+
+                {/* Dropdown Arrow */}
+                <svg
+                  onClick={() => setShowFollowupDropdown((prev) => !prev)}
+                  className={`w-3 h-3 absolute right-1 text-gray-500 cursor-pointer transition-transform ${showFollowupDropdown ? "rotate-180" : ""
+                    }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+
+              {/* Dropdown */}
+              {showFollowupDropdown && (
+                <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-sm shadow-md max-h-48 overflow-y-auto">
+                  {filteredFollowups.map((item, index) => {
+                    const label = getFollowupLabel(item);
+                    const key =
+                      typeof item === "object" ? item._id || item.id || index : index;
+
+                    return (
+                      <div
+                        key={key}
+                        onClick={() => {
+                          setFollowupValue(label);
+                          setShowFollowupDropdown(false);
+                        }}
+                        className="px-2 py-1.5 text-xs text-gray-700 hover:bg-orange-50 hover:text-orange-600 cursor-pointer transition-colors border-b border-gray-50 last:border-b-0"
+                      >
+                        {label}
+                      </div>
+                    );
+                  })}
+
+                  {filteredFollowups.length === 0 && (
+                    <div className="px-2 py-2 text-xs text-gray-400 text-center italic">
+                      No followup found
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
+
+
+
         </div>
       </div>
 
