@@ -197,31 +197,52 @@ export const DoctorDashboardData = (payload) => {
 
 
 //================DOCTOR API===============//
+//API of getReferences
 export const refByData = (payload) => {
     return proxyApiRequest("/getReferences", "POST", payload);
 };
 
+//API of getSplInstructionCategories
 export const SplInstructionCategories = () => {
     return proxyApiRequest("getSplInstructionCategories", "GET");
 }
 
+//API of getSplInstructions
 export const SplInstructions = (payload) => {
     return proxyApiRequest("/getSplInstructions", "POST", payload);
 };
 
-
+//API of getTreatmentList
 export const TreatmentList = () => {
     return proxyApiRequest("getTreatmentList", "GET")
 
 };
 
+//API of getInvestigationList
 export const InvestigationList = () => {
     return proxyApiRequest("/getInvestigationList", "GET");
 };
 
+
+//API of getFollowupList
 export const FollowupList = () => {
     return proxyApiRequest("/getFollowupList", "GET");
 }
+
+
+//API of getMedicinesList
+export const MedicinesList = () => {
+    return proxyApiRequest("/getMedicinesList", "POST");
+}
+
+
+//API of getMedicineDescription 
+export const MedicineDescription = () => {
+    return proxyApiRequest("/getMedicineDescription", "POST")
+};
+export const RemarkNote = () => {
+    return proxyApiRequest("/getRemarkNote", "POST")
+};
 
 
 

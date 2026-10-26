@@ -8,7 +8,10 @@ import {
   SplInstructions,
   TreatmentList,
   InvestigationList,
-  FollowupList
+  FollowupList,
+  MedicinesList,
+  MedicineDescription,
+  RemarkNote
 } from "../../api/endpoints/authApi";
 import SendLetterModal from "../../Components/Doctor/Popup/Send-Letter-Popup";
 
@@ -89,6 +92,144 @@ const CustomSelect = ({ options, value, onChange, placeholder, getLabel }) => {
   );
 };
 
+
+const RowDropdown = ({
+  options,
+  value,
+  placeholder,
+  getLabel,
+  onTextChange,
+  onSelect,
+  emptyText = "No results found",
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [query, setQuery] = useState(""); 
+  const wrapperRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+        setIsOpen(false);
+        setQuery("");
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const filtered = (options || []).filter((item) =>
+    (getLabel(item) || "").toLowerCase().includes(query.toLowerCase())
+  );
+
+  return (
+    <div className="relative w-full" ref={wrapperRef}>
+      <div className="relative flex items-center">
+        <input
+          type="text"
+          placeholder={placeholder}
+          value={value}
+          onFocus={() => setIsOpen(true)}
+          onChange={(e) => {
+            onTextChange(e.target.value);
+            setQuery(e.target.value);
+            setIsOpen(true);
+          }}
+          className="w-full py-1 px-2 pr-6 outline-none placeholder-slate-400 text-slate-600 text-xs bg-transparent"
+        />
+        <svg
+          onClick={() => setIsOpen((prev) => !prev)}
+          className={`w-3 h-3 absolute right-1 text-gray-500 cursor-pointer transition-transform ${isOpen ? "rotate-180" : ""
+            }`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
+
+      {isOpen && (
+        <div className="absolute left-0 right-0 z-50 mt-1 bg-white border border-gray-300 rounded-sm shadow-xl max-h-48 overflow-y-auto">
+          {filtered.length > 0 ? (
+            filtered.map((item, index) => {
+              const label = getLabel(item);
+              const key = `${typeof item === "object" ? item._id || item.id || "" : ""}-${index}`;
+              return (
+                <div
+                  key={key}
+                  onClick={() => {
+                    onSelect(item);
+                    setIsOpen(false);
+                    setQuery("");
+                  }}
+                  className="px-2 py-1.5 text-xs text-gray-700 hover:bg-orange-50 hover:text-orange-600 cursor-pointer transition-colors border-b border-gray-50 last:border-b-0"
+                >
+                  {label}
+                </div>
+              );
+            })
+          ) : (
+            <div className="px-2 py-2 text-xs text-gray-400 text-center italic">{emptyText}</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Label getters for each list (API item -> text shown in the dropdown)
+const getMedicineLabel = (item) =>
+  typeof item === "object"
+    ? item.medicine_name || item.medicine || item.name || item.title || ""
+    : String(item);
+
+// Description API: { id, daytime, daytime_print, label, value }
+const getDescriptionLabel = (item) =>
+  typeof item === "object"
+    ? item.label || item.daytime_print || item.value || ""
+    : String(item);
+
+// Remark API shape is not known, so common keys are tried — adjust if your API uses another key
+const getRemarkLabel = (item) =>
+  typeof item === "object"
+    ? item.label ||
+    item.remark ||
+    item.remark_name ||
+    item.remark_note ||
+    item.note ||
+    item.value ||
+    item.name ||
+    item.title ||
+    ""
+    : String(item);
+
+// Each column's differences live here. Everything else is shared logic.
+const DROPDOWN_FIELDS = [
+  {
+    field: "medicine",
+    placeholder: "Medicine",
+    emptyText: "No medicine found",
+    getLabel: getMedicineLabel,
+    // only for medicine: picking one also pre-fills the other fields
+    autoFill: (item, row) => ({
+      description: item.generic_name || item.description || row.description,
+      remark: item.remark || item.notes || row.remark,
+    }),
+  },
+  {
+    field: "description",
+    placeholder: "Description",
+    emptyText: "No description found",
+    getLabel: getDescriptionLabel,
+  },
+  {
+    field: "remark",
+    placeholder: "Notes",
+    emptyText: "No remark found",
+    getLabel: getRemarkLabel,
+  },
+];
+
 function Form() {
   const initialFormState = {
     patient_id: "",
@@ -127,7 +268,6 @@ function Form() {
   const [activeTestIds, setActiveTestIds] = useState([]);
   const [insertedTextByTest, setInsertedTextByTest] = useState({}); // { [testId]: exact text string inserted into the Select Test input }
 
-
   // Followup dynamic states (searchable + free-typable dropdown)
   const [followupList, setFollowupList] = useState([]);
   const [followupValue, setFollowupValue] = useState("");
@@ -141,6 +281,18 @@ function Form() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedValue, setSelectedValue] = useState("Select Treatment");
   const treatmentDropdownRef = useRef(null);
+
+  // Table dropdown option lists (Medicine / Description / Remark)
+  const [medicinesList, setMedicinesList] = useState([]);
+  const [descriptionList, setDescriptionList] = useState([]);
+  const [remarkNoteList, setRemarkNoteList] = useState([]);
+
+  // field name -> its options list (used by the table loop)
+  const optionsByField = {
+    medicine: medicinesList,
+    description: descriptionList,
+    remark: remarkNoteList,
+  };
 
   const errorMap = {};
   const msg = "";
@@ -163,20 +315,38 @@ function Form() {
 
   const addRow = () => {
     const newRow = { id: Date.now(), medicine: '', description: '', remark: '' };
-    setRows([...rows, newRow]);
+    setRows((prev) => [...prev, newRow]);
   };
 
   const removeRow = (id) => {
-    if (rows.length > 1) {
-      setRows(rows.filter(row => row.id !== id));
-    }
+    setRows((prev) => (prev.length > 1 ? prev.filter((row) => row.id !== id) : prev));
   };
 
+  // Generic setter: updates ONE field of ONE row (typing in any of the 3 dropdowns)
   const handleInputChange = (id, field, value) => {
-    const updatedRows = rows.map(row =>
-      row.id === id ? { ...row, [field]: value } : row
+    setRows((prev) =>
+      prev.map((row) => (row.id === id ? { ...row, [field]: value } : row))
     );
-    setRows(updatedRows);
+  };
+
+  // ONE select handler for medicine / description / remark.
+  // Uses DROPDOWN_FIELDS config: sets the picked field, plus any autoFill fields (medicine only).
+  const handleRowSelect = (rowId, field, item) => {
+    const cfg = DROPDOWN_FIELDS.find((f) => f.field === field);
+    if (!cfg) return;
+    const label = cfg.getLabel(item);
+
+    setRows((prev) =>
+      prev.map((row) =>
+        row.id === rowId
+          ? {
+            ...row,
+            [field]: label,
+            ...(cfg.autoFill ? cfg.autoFill(item, row) : {}),
+          }
+          : row
+      )
+    );
   };
 
   // Utility function to extract data arrays safely
@@ -191,7 +361,7 @@ function Form() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [eduRes, occRes, citRes, refRes, catRes, treatRes, invRes, followupRes] = await Promise.all([
+        const [eduRes, occRes, citRes, refRes, catRes, treatRes, invRes, followupRes, medRes, medDesRes, remarkRes] = await Promise.all([
           getEducations().catch(() => []),
           getOccupations().catch(() => []),
           getCity().catch(() => []),
@@ -199,7 +369,10 @@ function Form() {
           SplInstructionCategories().catch(() => []),
           TreatmentList ? TreatmentList().catch(() => []) : Promise.resolve([]),
           InvestigationList ? InvestigationList().catch(() => []) : Promise.resolve([]),
-          FollowupList ? FollowupList().catch(() => []) : Promise.resolve([])
+          FollowupList ? FollowupList().catch(() => []) : Promise.resolve([]),
+          MedicinesList ? MedicinesList().catch(() => []) : Promise.resolve([]),
+          MedicineDescription ? MedicineDescription().catch(() => []) : Promise.resolve([]),
+          RemarkNote ? RemarkNote().catch(() => []) : Promise.resolve([]),
         ]);
 
         setEducationsList(extractData(eduRes));
@@ -209,8 +382,10 @@ function Form() {
         setCategories(extractData(catRes));
         setAllTreatments(extractData(treatRes));
         setTestsList(extractData(invRes));
-        setAllTreatments(extractData(treatRes));
         setFollowupList(extractData(followupRes));
+        setMedicinesList(extractData(medRes));
+        setDescriptionList(extractData(medDesRes));
+        setRemarkNoteList(extractData(remarkRes));
       } catch (error) {
         console.error("Error fetching form options:", error);
       }
@@ -230,13 +405,21 @@ function Form() {
     return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, []);
 
+  // Followup dropdown click outside handler
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (followupDropdownRef.current && !followupDropdownRef.current.contains(e.target)) {
+        setShowFollowupDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
   // Special Instruction Category handler — supports multiple active categories at once
   const handleCategoryClick = async (cat) => {
     const catId = cat.id || cat._id;
 
-    // Turning OFF: remove the red/active highlight AND remove exactly this
-    // category's own text from the textarea (other active categories' text
-    // and anything typed manually stays untouched)
     if (activeCatIds.includes(catId)) {
       setActiveCatIds((prev) => prev.filter((id) => id !== catId));
       removeCategoryTextFromTextarea(catId);
@@ -246,8 +429,6 @@ function Form() {
     // Turning ON: add this category to the active list, keeping others active
     setActiveCatIds((prev) => [...prev, catId]);
 
-    // If we've already fetched this category's instructions before, just
-    // re-insert them (addCategoryTextToTextarea guards against duplicates)
     if (subInstructionsMap[catId]) {
       addCategoryTextToTextarea(catId, subInstructionsMap[catId]);
       return;
@@ -258,8 +439,7 @@ function Form() {
       const res = await SplInstructions({ cat_id: String(catId) });
       const fetchedData = extractData(res);
       setSubInstructionsMap((prev) => ({ ...prev, [catId]: fetchedData }));
-      // Directly write this category's instructions into the textarea —
-      // no separate preview list, placeholder disappears as soon as text is added
+
       addCategoryTextToTextarea(catId, fetchedData);
     } catch (err) {
       console.error("Error fetching sub instructions:", err);
@@ -280,7 +460,6 @@ function Form() {
       .map((label) => label.trim())
       .filter(Boolean);
 
-
   const removeSubstringWithSeparator = (fullText, substring) => {
     if (!fullText || !substring) return fullText || "";
     if (fullText === substring) return "";
@@ -297,7 +476,6 @@ function Form() {
     }
     return fullText; // not found (e.g. user edited it manually) — leave as-is
   };
-
 
   const addCategoryTextToTextarea = (catId, items) => {
     if (insertedTextByCategory[catId]) return;
@@ -333,7 +511,6 @@ function Form() {
       return next;
     });
   };
-
 
   const getLabelsFromInvTests = (invTests) =>
     (invTests || "")
@@ -378,7 +555,6 @@ function Form() {
   const handleTestClick = (test) => {
     const testId = test.id || test._id;
 
-
     if (activeTestIds.includes(testId)) {
       setActiveTestIds((prev) => prev.filter((id) => id !== testId));
       removeTestTextFromInput(testId);
@@ -417,11 +593,11 @@ function Form() {
 
       setFormData((prev) => ({
         ...prev,
-        diag_name: treatment.diag_name || "",
+        diagnosis: treatment.diag_name || "",
         notes: treatment.notes || "",
         self_notes: treatment.add_notes || "",
       }));
-      // 1. Agar treatment object me medicines array maujood ho
+
       if (Array.isArray(treatment.medicines) && treatment.medicines.length > 0) {
         const formattedRows = treatment.medicines.map((med, idx) => ({
           id: Date.now() + idx,
@@ -451,6 +627,7 @@ function Form() {
     const name = getTreatmentName(treatment);
     return name.toLowerCase().includes((searchTerm || "").toLowerCase());
   });
+
   // Followup dropdown filtered list
   const getFollowupLabel = (item) =>
     typeof item === "object"
@@ -626,7 +803,7 @@ function Form() {
               <td className="py-1">
                 <textarea
                   name="diagnosis"
-                  value={formData.diag_name}
+                  value={formData.diagnosis}
                   onChange={handleFormInputChange}
                   placeholder="Enter Diagnosis"
                   rows={1}
@@ -641,7 +818,7 @@ function Form() {
               </td>
               <td className="py-1">
                 <textarea
-                  name="Notes"
+                  name="notes"
                   value={formData.notes}
                   onChange={handleFormInputChange}
                   placeholder="Enter Notes"
@@ -657,7 +834,7 @@ function Form() {
               </td>
               <td className="py-1">
                 <textarea
-                  name="Self Notes"
+                  name="self_notes"
                   value={formData.self_notes}
                   onChange={handleFormInputChange}
                   placeholder="Enter Self Notes"
@@ -695,9 +872,6 @@ function Form() {
                   })}
                 </div>
 
-                {/* No separate preview list anymore — clicking a category
-                    directly writes its instructions into the textarea below,
-                    so the placeholder disappears the moment text is added. */}
                 {loadingCatId && (
                   <span style={{ fontSize: "12px" }}>Loading instructions...</span>
                 )}
@@ -798,8 +972,9 @@ function Form() {
         </div>
 
         <div className="w-full flex justify-center px-2">
-          <div className="w-full max-w-full bg-white overflow-hidden mb-2">
-            <div className="overflow-x-auto">
+          <div className="w-full max-w-full bg-white mb-2">
+            {/* overflow-visible so the dropdown lists are not clipped by the table container */}
+            <div className="relative overflow-visible">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
                   <tr className="bg-slate-50 border-y border-slate-200">
@@ -821,35 +996,20 @@ function Form() {
                 <tbody>
                   {rows.map((row) => (
                     <tr key={row.id} className="border-b border-slate-200">
-                      <td className="p-1 border-r border-slate-200">
-                        <input
-                          type="text"
-                          placeholder="Medicine"
-                          value={row.medicine}
-                          onChange={(e) => handleInputChange(row.id, 'medicine', e.target.value)}
-                          className="w-full py-1 px-2 outline-none placeholder-slate-400 text-slate-600 text-xs bg-transparent"
-                        />
-                      </td>
-
-                      <td className="p-1 border-r border-slate-200">
-                        <input
-                          type="text"
-                          placeholder="Description"
-                          value={row.description}
-                          onChange={(e) => handleInputChange(row.id, 'description', e.target.value)}
-                          className="w-full py-1 px-2 outline-none placeholder-slate-400 text-slate-600 text-xs bg-transparent"
-                        />
-                      </td>
-
-                      <td className="p-1 border-r border-slate-200">
-                        <input
-                          type="text"
-                          placeholder="Notes"
-                          value={row.remark}
-                          onChange={(e) => handleInputChange(row.id, 'remark', e.target.value)}
-                          className="w-full py-1 px-2 outline-none placeholder-slate-400 text-slate-600 text-xs bg-transparent"
-                        />
-                      </td>
+                      {/* Medicine / Description / Remark — all 3 come from one loop */}
+                      {DROPDOWN_FIELDS.map((cfg) => (
+                        <td key={cfg.field} className="p-1 border-r border-slate-200 relative">
+                          <RowDropdown
+                            options={optionsByField[cfg.field]}
+                            value={row[cfg.field]}
+                            placeholder={cfg.placeholder}
+                            getLabel={cfg.getLabel}
+                            emptyText={cfg.emptyText}
+                            onTextChange={(text) => handleInputChange(row.id, cfg.field, text)}
+                            onSelect={(item) => handleRowSelect(row.id, cfg.field, item)}
+                          />
+                        </td>
+                      ))}
 
                       <td className="p-1 text-center">
                         <button
@@ -920,7 +1080,6 @@ function Form() {
             />
           </div>
 
-
           <div
             className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 py-2"
             ref={followupDropdownRef}
@@ -930,7 +1089,6 @@ function Form() {
             </label>
 
             <div className="relative w-full">
-              {/* Editable Input */}
               <div className="relative flex items-center">
                 <input
                   type="text"
@@ -944,7 +1102,6 @@ function Form() {
                   className="w-full outline-none border-b border-gray-300 focus:border-orange-500 pb-0.5 pr-6 text-xs leading-none transition-all bg-transparent placeholder:text-slate-400"
                 />
 
-                {/* Dropdown Arrow */}
                 <svg
                   onClick={() => setShowFollowupDropdown((prev) => !prev)}
                   className={`w-3 h-3 absolute right-1 text-gray-500 cursor-pointer transition-transform ${showFollowupDropdown ? "rotate-180" : ""
@@ -962,7 +1119,6 @@ function Form() {
                 </svg>
               </div>
 
-              {/* Dropdown */}
               {showFollowupDropdown && (
                 <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-sm shadow-md max-h-48 overflow-y-auto">
                   {filteredFollowups.map((item, index) => {
@@ -993,9 +1149,6 @@ function Form() {
               )}
             </div>
           </div>
-
-
-
         </div>
       </div>
 
