@@ -92,23 +92,101 @@ const CustomSelect = ({ options, value, onChange, placeholder, getLabel }) => {
   );
 };
 
+// Small arrow icon shared by the three table dropdowns (icon only, no logic)
+const Arrow = ({ isOpen, onClick }) => (
+  <svg
+    onClick={onClick}
+    className={`w-3 h-3 absolute right-1 text-gray-500 cursor-pointer transition-transform ${isOpen ? "rotate-180" : ""
+      }`}
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+  </svg>
+);
 
-const RowDropdown = ({
-  options,
-  value,
-  placeholder,
-  getLabel,
-  onTextChange,
-  onSelect,
-  emptyText = "No results found",
-}) => {
+
+//  1. MEDICINE dropdown  -> shows medicine_name                   
+
+const MedicineDropdown = ({ options, value, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [query, setQuery] = useState(""); 
-  const wrapperRef = useRef(null);
+  const [query, setQuery] = useState("");
+  const ref = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+      if (ref.current && !ref.current.contains(e.target)) {
+        setIsOpen(false);
+        setQuery("");
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Filter options starting with the query (ignoring case)
+  const filtered = (options || []).filter((item) => {
+    if (!query || query.length < 3) return true; // Show all options if less than 3 characters
+    return (item.medicine_name || "").toLowerCase().startsWith(query.toLowerCase());
+  });
+
+  return (
+    <div className="relative w-full" ref={ref}>
+      <div className="relative flex items-center">
+        <input
+          type="text"
+          placeholder="Medicine"
+          value={value}
+          onFocus={() => setIsOpen(true)}
+          onChange={(e) => {
+            onChange(e.target.value);
+            setQuery(e.target.value);
+            setIsOpen(true);
+          }}
+          className="w-full py-1 px-2 pr-6 outline-none placeholder-slate-400 text-slate-600 text-xs bg-transparent"
+        />
+        <Arrow isOpen={isOpen} onClick={() => setIsOpen((p) => !p)} />
+      </div>
+
+      {isOpen && (
+        <div className="absolute left-0 right-0 z-50 mt-1 bg-white border border-gray-300 rounded-sm shadow-xl max-h-48 overflow-y-auto">
+          {filtered.length > 0 ? (
+            filtered.map((item) => (
+              <div
+                key={item.medicine_id}
+                onClick={() => {
+                  onChange(item.medicine_name);
+                  setIsOpen(false);
+                  setQuery("");
+                }}
+                className="px-2 py-1.5 text-xs text-gray-700 hover:bg-orange-50 hover:text-orange-600 cursor-pointer transition-colors border-b border-gray-50 last:border-b-0"
+              >
+                {item.medicine_name}
+              </div>
+            ))
+          ) : (
+            <div className="px-2 py-2 text-xs text-gray-400 text-center italic">
+              No medicine found
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+
+//  2. DESCRIPTION dropdown  -> shows daytime_print               
+
+const DescriptionDropdown = ({ options, value, onChange }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
         setIsOpen(false);
         setQuery("");
       }
@@ -118,58 +196,47 @@ const RowDropdown = ({
   }, []);
 
   const filtered = (options || []).filter((item) =>
-    (getLabel(item) || "").toLowerCase().includes(query.toLowerCase())
+    (item.daytime_print || "").toLowerCase().startsWith(query.toLowerCase())
   );
 
   return (
-    <div className="relative w-full" ref={wrapperRef}>
+    <div className="relative w-full" ref={ref}>
       <div className="relative flex items-center">
         <input
           type="text"
-          placeholder={placeholder}
+          placeholder="Description"
           value={value}
           onFocus={() => setIsOpen(true)}
           onChange={(e) => {
-            onTextChange(e.target.value);
+            onChange(e.target.value);
             setQuery(e.target.value);
             setIsOpen(true);
           }}
           className="w-full py-1 px-2 pr-6 outline-none placeholder-slate-400 text-slate-600 text-xs bg-transparent"
         />
-        <svg
-          onClick={() => setIsOpen((prev) => !prev)}
-          className={`w-3 h-3 absolute right-1 text-gray-500 cursor-pointer transition-transform ${isOpen ? "rotate-180" : ""
-            }`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-        </svg>
+        <Arrow isOpen={isOpen} onClick={() => setIsOpen((p) => !p)} />
       </div>
 
       {isOpen && (
         <div className="absolute left-0 right-0 z-50 mt-1 bg-white border border-gray-300 rounded-sm shadow-xl max-h-48 overflow-y-auto">
           {filtered.length > 0 ? (
-            filtered.map((item, index) => {
-              const label = getLabel(item);
-              const key = `${typeof item === "object" ? item._id || item.id || "" : ""}-${index}`;
-              return (
-                <div
-                  key={key}
-                  onClick={() => {
-                    onSelect(item);
-                    setIsOpen(false);
-                    setQuery("");
-                  }}
-                  className="px-2 py-1.5 text-xs text-gray-700 hover:bg-orange-50 hover:text-orange-600 cursor-pointer transition-colors border-b border-gray-50 last:border-b-0"
-                >
-                  {label}
-                </div>
-              );
-            })
+            filtered.map((item) => (
+              <div
+                key={item.id}
+                onClick={() => {
+                  onChange(item.daytime_print);
+                  setIsOpen(false);
+                  setQuery("");
+                }}
+                className="px-2 py-1.5 text-xs text-gray-700 hover:bg-orange-50 hover:text-orange-600 cursor-pointer transition-colors border-b border-gray-50 last:border-b-0"
+              >
+                {item.daytime_print}
+              </div>
+            ))
           ) : (
-            <div className="px-2 py-2 text-xs text-gray-400 text-center italic">{emptyText}</div>
+            <div className="px-2 py-2 text-xs text-gray-400 text-center italic">
+              No description found
+            </div>
           )}
         </div>
       )}
@@ -177,59 +244,74 @@ const RowDropdown = ({
   );
 };
 
-// Label getters for each list (API item -> text shown in the dropdown)
-const getMedicineLabel = (item) =>
-  typeof item === "object"
-    ? item.medicine_name || item.medicine || item.name || item.title || ""
-    : String(item);
 
-// Description API: { id, daytime, daytime_print, label, value }
-const getDescriptionLabel = (item) =>
-  typeof item === "object"
-    ? item.label || item.daytime_print || item.value || ""
-    : String(item);
+// 3. REMARK dropdown  -> shows txt_add_note               
+const RemarkDropdown = ({ options, value, onChange }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const ref = useRef(null);
 
-// Remark API shape is not known, so common keys are tried — adjust if your API uses another key
-const getRemarkLabel = (item) =>
-  typeof item === "object"
-    ? item.label ||
-    item.remark ||
-    item.remark_name ||
-    item.remark_note ||
-    item.note ||
-    item.value ||
-    item.name ||
-    item.title ||
-    ""
-    : String(item);
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
+        setIsOpen(false);
+        setQuery("");
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-// Each column's differences live here. Everything else is shared logic.
-const DROPDOWN_FIELDS = [
-  {
-    field: "medicine",
-    placeholder: "Medicine",
-    emptyText: "No medicine found",
-    getLabel: getMedicineLabel,
-    // only for medicine: picking one also pre-fills the other fields
-    autoFill: (item, row) => ({
-      description: item.generic_name || item.description || row.description,
-      remark: item.remark || item.notes || row.remark,
-    }),
-  },
-  {
-    field: "description",
-    placeholder: "Description",
-    emptyText: "No description found",
-    getLabel: getDescriptionLabel,
-  },
-  {
-    field: "remark",
-    placeholder: "Notes",
-    emptyText: "No remark found",
-    getLabel: getRemarkLabel,
-  },
-];
+  const filtered = (options || []).filter((item) =>
+    (item.txt_add_note || "").toLowerCase().startsWith(query.toLowerCase())
+  );
 
+  return (
+    <div className="relative w-full" ref={ref}>
+      <div className="relative flex items-center">
+        <input
+          type="text"
+          placeholder="Notes"
+          value={value}
+          onFocus={() => setIsOpen(true)}
+          onChange={(e) => {
+            onChange(e.target.value);
+            setQuery(e.target.value);
+            setIsOpen(true);
+          }}
+          className="w-full py-1 px-2 pr-6 outline-none placeholder-slate-400 text-slate-600 text-xs bg-transparent"
+        />
+        <Arrow isOpen={isOpen} onClick={() => setIsOpen((p) => !p)} />
+      </div>
+
+      {isOpen && (
+        <div className="absolute left-0 right-0 z-50 mt-1 bg-white border border-gray-300 rounded-sm shadow-xl max-h-48 overflow-y-auto">
+          {filtered.length > 0 ? (
+            filtered.map((item) => (
+              <div
+                key={item.id}
+                onClick={() => {
+                  onChange(item.txt_add_note);
+                  setIsOpen(false);
+                  setQuery("");
+                }}
+                className="px-2 py-1.5 text-xs text-gray-700 hover:bg-orange-50 hover:text-orange-600 cursor-pointer transition-colors border-b border-gray-50 last:border-b-0"
+              >
+                {item.txt_add_note}
+              </div>
+            ))
+          ) : (
+            <div className="px-2 py-2 text-xs text-gray-400 text-center italic">
+              No remark found
+            </div>
+
+            
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 function Form() {
   const initialFormState = {
     patient_id: "",
@@ -287,13 +369,6 @@ function Form() {
   const [descriptionList, setDescriptionList] = useState([]);
   const [remarkNoteList, setRemarkNoteList] = useState([]);
 
-  // field name -> its options list (used by the table loop)
-  const optionsByField = {
-    medicine: medicinesList,
-    description: descriptionList,
-    remark: remarkNoteList,
-  };
-
   const errorMap = {};
   const msg = "";
 
@@ -322,43 +397,23 @@ function Form() {
     setRows((prev) => (prev.length > 1 ? prev.filter((row) => row.id !== id) : prev));
   };
 
-  // Generic setter: updates ONE field of ONE row (typing in any of the 3 dropdowns)
+  // Updates ONE field of ONE row (used by typing AND selecting in all 3 dropdowns)
   const handleInputChange = (id, field, value) => {
     setRows((prev) =>
       prev.map((row) => (row.id === id ? { ...row, [field]: value } : row))
     );
   };
 
-  // ONE select handler for medicine / description / remark.
-  // Uses DROPDOWN_FIELDS config: sets the picked field, plus any autoFill fields (medicine only).
-  const handleRowSelect = (rowId, field, item) => {
-    const cfg = DROPDOWN_FIELDS.find((f) => f.field === field);
-    if (!cfg) return;
-    const label = cfg.getLabel(item);
-
-    setRows((prev) =>
-      prev.map((row) =>
-        row.id === rowId
-          ? {
-            ...row,
-            [field]: label,
-            ...(cfg.autoFill ? cfg.autoFill(item, row) : {}),
-          }
-          : row
-      )
-    );
-  };
-
   // Utility function to extract data arrays safely
-  const extractData = (res) => {
-    if (Array.isArray(res)) return res;
-    if (Array.isArray(res?.data)) return res.data;
-    if (Array.isArray(res?.fullData?.data)) return res.fullData.data;
-    if (Array.isArray(res?.data?.data)) return res.data.data;
-    return [];
-  };
+const extractData = (res) => {
+  if (Array.isArray(res)) return res;
+  if (Array.isArray(res?.fullData?.data)) return res.fullData.data; // Check this first!
+  if (Array.isArray(res?.data?.data)) return res.data.data;
+  if (Array.isArray(res?.data)) return res.data;
+  return [];
+};
 
-  useEffect(() => {
+useEffect(() => {
     const fetchData = async () => {
       try {
         const [eduRes, occRes, citRes, refRes, catRes, treatRes, invRes, followupRes, medRes, medDesRes, remarkRes] = await Promise.all([
@@ -375,6 +430,10 @@ function Form() {
           RemarkNote ? RemarkNote().catch(() => []) : Promise.resolve([]),
         ]);
 
+      
+        console.log("Raw Remark API Response:", remarkRes);
+        console.log("Extracted Remark List:", extractData(remarkRes));
+
         setEducationsList(extractData(eduRes));
         setOccupationsList(extractData(occRes));
         setCityList(extractData(citRes));
@@ -384,8 +443,9 @@ function Form() {
         setTestsList(extractData(invRes));
         setFollowupList(extractData(followupRes));
         setMedicinesList(extractData(medRes));
+         console.log(" MedicinesList", medRes), 
         setDescriptionList(extractData(medDesRes));
-        setRemarkNoteList(extractData(remarkRes));
+        setRemarkNoteList(extractData(remarkRes)); // Make sure to use extractData(remarkRes) here if needed!
       } catch (error) {
         console.error("Error fetching form options:", error);
       }
@@ -602,20 +662,20 @@ function Form() {
         const formattedRows = treatment.medicines.map((med, idx) => ({
           id: Date.now() + idx,
           medicine: med.medicine_name || med.medicine || "",
-          description: med.generic_name || med.description || "",
-          remark: med.remark || med.notes || "",
-
+          // Description column now uses daytime_print; adjust keys if your treatment API differs
+          description: med.daytime_print || med.description || "",
+          remark: med.txt_add_note || med.remark || med.notes || "",
         }));
         setRows(formattedRows);
       }
-      // 2. Agar object me single medicine data direct fields me ho
-      else if (treatment.medicine_name || treatment.generic_name) {
+      // If the object has a single medicine directly in its fields
+      else if (treatment.medicine_name) {
         setRows([
           {
             id: Date.now(),
             medicine: treatment.medicine_name || "",
-            description: treatment.generic_name || "",
-            remark: treatment.remark || "",
+            description: treatment.daytime_print || treatment.description || "",
+            remark: treatment.txt_add_note || treatment.remark || "",
           },
         ]);
       }
@@ -996,20 +1056,32 @@ function Form() {
                 <tbody>
                   {rows.map((row) => (
                     <tr key={row.id} className="border-b border-slate-200">
-                      {/* Medicine / Description / Remark — all 3 come from one loop */}
-                      {DROPDOWN_FIELDS.map((cfg) => (
-                        <td key={cfg.field} className="p-1 border-r border-slate-200 relative">
-                          <RowDropdown
-                            options={optionsByField[cfg.field]}
-                            value={row[cfg.field]}
-                            placeholder={cfg.placeholder}
-                            getLabel={cfg.getLabel}
-                            emptyText={cfg.emptyText}
-                            onTextChange={(text) => handleInputChange(row.id, cfg.field, text)}
-                            onSelect={(item) => handleRowSelect(row.id, cfg.field, item)}
-                          />
-                        </td>
-                      ))}
+                      {/* Medicine */}
+                      <td className="p-1 border-r border-slate-200 relative">
+                        <MedicineDropdown
+                          options={medicinesList}
+                          value={row.medicine}
+                          onChange={(val) => handleInputChange(row.id, "medicine", val)}
+                        />
+                      </td>
+
+                      {/* Description */}
+                      <td className="p-1 border-r border-slate-200 relative">
+                        <DescriptionDropdown
+                          options={descriptionList}
+                          value={row.description}
+                          onChange={(val) => handleInputChange(row.id, "description", val)}
+                        />
+                      </td>
+
+                      {/* Remark */}
+                      <td className="p-1 border-r border-slate-200 relative">
+                        <RemarkDropdown
+                          options={remarkNoteList}
+                          value={row.remark}
+                          onChange={(val) => handleInputChange(row.id, "remark", val)}
+                        />
+                      </td>
 
                       <td className="p-1 text-center">
                         <button
@@ -1152,26 +1224,56 @@ function Form() {
         </div>
       </div>
 
-      <div className="bg-[#f7f5d1] p-3 border-l border-r border-b border-gray-300 rounded-b-sm">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 overflow-x-auto no-scrollbar">
-          <div className="flex flex-wrap md:flex-nowrap items-center gap-4 min-w-max">
-            {[
-              { id: "exercise", label: "Daily Exercise" },
-              { id: "physio", label: "Physiotherapist" },
-            ].map((item) => (
-              <label key={item.id} className="flex items-center gap-2 cursor-pointer group whitespace-nowrap">
-                <input
-                  type="checkbox"
-                  className="w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-                />
-                <span className="text-xs font-medium text-slate-800 group-hover:text-blue-600 transition-colors">
-                  {item.label}
-                </span>
-              </label>
-            ))}
-          </div>
-        </div>
-      </div>
+   <div className="bg-[#f7f5d1] p-3 border-l border-r border-b border-gray-300 rounded-b-sm">
+  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    
+    {/* Left Side: Checkboxes */}
+    <div className="flex items-center gap-4 flex-wrap">
+      {[
+        { id: "exercise", label: "Daily Exercise" },
+        { id: "physio", label: "Physiotherapist" },
+      ].map((item) => (
+        <label key={item.id} className="flex items-center gap-2 cursor-pointer group whitespace-nowrap">
+          <input
+            type="checkbox"
+            className="w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+          />
+          <span className="text-xs font-medium text-slate-800 group-hover:text-blue-600 transition-colors">
+            {item.label}
+          </span>
+        </label>
+      ))}
+    </div>
+
+    {/* Right Side: Buttons */}
+    <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap justify-end">
+      {/* Button 1: Create New Visit */}
+      <button 
+        type="button" 
+        className="bg-[#ff8533] hover:bg-[#f07424] text-white font-medium text-xs px-3.5 py-1.5 rounded-md transition-colors shadow-sm whitespace-nowrap"
+      >
+        Create New Visit
+      </button>
+
+      {/* Button 2: Save & Update */}
+      <button 
+        type="button" 
+        className="bg-[#383e47] hover:bg-[#2b3038] text-white font-medium text-xs px-3.5 py-1.5 rounded-md transition-colors shadow-sm whitespace-nowrap"
+      >
+        Save & Update
+      </button>
+
+      {/* Button 3: Save & print */}
+      <button 
+        type="button" 
+        className="bg-[#00e65c] hover:bg-[#00cc52] text-white font-medium text-xs px-3.5 py-1.5 rounded-md transition-colors shadow-sm whitespace-nowrap"
+      >
+        Save & print
+      </button>
+    </div>
+
+  </div>
+</div>
     </div>
   );
 }

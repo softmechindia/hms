@@ -26,6 +26,7 @@ export async function proxyApiRequest(endpoint, method = 'POST', body = null) {
       method: method,
       data: body,
     });
+    
 
     return {
       status: response.data?.status ?? true,

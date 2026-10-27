@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { searchHistory, cancelAppointment } from "../../../api/endpoints/authApi";
-import CancelAppointment from "../Popup/Cancel-Appointment";
+import React, { useEffect, useState } from "react";
+import { searchHistory } from "../../../api/endpoints/authApi";
+import PatientHistoryCancelPopup from "../../Doctor/Popup/Patient-History-Cancel-App";
 import { Clock } from "lucide-react";
 import PatientHistorySkeleton from "../Loaders/Patient-History-Skelton";
 
 function PatientsHistory({ userID, refreshKey, onHistoryLoaded, onCancelSuccess }) {
   const [historyData, setHistoryData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [cancellingId, setCancellingId] = useState(null);
+  const [patientName, setPatientName] = useState("")
+
 
   // Popup states
   const [showCancelPopup, setShowCancelPopup] = useState(false);
@@ -28,13 +29,13 @@ function PatientsHistory({ userID, refreshKey, onHistoryLoaded, onCancelSuccess 
 
       try {
         const response = await searchHistory({ search_by: userID });
-        
         const rawData = response?.fullData || response;
-        
-        
+
         let list = [];
 
         if (Array.isArray(rawData?.user_data) && rawData.user_data.length > 0) {
+          const userDataObj = rawData.user_data[0];
+          setPatientName(userDataObj?.user_name || "");
           list = rawData.user_data[0]?.history || [];
         } else if (Array.isArray(rawData?.history)) {
           list = rawData.history;
@@ -67,48 +68,22 @@ function PatientsHistory({ userID, refreshKey, onHistoryLoaded, onCancelSuccess 
     setShowCancelPopup(true);
   };
 
-  const confirmCancelAppointment = async (reason) => {
-    if (!selectedAppointment) return;
+  // Called when the popup successfully cancels the appointment via API
+  const handleSuccessCancel = (appId, reason, successMessage) => {
+    const updatedList = historyData.map((h) => {
+      const currentId = h.appointment_id || h.id;
+      return currentId === appId
+        ? { ...h, vstatus: "cancel", status: "cancel", cancel_reason: reason }
+        : h;
+    });
 
-    const appId = selectedAppointment.appointment_id || selectedAppointment.id;
-    setCancellingId(appId);
+    setHistoryData(updatedList);
 
-    try {
-      const payload = {
-        appointment_id: appId,
-        patient_id: userID,
-        reason: reason,
-        cancelled_by: "ST0001",
-      };
+    if (onCancelSuccess) onCancelSuccess(updatedList);
 
-      const response = await cancelAppointment(payload);
-      const data = response?.fullData || response;
-
-      if (data?.success === 1 || data?.success === "1") {
-        const updatedList = historyData.map((h) => {
-          const currentId = h.appointment_id || h.id;
-          return currentId === appId
-            ? { ...h, vstatus: "cancel", status: "cancel", cancel_reason: reason }
-            : h;
-        });
-
-        setHistoryData(updatedList);
-
-        // notify parent so it re-checks hasTodayAppointment
-        if (onCancelSuccess) onCancelSuccess(updatedList);
-
-        alert(data?.message || "Appointment cancelled successfully");
-        setShowCancelPopup(false);
-        setSelectedAppointment(null);
-      } else {
-        alert(data?.message || "Unable to cancel appointment");
-      }
-    } catch (err) {
-      console.error("Cancel error:", err);
-      alert("Something went wrong");
-    } finally {
-      setCancellingId(null);
-    }
+    setMessage(successMessage);
+    setShowCancelPopup(false);
+    setSelectedAppointment(null);
   };
 
   const getStatusBadge = (vstatus) => {
@@ -128,6 +103,7 @@ function PatientsHistory({ userID, refreshKey, onHistoryLoaded, onCancelSuccess 
           Patient History
         </h1>
 
+
         <div className="relative overflow-hidden" style={{ height: `${contentHeight}px` }}>
           {!userID ? (
             <div className="absolute inset-0 flex items-center justify-center bg-white">
@@ -143,6 +119,7 @@ function PatientsHistory({ userID, refreshKey, onHistoryLoaded, onCancelSuccess 
                     <th className="w-[8%] py-2 text-center">S.No</th>
                     <th className="w-[20%] py-2 text-center">Date</th>
                     <th className="w-[22%] py-2 text-center">App.ID</th>
+                    <th className="w-[17%] py-2 text-center">Patient Name</th> 
                     <th className="w-[20%] py-2 text-center">Doctor</th>
                     <th className="w-[15%] py-2 text-center">Status</th>
                     <th className="w-[15%] py-2 text-center">Actions</th>
@@ -163,9 +140,8 @@ function PatientsHistory({ userID, refreshKey, onHistoryLoaded, onCancelSuccess 
                       return (
                         <tr
                           key={appId !== "N/A" ? appId : index}
-                          className={`${
-                            index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                          } border-b border-gray-100`}
+                          className={`${index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                            } border-b border-gray-100`}
                           style={{ height: `${rowHeight}px` }}
                         >
                           <td className="text-center font-medium">{index + 1}</td>
@@ -181,6 +157,7 @@ function PatientsHistory({ userID, refreshKey, onHistoryLoaded, onCancelSuccess 
                             </div>
                           </td>
                           <td className="text-center truncate">{appId}</td>
+                          <td className="text-center truncate font-medium text-gray-800 px-1">{patientName}</td>
                           <td className="text-center truncate px-1">{doc}</td>
                           <td className="text-center">
                             <span
@@ -194,14 +171,13 @@ function PatientsHistory({ userID, refreshKey, onHistoryLoaded, onCancelSuccess 
                           <td className="text-center">
                             <button
                               onClick={() => isCancellable(status) && handleCancel(item)}
-                              disabled={!isCancellable(status) || cancellingId === appId}
-                              className={`px-2 py-1 rounded text-white text-[10px] font-bold transition ${
-                                isCancellable(status)
+                              disabled={!isCancellable(status)}
+                              className={`px-2 py-1 rounded text-white text-[10px] font-bold transition ${isCancellable(status)
                                   ? "bg-red-500 hover:bg-red-600 cursor-pointer"
                                   : "bg-gray-400 opacity-60 cursor-not-allowed"
-                              }`}
+                                }`}
                             >
-                              {cancellingId === appId ? "..." : "Cancel"}
+                              Cancel
                             </button>
                           </td>
                         </tr>
@@ -221,14 +197,17 @@ function PatientsHistory({ userID, refreshKey, onHistoryLoaded, onCancelSuccess 
         </div>
       </div>
 
+      {/* Conditionally rendered popup passing correct props */}
       {showCancelPopup && (
-        <CancelAppointment
+        <PatientHistoryCancelPopup
+          appointment={selectedAppointment}
+          patientName={patientName}
+          userID={userID}
           onClose={() => {
-            setShowCancelPopup(false);
+            setShowCancelPopup(false); 
             setSelectedAppointment(null);
           }}
-          onCancelAppointment={confirmCancelAppointment}
-          patientName={selectedAppointment?.doctor_name || ""}
+          onSuccess={handleSuccessCancel}
         />
       )}
     </>
