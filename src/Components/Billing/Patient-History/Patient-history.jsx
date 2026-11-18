@@ -1,4 +1,235 @@
-import React, { useEffect, useState } from "react";
+// import React, { useEffect, useState } from "react";
+// import { searchHistory } from "../../../api/endpoints/authApi";
+// import PatientHistoryCancelPopup from "../../Doctor/Popup/Patient-History-Cancel-App";
+// import { Clock } from "lucide-react";
+// import PatientHistorySkeleton from "../Loaders/Patient-History-Skelton";
+
+// function PatientsHistory({ userID, refreshKey, onHistoryLoaded, onCancelSuccess }) {
+//   const [historyData, setHistoryData] = useState([]);
+//   const [loading, setLoading] = useState(false);
+//   const [patientName, setPatientName] = useState("")
+
+
+//   // Popup states
+//   const [showCancelPopup, setShowCancelPopup] = useState(false);
+//   const [selectedAppointment, setSelectedAppointment] = useState(null);
+
+//   const rowHeight = 40;
+//   const totalVisibleRows = 6;
+//   const contentHeight = rowHeight * totalVisibleRows;
+
+//   useEffect(() => {
+//     if (!userID) {
+//       setHistoryData([]);
+//       return;
+//     }
+
+//     const fetchHistory = async () => {
+//       setLoading(true);
+
+//       try {
+//         const response = await searchHistory({ search_by: userID });
+//         const rawData = response?.fullData || response;
+
+//         let list = [];
+
+//         if (Array.isArray(rawData?.user_data) && rawData.user_data.length > 0) {
+//           const userDataObj = rawData.user_data[0];
+//           setPatientName(userDataObj?.user_name || "");
+//           list = rawData.user_data[0]?.history || [];
+//         } else if (Array.isArray(rawData?.history)) {
+//           list = rawData.history;
+//         } else if (Array.isArray(rawData?.data)) {
+//           list = rawData.data;
+//         } else if (Array.isArray(rawData)) {
+//           list = rawData;
+//         }
+
+//         setHistoryData(list);
+//         if (onHistoryLoaded) onHistoryLoaded(list);
+//       } catch (err) {
+//         console.error("History fetch error:", err);
+//         setHistoryData([]);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchHistory();
+//   }, [userID, refreshKey]);
+
+//   const isCancellable = (vstatus) => {
+//     const s = (vstatus || "").toLowerCase();
+//     return s === "booking" || s === "confirmed" || s === "pending";
+//   };
+
+//   const handleCancel = (item) => {
+//     setSelectedAppointment(item);
+//     setShowCancelPopup(true);
+//   };
+
+//   // Called when the popup successfully cancels the appointment via API
+//   const handleSuccessCancel = (appId, reason) => {
+
+//     const updatedList = historyData.map((h) => {
+//       const currentId = h.appointment_id || h.id;
+
+//       return String(currentId) === String(appId)
+//         ? {
+//           ...h,
+//           vstatus: "cancel",
+//           status: "cancel",
+//           cancel_reason: reason
+//         }
+//         : h;
+//     });
+
+//     // Update history in current component
+//     setHistoryData(updatedList);
+
+//     // Send updated history to parent component
+//     if (onCancelSuccess) {
+//       onCancelSuccess(updatedList);
+//     }
+
+//     // Automatically close popup after 2.5 seconds
+//     setTimeout(() => {
+//       setShowCancelPopup(false);
+//       setSelectedAppointment(null);
+//     }, 2500);
+
+//   };
+
+//   const getStatusBadge = (vstatus) => {
+//     const s = (vstatus || "").toLowerCase();
+
+//     if (s === "booking" || s === "pending") return "bg-yellow-100 text-yellow-700";
+//     if (s === "complete" || s === "confirmed") return "bg-green-100 text-green-700";
+//     if (s === "cancel" || s === "cancelled") return "bg-red-100 text-red-700";
+
+//     return "bg-gray-100 text-gray-700";
+//   };
+
+//   return (
+//     <>
+//       <div className="w-full rounded-md bg-white border border-gray-300 shadow-sm overflow-hidden flex flex-col">
+//         <h1 className="text-[12px] font-bold text-white text-center py-4 bg-[#4F6EEA] tracking-wider shrink-0">
+//           Patient History
+//         </h1>
+
+
+//         <div className="relative overflow-hidden" style={{ height: `${contentHeight}px` }}>
+//           {!userID ? (
+//             <div className="absolute inset-0 flex items-center justify-center bg-white">
+//               <p className="text-xs text-gray-400 px-4 text-center">
+//                 Search and select a patient to view history.
+//               </p>
+//             </div>
+//           ) : (
+//             <div className="h-full overflow-y-auto">
+//               <table className="w-full table-fixed text-[12px]">
+//                 <thead className="bg-gray-100 border-b border-gray-200 sticky top-0 z-10">
+//                   <tr className="text-black">
+//                     <th className="w-[8%] py-2 text-center">S.No</th>
+//                     <th className="w-[20%] py-2 text-center">Date</th>
+//                     <th className="w-[22%] py-2 text-center">App.ID</th>
+//                     <th className="w-[17%] py-2 text-center">Patient Name</th>
+//                     <th className="w-[20%] py-2 text-center">Doctor</th>
+//                     <th className="w-[15%] py-2 text-center">Status</th>
+//                     <th className="w-[15%] py-2 text-center">Actions</th>
+//                   </tr>
+//                 </thead>
+
+//                 <tbody>
+//                   {loading ? (
+//                     <PatientHistorySkeleton rows={6} />
+//                   ) : historyData.length > 0 ? (
+//                     historyData.map((item, index) => {
+//                       const appId = item.appointment_id || item.id || "N/A";
+//                       const date = item.appointment_date || item.date || "N/A";
+//                       const time = item.appointment_time || item.time || "";
+//                       const doc = item.doctor_name || item.doctor_id || item.doctor || "N/A";
+//                       const status = item.vstatus || item.status || "N/A";
+
+//                       return (
+//                         <tr
+//                           key={appId !== "N/A" ? appId : index}
+//                           className={`${index % 2 === 0 ? "bg-white" : "bg-gray-50"
+//                             } border-b border-gray-100`}
+//                           style={{ height: `${rowHeight}px` }}
+//                         >
+//                           <td className="text-center font-medium">{index + 1}</td>
+//                           <td className="text-center">
+//                             <div className="flex flex-col items-center leading-tight">
+//                               <span className="font-medium">{date}</span>
+//                               {time && (
+//                                 <span className="flex items-center gap-1 text-[10px] text-gray-500 mt-0.5">
+//                                   <Clock size={10} />
+//                                   {time}
+//                                 </span>
+//                               )}
+//                             </div>
+//                           </td>
+//                           <td className="text-center truncate">{appId}</td>
+//                           <td className="text-center truncate font-medium text-gray-800 px-1">{patientName}</td>
+//                           <td className="text-center truncate px-1">{doc}</td>
+//                           <td className="text-center">
+//                             <span
+//                               className={`px-1.5 py-0.5 font-bold rounded text-[10px] uppercase ${getStatusBadge(
+//                                 status
+//                               )}`}
+//                             >
+//                               {status}
+//                             </span>
+//                           </td>
+//                           <td className="text-center">
+//                             <button
+//                               onClick={() => isCancellable(status) && handleCancel(item)}
+//                               disabled={!isCancellable(status)}
+//                               className={`px-2 py-1 rounded text-white text-[10px] font-bold transition ${isCancellable(status)
+//                                 ? "bg-red-500 hover:bg-red-600 cursor-pointer"
+//                                 : "bg-gray-400 opacity-60 cursor-not-allowed"
+//                                 }`}
+//                             >
+//                               Cancel
+//                             </button>
+//                           </td>
+//                         </tr>
+//                       );
+//                     })
+//                   ) : (
+//                     <tr>
+//                       <td colSpan="6" className="text-center py-10 text-gray-400 text-xs">
+//                         No history found for this patient.
+//                       </td>
+//                     </tr>
+//                   )}
+//                 </tbody>
+//               </table>
+//             </div>
+//           )}
+//         </div>
+//       </div>
+
+//       {/* Conditionally rendered popup passing correct props */}
+//       {showCancelPopup && (
+//         <PatientHistoryCancelPopup
+//           appointment={selectedAppointment}
+//           patientName={patientName}
+//           userID={userID}
+//           onClose={() => {
+//             setShowCancelPopup(false);
+//             setSelectedAppointment(null);
+//           }}
+//           onSuccess={handleSuccessCancel}
+//         />
+//       )}
+//     </>
+//   );
+// }
+
+// export default PatientsHistory;
+import React, { useEffect, useRef, useState } from "react";
 import { searchHistory } from "../../../api/endpoints/authApi";
 import PatientHistoryCancelPopup from "../../Doctor/Popup/Patient-History-Cancel-App";
 import { Clock } from "lucide-react";
@@ -7,12 +238,14 @@ import PatientHistorySkeleton from "../Loaders/Patient-History-Skelton";
 function PatientsHistory({ userID, refreshKey, onHistoryLoaded, onCancelSuccess }) {
   const [historyData, setHistoryData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [patientName, setPatientName] = useState("")
-
+  const [patientName, setPatientName] = useState("");
 
   // Popup states
   const [showCancelPopup, setShowCancelPopup] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
+
+  // Timer that closes the cancel popup (cleared if the component unmounts)
+  const closePopupTimerRef = useRef(null);
 
   const rowHeight = 40;
   const totalVisibleRows = 6;
@@ -21,21 +254,28 @@ function PatientsHistory({ userID, refreshKey, onHistoryLoaded, onCancelSuccess 
   useEffect(() => {
     if (!userID) {
       setHistoryData([]);
+      setPatientName("");
       return;
     }
+
+    // If userID changes (or the component unmounts) before this request finishes,
+    // the old response must be ignored, otherwise patient A's history can show for patient B.
+    let cancelled = false;
 
     const fetchHistory = async () => {
       setLoading(true);
 
       try {
         const response = await searchHistory({ search_by: userID });
+        if (cancelled) return;
+
         const rawData = response?.fullData || response;
 
         let list = [];
+        let name = "";
 
         if (Array.isArray(rawData?.user_data) && rawData.user_data.length > 0) {
-          const userDataObj = rawData.user_data[0];
-          setPatientName(userDataObj?.user_name || "");
+          name = rawData.user_data[0]?.user_name || "";
           list = rawData.user_data[0]?.history || [];
         } else if (Array.isArray(rawData?.history)) {
           list = rawData.history;
@@ -45,18 +285,29 @@ function PatientsHistory({ userID, refreshKey, onHistoryLoaded, onCancelSuccess 
           list = rawData;
         }
 
+        setPatientName(name);
         setHistoryData(list);
         if (onHistoryLoaded) onHistoryLoaded(list);
       } catch (err) {
-        console.error("History fetch error:", err);
+        if (cancelled) return;
         setHistoryData([]);
+        if (onHistoryLoaded) onHistoryLoaded([]);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     fetchHistory();
+
+    return () => {
+      cancelled = true;
+    };
+    // onHistoryLoaded is a state setter from the parent, so it is stable
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userID, refreshKey]);
+
+  // Clear the popup timer on unmount
+  useEffect(() => () => clearTimeout(closePopupTimerRef.current), []);
 
   const isCancellable = (vstatus) => {
     const s = (vstatus || "").toLowerCase();
@@ -69,21 +320,34 @@ function PatientsHistory({ userID, refreshKey, onHistoryLoaded, onCancelSuccess 
   };
 
   // Called when the popup successfully cancels the appointment via API
-  const handleSuccessCancel = (appId, reason, successMessage) => {
+  const handleSuccessCancel = (appId, reason) => {
     const updatedList = historyData.map((h) => {
       const currentId = h.appointment_id || h.id;
-      return currentId === appId
-        ? { ...h, vstatus: "cancel", status: "cancel", cancel_reason: reason }
+
+      return String(currentId) === String(appId)
+        ? {
+          ...h,
+          vstatus: "cancel",
+          status: "cancel",
+          cancel_reason: reason,
+        }
         : h;
     });
 
+    // Update history in current component
     setHistoryData(updatedList);
 
-    if (onCancelSuccess) onCancelSuccess(updatedList);
+    // Send updated history to parent component
+    if (onCancelSuccess) {
+      onCancelSuccess(updatedList);
+    }
 
-    setMessage(successMessage);
-    setShowCancelPopup(false);
-    setSelectedAppointment(null);
+    // Automatically close popup after 2.5 seconds
+    clearTimeout(closePopupTimerRef.current);
+    closePopupTimerRef.current = setTimeout(() => {
+      setShowCancelPopup(false);
+      setSelectedAppointment(null);
+    }, 2500);
   };
 
   const getStatusBadge = (vstatus) => {
@@ -103,7 +367,6 @@ function PatientsHistory({ userID, refreshKey, onHistoryLoaded, onCancelSuccess 
           Patient History
         </h1>
 
-
         <div className="relative overflow-hidden" style={{ height: `${contentHeight}px` }}>
           {!userID ? (
             <div className="absolute inset-0 flex items-center justify-center bg-white">
@@ -119,7 +382,7 @@ function PatientsHistory({ userID, refreshKey, onHistoryLoaded, onCancelSuccess 
                     <th className="w-[8%] py-2 text-center">S.No</th>
                     <th className="w-[20%] py-2 text-center">Date</th>
                     <th className="w-[22%] py-2 text-center">App.ID</th>
-                    <th className="w-[17%] py-2 text-center">Patient Name</th> 
+                    <th className="w-[17%] py-2 text-center">Patient Name</th>
                     <th className="w-[20%] py-2 text-center">Doctor</th>
                     <th className="w-[15%] py-2 text-center">Status</th>
                     <th className="w-[15%] py-2 text-center">Actions</th>
@@ -173,8 +436,8 @@ function PatientsHistory({ userID, refreshKey, onHistoryLoaded, onCancelSuccess 
                               onClick={() => isCancellable(status) && handleCancel(item)}
                               disabled={!isCancellable(status)}
                               className={`px-2 py-1 rounded text-white text-[10px] font-bold transition ${isCancellable(status)
-                                  ? "bg-red-500 hover:bg-red-600 cursor-pointer"
-                                  : "bg-gray-400 opacity-60 cursor-not-allowed"
+                                ? "bg-red-500 hover:bg-red-600 cursor-pointer"
+                                : "bg-gray-400 opacity-60 cursor-not-allowed"
                                 }`}
                             >
                               Cancel
@@ -185,7 +448,7 @@ function PatientsHistory({ userID, refreshKey, onHistoryLoaded, onCancelSuccess 
                     })
                   ) : (
                     <tr>
-                      <td colSpan="6" className="text-center py-10 text-gray-400 text-xs">
+                      <td colSpan="7" className="text-center py-10 text-gray-400 text-xs">
                         No history found for this patient.
                       </td>
                     </tr>
@@ -204,7 +467,7 @@ function PatientsHistory({ userID, refreshKey, onHistoryLoaded, onCancelSuccess 
           patientName={patientName}
           userID={userID}
           onClose={() => {
-            setShowCancelPopup(false); 
+            setShowCancelPopup(false);
             setSelectedAppointment(null);
           }}
           onSuccess={handleSuccessCancel}

@@ -7,6 +7,7 @@ import AddEducationPopup from "../Popup/AddEducationPopup";
 import EditEducationPopup from "../Popup/EditEducationPopup";
 import AddCityPopup from "../Popup/AddCityPopup";
 import EditCityPopup from "../Popup/EditCityPopup";
+import { printAppointmentReceipt } from "../../../utils/printAppointmentReceipt";
 import { FaUser } from "react-icons/fa";
 import {
   bookAppointment,
@@ -21,6 +22,10 @@ import {
 } from "../../../api/endpoints/authApi";
 import { useOutletContext } from "react-router-dom";
 
+import { validateAppointment } from "../../../Appointment/validation";
+import { getFieldBorderClass } from "../../../Appointment/helpers";
+import { hasActiveAppointmentOnDate } from "../../../Appointment/activeAppointment";
+
 // ─────────────────────────────────────────────────────────────────
 // Form Component
 // Handles patient search, form fill, and appointment booking/update.
@@ -32,7 +37,7 @@ function Form({ onBookingSuccess }) {
 
   // Available time slots fetched from API for the selected date
   const [availableSlots, setAvailableSlots] = useState([]);
-  
+
   // Controls open/close state of the custom time slot dropdown
   const [isTimeOpen, setIsTimeOpen] = useState(false);
 
@@ -43,8 +48,9 @@ function Form({ onBookingSuccess }) {
   const [doctorsList, setDoctorsList] = useState([]);
   const [consultancyList, setConsultancyList] = useState([]);
 
-  // Today's date in YYYY-MM-DD format, used as the minimum selectable date
-  const todayDateString = new Date().toLocaleDateString("en-CA");
+  // Today's date in YYYY-MM-DD format (local India time)
+  const getToday = () => new Date().toLocaleDateString("en-CA");
+  const todayDateString = getToday();
 
   // Patient search: results list, loading state, dropdown visibility, selected patient ID
   const [searchResults, setSearchResults] = useState([]);
@@ -68,14 +74,12 @@ function Form({ onBookingSuccess }) {
   const [selectedEducation, setSelectedEducation] = useState(null);
   const [selectedCity, setSelectedCity] = useState(null);
 
-  // User-facing notification banners (green = success, red = error)
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  // True when the selected patient already has an active (non-cancelled) appointment
-  // on the currently selected appointment_date.
-  // Set exclusively by onHistoryLoaded / onCancelSuccess callbacks from real API data.
-  // When true, the Save button switches to "Update Info" and a new booking is blocked.
+  // Name of the form field that failed validation (drives the red border)
+  const [errorField, setErrorField] = useState("");
+
   const [hasActiveDateAppointment, setHasActiveDateAppointment] = useState(false);
 
   // Stores the loaded history list so we can re-check when the date changes
@@ -84,13 +88,20 @@ function Form({ onBookingSuccess }) {
   // Incrementing this key forces PatientsHistory to re-fetch after a booking or cancel
   const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
 
+  // Stop double-click saves:
+  // ref = instant guard inside the code, state = makes the button show "Saving..."
+  const [isSaving, setIsSaving] = useState(false);
+  const isSavingRef = useRef(false);
+  const searchTimerRef = useRef(null);
+  const searchIdRef = useRef(0);
+
   // Default empty state for the form — used on mount and after reset
   const initialFormState = {
     patient_id: "",
     doctor_fees: "0",
     name: "",
     mobile_no: "",
-    patient_type: "",     // "1" = New Patient, "0" = Old Patient
+    patient_type: "1",     // "1" = New Patient, "0" = Old Patient
     email: "",
     gender: "",
     birth_of_year: "",
@@ -102,14 +113,14 @@ function Form({ onBookingSuccess }) {
     address: "",
     doctor_id: "",
     consultancy: "",
-    appointment_date: new Date().toISOString().split("T")[0], // Defaults to today
+    appointment_date: getToday(),
     appointment_time: "",
     appointment_by: "Billing",
     appointment_mode: "Offline",
     payment_mode: "Cash",
     paid_amount: "0",
-    reserved: "No",       // Optional — does not block booking
-    review_patient: "No", // Optional — does not block booking
+    reserved: "No",       
+    review_patient: "No", 
     review_payment: "No",
     ref_by: "",
     vstatus: "confirmed",
@@ -120,155 +131,36 @@ function Form({ onBookingSuccess }) {
 
   // ─────────────────────────────────────────────────────────────────
   // getBorderClass
-  // Returns a red border class when a validation error message
-  // matches the given field name — visually highlights the problem field.
+  // Red border on the field that failed validation, normal otherwise.
+  // "Old patient without ID" error is shown on the Patient Type box.
   // ─────────────────────────────────────────────────────────────────
   const getBorderClass = (field) => {
-    if (!errorMessage) return "border-gray-300 focus-within:ring-2 focus-within:ring-blue-400";
-
-    const msg = errorMessage.toLowerCase();
-    const errorMap = {
-      name: "name",
-      mobile_no: "mobile",
-      patient_type: "patient type",
-      gender: "gender",
-      doctor_id: "doctor",
-      consultancy: "consultancy",
-      appointment_time: "time",
-    };
-
-    const isError = errorMap[field] && msg.includes(errorMap[field]);
-    return isError
-      ? "border-red-500 ring-2 ring-red-200"
-      : "border-gray-300 focus-within:ring-2 focus-within:ring-blue-400";
+    const target =
+      field === "patient_type" && errorField === "patient_id" ? "patient_id" : field;
+    return getFieldBorderClass(errorField, target);
   };
 
-  // ─────────────────────────────────────────────────────────────────
-  // appbooking_print
-  // Opens a new browser window and prints the appointment receipt.
-  // Fetches receipt data from the backend print endpoint.
-  // If the backend returns no data, falls back to building the receipt
-  // from the current form state so printing never silently fails.
-  // ─────────────────────────────────────────────────────────────────
-  const appbooking_print = async (appointment_id, patient_id, invoice_no = "") => {
-    const printWindow = window.open("", "_blank", "width=600,height=800");
+  // Clears the error banner + red border together
+  const clearError = () => {
+    setErrorMessage("");
+    setErrorField("");
+  };
 
-    if (!printWindow) {
-      setErrorMessage("Browser blocked the print window. Please allow popups.");
-      return;
-    }
-
-    printWindow.document.write(
-      "<h3 style='font-family:sans-serif;text-align:center;margin-top:50px;'>Generating Receipt... Please Wait.</h3>"
-    );
-
-    // Reset form fields after print window opens — history guard is preserved
-    resetFormAfterPrint();
-
-    try {
-      const response = await fetch("/appbooking-print-details", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `appointment_id=${appointment_id}&patient_id=${patient_id}&invoice_no=${invoice_no}`,
-      });
-
-      const dataText = await response.text();
-      let global_di = null;
-
-      // The backend sometimes wraps JSON inside HTML.
-      // Extract JSON by finding the first [ or { in the response text.
-      try {
-        const jsonStart = dataText.indexOf("[");
-        const jsonEnd = dataText.lastIndexOf("]");
-        if (jsonStart !== -1 && jsonEnd > jsonStart) {
-          global_di = JSON.parse(dataText.substring(jsonStart, jsonEnd + 1));
-        } else {
-          const objStart = dataText.indexOf("{");
-          const objEnd = dataText.lastIndexOf("}");
-          if (objStart !== -1 && objEnd > objStart) {
-            const parsed = JSON.parse(dataText.substring(objStart, objEnd + 1));
-            global_di = Array.isArray(parsed) ? parsed : [parsed];
-          }
-        }
-      } catch (e) {
-        console.error("Print JSON parse error:", e);
-      }
-
-      // Fallback: build receipt data from current form state
-      if (!global_di || global_di.length === 0) {
-        global_di = [{
-          invoice_no: invoice_no || "REC-" + Math.floor(100000 + Math.random() * 900000),
-          today_date: new Date().toISOString(),
-          user_id: patient_id,
-          user_name: formData.name || "N/A",
-          age: formData.age || "N/A",
-          gender: formData.gender || "N/A",
-          city: formData.city || "N/A",
-          mobile_no: formData.mobile_no || "N/A",
-          registration_fees: "0",
-          consulting_fees: "0",
-          grand_total: "0",
-          appointment_time: formData.appointment_time || "",
-          review_patient: formData.review_patient,
-        }];
-      }
-
-      // Convert date from YYYY-MM-DD to DD-MM-YYYY for display
-      const raw = global_di[0]["today_date"] || new Date().toISOString();
-      const D = new Date(raw.substring(0, 10));
-      const today_date =
-        String(D.getDate()).padStart(2, "0") + "-" +
-        String(D.getMonth() + 1).padStart(2, "0") + "-" +
-        D.getFullYear();
-
-      // Build the receipt HTML string
-      let winHtml = `<!doctype html><html><head><meta charset="UTF-8"><title>Cash Receipt</title>
-        <style>body{margin:0;padding:20px;font-family:sans-serif;}@media print{body{padding:10px;}}@page{size:auto;margin:0mm;}</style>
-        </head><body><div style="text-align:center;width:100%;max-width:300px;margin:0 auto;">`;
-
-      winHtml += `<h4 style="margin:0 0 4px;font-size:16px;"><u>PUNJAB RHEUMATOLOGY</u></h4>`;
-      winHtml += `<p style="font-size:12px;margin:0;line-height:1.4;">B-35-922/2/1, Ferozepur Road<br>Near MBD Mall, Ludhiana (PB)<br>+91 98787-36644</p>`;
-      winHtml += `<p style="font-size:13px;font-weight:bold;text-decoration:underline;margin:8px 0;">Cash Receipt</p>`;
-      winHtml += `<div style="display:flex;justify-content:space-between;border-top:1px solid #000;border-bottom:1px solid #000;padding:2px 0;margin-bottom:5px;">
-        <span style="font-size:11px;">Receipt ID: ${global_di[0]["invoice_no"] || invoice_no || "N/A"}</span>
-        <span style="font-size:11px;">Date: ${today_date}</span></div>`;
-      winHtml += `<p style="font-size:11px;text-align:left;margin:3px 0;"><b>Patient ID</b> : ${global_di[0]["user_id"] || patient_id}</p>`;
-      winHtml += `<p style="font-size:11px;text-align:left;margin:3px 0;"><b>Name</b> : ${global_di[0]["user_name"] || "N/A"}</p>`;
-      winHtml += `<p style="font-size:11px;text-align:left;margin:3px 0;"><b>Age/Sex</b> : ${global_di[0]["age"]} | ${global_di[0]["gender"]} | City: ${global_di[0]["city"]}</p>`;
-      winHtml += `<p style="font-size:11px;text-align:left;margin:3px 0;"><b>Mobile</b> : ${global_di[0]["mobile_no"]}</p>`;
-
-      // Review patients get a simplified receipt without fee breakdown
-      if (global_di[0]["review_patient"] !== "1" && global_di[0]["review_patient"] !== "Yes") {
-        winHtml += `<table style="width:100%;border-collapse:collapse;border:1px solid #000;margin-top:10px;font-size:11px;">
-          <tr style="border-bottom:1px solid #000;font-weight:bold;"><td style="padding:4px;">Charges Desc</td><td style="padding:4px;text-align:right;">Fees</td></tr>
-          <tr><td style="padding:4px;">Registration</td><td style="padding:4px;text-align:right;">${global_di[0]["registration_fees"] || "0"}/-</td></tr>
-          <tr><td style="padding:4px;">Consultation</td><td style="padding:4px;text-align:right;">${global_di[0]["consulting_fees"] || "0"}/-</td></tr>
-          <tr style="border-top:1px solid #000;"><td style="padding:4px;">Total Amount</td><td style="padding:4px;text-align:right;">${global_di[0]["grand_total"] || "0"}/-</td></tr>
-          <tr style="border-top:1px solid #000;font-weight:bold;background:lightgray;"><td style="padding:4px;">Net Payable</td><td style="padding:4px;text-align:right;">${global_di[0]["grand_total"] || "0"}/-</td></tr>
-          </table>`;
-      } else {
-        winHtml += `<div style="border-top:1px solid #000;border-bottom:1px solid #000;padding:5px 0;margin-top:10px;text-align:center;font-size:11px;font-weight:bold;">Reviewed Patient</div>`;
-      }
-
-      winHtml += `<p style="font-size:12px;font-weight:bold;text-align:left;margin-top:12px;">Time: ${global_di[0]["appointment_time"] || ""}</p>`;
-      winHtml += `</div></body></html>`;
-
-      printWindow.document.open();
-      printWindow.document.write(winHtml);
-      printWindow.document.close();
-      setTimeout(() => { printWindow.focus(); printWindow.print(); printWindow.close(); }, 300);
-
-    } catch (err) {
-      console.error("Print error:", err);
-      printWindow.document.body.innerHTML =
-        "<h3 style='color:red;text-align:center;'>Print failed. Please try again.</h3>";
-    }
+  //prrint PF  appbooking_print//
+  const appbooking_print = (appointment_id, patient_id, invoice_no = "") => {
+    printAppointmentReceipt({
+      appointment_id,
+      patient_id,
+      invoice_no,
+      fallbackData: formData,
+      onError: setErrorMessage,
+      onAfterWindowOpen: resetFormAfterPrint,
+    });
   };
 
   // ─────────────────────────────────────────────────────────────────
   // handleResetForm — Full reset via Reset button or clearing search input.
-  // Clears everything including history guard state.
-  // ─────────────────────────────────────────────────────────────────
+  //  ─────────────────────────────────────────────────────────────────
   const handleResetForm = () => {
     setFormData(initialFormState);
     setSelectedPatientId("");
@@ -277,106 +169,127 @@ function Form({ onBookingSuccess }) {
     setSearchResults([]);
     setShowSearchDropdown(false);
     setSuccessMessage("");
-    setErrorMessage("");
+    clearError();
   };
 
-  // resetFormAfterPrint — Called after print window opens.
-  // Only clears form fields — preserves loadedHistory and hasActiveDateAppointment
-  // so the duplicate booking guard stays active after a successful booking.
   const resetFormAfterPrint = () => {
     setFormData(initialFormState);
     setSelectedPatientId("");
+    setLoadedHistory([]);
+    setHasActiveDateAppointment(false);
     setSearchResults([]);
     setShowSearchDropdown(false);
     setSuccessMessage("");
-    setErrorMessage("");
+    clearError();
   };
 
-  // ─────────────────────────────────────────────────────────────────
-  // handleSearchInput
-  // Fires on every keystroke in the search box.
-  // Calls the searchPatient API and shows a dropdown of matching patients.
-  // hasTodayAppointment is always reset to false here —
-  // the correct value is set later by onHistoryLoaded once history loads.
-  // ─────────────────────────────────────────────────────────────────
-  const handleSearchInput = async (value) => {
+  const handlePatientTypeChange = (e) => {
+    const value = e.target.value;
+
+    setFormData((prev) => ({
+      ...prev,
+      patient_type: value,
+      patient_id: value === "1" ? "" : prev.patient_id,
+    }));
+
+    if (errorField === "patient_type" || errorField === "patient_id") clearError();
+
+    if (value === "1") {
+      setSelectedPatientId("");
+      setLoadedHistory([]);
+      setHasActiveDateAppointment(false);
+      setSearchResults([]);
+      setShowSearchDropdown(false);
+    }
+  };
+
+  const normalize = (v) => String(v ?? "").trim().replace(/\s+/g, " ").toLowerCase();
+
+  const handleSearchInput = (value) => {
+    clearTimeout(searchTimerRef.current);
+
     if (!value || value.trim() === "") {
+      searchIdRef.current += 1;
       handleResetForm();
       return;
     }
 
     setFormData((prev) => ({ ...prev, patient_id: value }));
     setSelectedPatientId("");
-    setHasActiveDateAppointment(false); // Reset — will be re-evaluated after history loads
+    setHasActiveDateAppointment(false);
     setLoadedHistory([]);
 
     if (value.length < 2) {
+      searchIdRef.current += 1;
       setSearchResults([]);
       setShowSearchDropdown(false);
       return;
     }
 
+    searchTimerRef.current = setTimeout(() => runSearch(value), 300);
+  };
+
+  const runSearch = async (value) => {
+    const myId = ++searchIdRef.current;
+
     try {
       setIsSearching(true);
       const response = await searchPatient({ search_by: value });
+      if (myId !== searchIdRef.current) return;
+
       const actualData = response?.fullData || response;
 
       if (actualData?.success === 1 || actualData?.user_data) {
         const results = Array.isArray(actualData.user_data)
           ? actualData.user_data
           : [actualData.user_data];
-        setSearchResults(results.filter(Boolean));
-        setShowSearchDropdown(true);
+
+        const q = normalize(value);
+        const isDigits = /^\d+$/.test(q);
+
+        const filtered = results.filter(Boolean).filter((p) =>
+          normalize(p.user_name).startsWith(q) ||
+          normalize(p.userID || p.id).startsWith(q) ||
+          (isDigits && String(p.mobile_no || "").startsWith(q))
+        );
+
+        setSearchResults(filtered);
+        setShowSearchDropdown(filtered.length > 0);
       } else {
         setSearchResults([]);
         setShowSearchDropdown(false);
       }
     } catch (err) {
-      console.error("Search error:", err);
+      if (myId !== searchIdRef.current) return;
+      setSearchResults([]);
+      setShowSearchDropdown(false);
+      setErrorMessage("Patient search failed. Please try again.");
     } finally {
-      setIsSearching(false);
+      if (myId === searchIdRef.current) setIsSearching(false);
     }
   };
 
-  // ─────────────────────────────────────────────────────────────────
-  // checkActiveForDate
-  // Checks whether a patient already has an active appointment on
-  // a specific date (defaults to formData.appointment_date).
-  // Active statuses: booking, confirmed, pending.
-  // Cancelled and completed appointments do NOT block a new booking.
-  // Works for both current date and future dates.
-  // ─────────────────────────────────────────────────────────────────
-  const checkActiveForDate = (historyList, targetDate) => {
-    const dateToCheck = targetDate || formData.appointment_date;
-    if (!dateToCheck) return false;
 
-    const activeStatuses = ["booking", "confirmed", "pending"];
 
-    return historyList.some((appt) => {
-      const apptDate = (appt.appointment_date || appt.date || "").split(" ")[0];
-      const status = (appt.vstatus || appt.status || "").toLowerCase();
-      return apptDate === dateToCheck && activeStatuses.includes(status);
-    });
-  };
 
-  // ─────────────────────────────────────────────────────────────────
-  // selectPatient
-  // Called when a patient is picked from the search dropdown.
-  // Fills the form with that patient's existing data.
-  // If birth_of_year is missing, it is derived from age.
-  // hasTodayAppointment is reset here — PatientsHistory will load
-  // and onHistoryLoaded will set the correct value.
-  // ─────────────────────────────────────────────────────────────────
+
+
+
+
+
+
   const selectPatient = (patient) => {
     const pId = patient.userID || patient.id || patient.patient_id || "";
+
+
 
     // Derive birth_of_year from age when the API returns it empty
     const rawBirthYear = patient.birth_of_year || "";
     const derivedBirthYear = rawBirthYear
       ? rawBirthYear
       : patient.age
-      ? String(new Date().getFullYear() - parseInt(patient.age))
-      : "";
+        ? String(new Date().getFullYear() - parseInt(patient.age))
+        : "";
 
     setFormData((prev) => ({
       ...prev,
@@ -391,19 +304,21 @@ function Form({ onBookingSuccess }) {
       education: patient.education || "",
       city: patient.city || "",
       address: patient.address || "",
-      patient_type: "0", // Existing patient found by search is always "Old"
+      patient_type: "0",
     }));
 
     setSelectedPatientId(pId);
     setShowSearchDropdown(false);
-    setHasActiveDateAppointment(false); // Correct value set by onHistoryLoaded after history loads
+    setHasActiveDateAppointment(false);
     setLoadedHistory([]);
+    clearError();
+
+
   };
 
   // ─────────────────────────────────────────────────────────────────
   // Auto Age Calculation
   // When the user types a 4-digit birth year, age is automatically
-  // calculated and filled into the read-only age field.
   // ─────────────────────────────────────────────────────────────────
   useEffect(() => {
     const yearStr = formData.birth_of_year?.toString();
@@ -413,15 +328,6 @@ function Form({ onBookingSuccess }) {
     }
   }, [formData.birth_of_year]);
 
-  // Re-evaluate active appointment check whenever the selected date changes.
-  // If the patient has history loaded and they change the date,
-  // immediately check if they already have an active appointment on the new date.
-  useEffect(() => {
-    if (loadedHistory.length > 0) {
-      setHasActiveDateAppointment(checkActiveForDate(loadedHistory, formData.appointment_date));
-    }
-  }, [formData.appointment_date]);
-
   // Auto-dismiss success banner after 4 seconds
   useEffect(() => {
     if (successMessage) {
@@ -430,63 +336,48 @@ function Form({ onBookingSuccess }) {
     }
   }, [successMessage]);
 
-  // Auto-dismiss error banner after 3 seconds
+  // Auto-dismiss error banner (and red border) after 3 seconds
   useEffect(() => {
     if (errorMessage) {
-      const t = setTimeout(() => setErrorMessage(""), 3000);
+      const t = setTimeout(() => {
+        setErrorMessage("");
+        setErrorField("");
+      }, 3000);
       return () => clearTimeout(t);
     }
   }, [errorMessage]);
 
-  // ─────────────────────────────────────────────────────────────────
-  // handleSave — Main submit handler for Save & Print / Update Info
-  //
-  // Flow:
-  //   1. Validate required fields — show specific field-level errors
-  //   2. Pre-flight check — re-verify against loadedHistory directly
-  //      (guards against state being wiped by reset after print)
-  //   3. If hasActiveDateAppointment → call updateAppointment API
-  //   4. If no active appointment → call bookAppointment API
-  //   5. On success: message, history refresh, My Patient refresh, print
-  //
-  // Duplicate rule: ONE patient = ONE active appointment per date,
-  // regardless of doctor, time, or number of form submissions.
-  // ─────────────────────────────────────────────────────────────────
-  const handleSave = async () => {
-    setErrorMessage("");
+  // Update Info vs Save & Print:
+  // patient ki selected date par active appointment hai ya nahi
+  useEffect(() => {
+    setHasActiveDateAppointment(
+      Boolean(selectedPatientId) &&
+      hasActiveAppointmentOnDate(loadedHistory, formData.appointment_date)
+    );
+  }, [loadedHistory, formData.appointment_date, selectedPatientId]);
 
-    // Step 1 — Required field validation with specific messages
-    if (!formData.name?.trim())           return setErrorMessage("Patient name is required.");
-    if (!formData.mobile_no?.trim())      return setErrorMessage("Mobile number is required.");
-    if (formData.mobile_no.trim().length !== 10)
-                                          return setErrorMessage("Mobile number must be 10 digits.");
-    if (!formData.patient_type)           return setErrorMessage("Please select Patient Type (New/Old).");
-    if (!formData.gender)                 return setErrorMessage("Please select Gender.");
-    if (!formData.doctor_id)              return setErrorMessage("Please select a Doctor.");
-    if (!formData.consultancy)            return setErrorMessage("Please select Consultancy.");
-    if (!formData.appointment_time || formData.appointment_time === "Select Time")
-                                          return setErrorMessage("Please select an Appointment Time.");
+
+  //________________________________________________handleSave______________________________________________
+  const handleSave = async () => {
+    // A save is already running: ignore this click
+    if (isSavingRef.current) return;
+
+    setErrorMessage("");
+    setErrorField("");
+
+    // Validation lives in validation.js (pure function, unit tested)
+    const check = validateAppointment({ ...formData, patient_id: selectedPatientId });
+    if (!check.valid) {
+      setErrorField(check.field);
+      return setErrorMessage(check.message);
+    }
+
+    // Lock only after validation passes, so a failed validation never locks the button
+    isSavingRef.current = true;
+    setIsSaving(true);
 
     const currentId = formData.patient_id?.trim() || "";
     const selectedDate = formData.appointment_date;
-
-    // Step 2 — Pre-flight duplicate check directly against loadedHistory.
-    // This re-checks the history list in memory regardless of hasActiveDateAppointment state,
-    // so it catches cases where the state was cleared by reset/print.
-    // Rule: same patient + same date + active status → block, regardless of doctor.
-    const activeStatuses = ["booking", "confirmed", "pending"];
-    const alreadyActive = loadedHistory.some((appt) => {
-      const apptDate = (appt.appointment_date || appt.date || "").split(" ")[0];
-      const status = (appt.vstatus || appt.status || "").toLowerCase();
-      return apptDate === selectedDate && activeStatuses.includes(status);
-    });
-
-    if (alreadyActive) {
-      setHasActiveDateAppointment(true); // Sync state with reality
-      return setErrorMessage(
-        `This patient already has an active appointment on ${selectedDate}. Cancel it first to book another.`
-      );
-    }
 
     // Build payload — reserved and review are optional checkboxes, never block submission
     const payload = {
@@ -498,11 +389,13 @@ function Form({ onBookingSuccess }) {
     };
 
     try {
-      // Step 2 — Patient already has an active appointment on the selected date: UPDATE
+      // Patient already has an active appointment on the selected date: UPDATE
       if (hasActiveDateAppointment) {
         const response = await updateAppointment(payload);
         const fullData = response?.fullData || {};
-        const ok = fullData?.success === 1 || fullData?.success === "1" || response?.status === true;
+        const ok =
+          typeof fullData === "object" &&
+          (fullData?.success === 1 || fullData?.success === "1" || response?.status === true);
 
         if (ok) {
           setSuccessMessage(fullData?.message || "Appointment updated successfully!");
@@ -510,12 +403,16 @@ function Form({ onBookingSuccess }) {
           if (onBookingSuccess) onBookingSuccess();
           if (triggerRefresh) triggerRefresh();
         } else {
-          setErrorMessage(fullData?.message || "Update failed. Please try again.");
+          setErrorMessage(
+            typeof fullData === "string"
+              ? "Server error: the update was not saved. Please contact the admin."
+              : fullData?.message || "Update failed. Please try again."
+          );
         }
         return;
       }
 
-      // Step 3 — No active appointment today: BOOK NEW
+      // No active appointment today: BOOK NEW
       const response = await bookAppointment(payload);
 
       // Expected API response: { success: 1, Appointment_id, Invoice_no, user_id, message, history }
@@ -525,10 +422,6 @@ function Form({ onBookingSuccess }) {
       if (isSuccess) {
         setSuccessMessage(fullData?.message || "Appointment booked successfully!");
 
-        // Switch to Update mode — prevents duplicate booking for the same date.
-        // Also inject the new appointment into loadedHistory so the pre-flight
-        // check in handleSave will catch any repeated submissions immediately.
-        setHasActiveDateAppointment(true);
         const newAppt = {
           appointment_id: fullData?.Appointment_id || "",
           appointment_date: selectedDate,
@@ -537,29 +430,38 @@ function Form({ onBookingSuccess }) {
         setLoadedHistory((prev) => [newAppt, ...prev]);
         setHistoryRefreshKey((prev) => prev + 1);
 
-        // Refresh available slots so the booked slot shows as unavailable
-        const updatedSlots = await getAvailableSlots(formData.appointment_date);
-        setAvailableSlots(updatedSlots?.fullData?.slots || updatedSlots?.slots || []);
+        try {
+          const updatedSlots = await getAvailableSlots(formData.appointment_date);
+          setAvailableSlots(updatedSlots?.fullData?.slots || updatedSlots?.slots || []);
+        } catch (e) {
+          // Booking already saved; slot refresh failure should not block printing
+        }
 
         // Open print receipt window
-        const apptId  = fullData?.Appointment_id || "APT-" + Date.now();
-        const userId  = fullData?.user_id || currentId || "PAT-NEW";
+        const apptId = fullData?.Appointment_id || "APT-" + Date.now();
+        const userId = fullData?.user_id || currentId || "PAT-NEW";
         const invoice = fullData?.Invoice_no || "";
         appbooking_print(apptId, userId, invoice);
 
-        if (onBookingSuccess) onBookingSuccess(); // Refresh My Patient panel
-        if (triggerRefresh) triggerRefresh();     // Refresh Navbar counters
-
+        if (onBookingSuccess) onBookingSuccess();
+        if (triggerRefresh) triggerRefresh();
       } else {
-        // API returned success: 0 — show the API's own message in the center banner
-        setErrorMessage(fullData?.message || "Booking failed. Please try again.");
+        // If the server sends an HTML error page, fullData is a string
+        setErrorMessage(
+          typeof fullData === "string"
+            ? "Server error: the appointment was not saved. Please contact the admin."
+            : fullData?.message || "Booking failed. Please try again."
+        );
       }
     } catch (err) {
-      // Network or server-level failure
-      console.error("Booking error:", err);
       setErrorMessage("Server error. Please try again.");
+    } finally {
+      // Runs on every path (success, failure, early return), so the button never stays locked
+      isSavingRef.current = false;
+      setIsSaving(false);
     }
   };
+
 
   // ─────────────────────────────────────────────────────────────────
   // fetchSlots
@@ -574,8 +476,8 @@ function Form({ onBookingSuccess }) {
         const slotsData = response?.fullData?.slots || response?.slots || [];
         setAvailableSlots(Array.isArray(slotsData) ? slotsData : []);
       } catch (err) {
-        console.error("Slots fetch error:", err);
         setAvailableSlots([]);
+        setErrorMessage("Could not load time slots. Please try again.");
       }
     };
     fetchSlots();
@@ -592,28 +494,21 @@ function Form({ onBookingSuccess }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // ─────────────────────────────────────────────────────────────────
-  // handleInputChange
-  // Generic change handler for all text inputs, selects, and checkboxes.
-  // Also clears the error banner when the user fills in the problem field.
-  // ─────────────────────────────────────────────────────────────────
+  //__________________________________________handleInputChange _______________________________________
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     const updated = type === "checkbox" ? (checked ? "Yes" : "No") : value;
-    setFormData((prev) => ({ ...prev, [name]: updated }));
+    setFormData((prev) => ({
+      ...prev, [name]: updated,
+      ...(name === "appointment_date" ? { appointment_time: "" } : {})
+    }));
 
-    // Clear error banner as soon as the relevant field is filled
-    if (errorMessage) {
-      const clearFields = ["name", "mobile_no", "patient_type", "doctor_id", "consultancy", "gender"];
-      if (clearFields.includes(name) && updated) setErrorMessage("");
-      if (name === "appointment_time" && updated && updated !== "Select Time") setErrorMessage("");
-    }
+    // Clear the error as soon as the field that failed is edited
+    if (errorField === name && updated) clearError();
   };
 
   // ─────────────────────────────────────────────────────────────────
-  // fetchData
-  // Runs once on component mount.
-  // Loads all dropdown option lists in parallel:
   // Occupations, Educations, Cities, Doctors, Consultancy.
   // ─────────────────────────────────────────────────────────────────
   useEffect(() => { fetchData(); }, []);
@@ -633,14 +528,12 @@ function Form({ onBookingSuccess }) {
       setDoctorsList(docRes?.Getdoctorsdata || docRes?.fullData?.Getdoctorsdata || []);
       setConsultancyList(consRes?.Getconsultancydata || consRes?.fullData?.Getconsultancydata || []);
     } catch (err) {
-      console.error("fetchData error:", err);
+      setErrorMessage("Could not load doctors/lists. Please refresh the page.");
     }
   };
 
   // ─────────────────────────────────────────────────────────────────
   // Edit Popup Handlers
-  // Each handler validates that a value is selected before opening
-  // the corresponding edit popup with the matching list item.
   // ─────────────────────────────────────────────────────────────────
   const handleEditClick = (field) => {
     if (field === "occupation") {
@@ -666,15 +559,13 @@ function Form({ onBookingSuccess }) {
 
   // ─────────────────────────────────────────────────────────────────
   // handleDoctorChange
-  // When a doctor is selected, automatically populate doctor_fees
-  // from the doctor's data in the doctors list.
-  // ─────────────────────────────────────────────────────────────────
+  //  ─────────────────────────────────────────────────────────────────
   const handleDoctorChange = (e) => {
     const selectedId = e.target.value;
     const doctorObj = doctorsList.find((d) => d.userID === selectedId);
     const fees = doctorObj?.fees || doctorObj?.consulting_fees || "0";
 
-    if (errorMessage?.toLowerCase().includes("doctor")) setErrorMessage("");
+    if (errorField === "doctor_id") clearError();
 
     setFormData((prev) => ({
       ...prev,
@@ -793,12 +684,17 @@ function Form({ onBookingSuccess }) {
                 />
               </div>
 
-              {/* Patient Type: New or Old */}
               <div className={`relative flex items-center border rounded overflow-hidden transition-all duration-200 ${getBorderClass("patient_type")}`}>
-                <div className="pl-3 text-gray-500"><UserCheck size={15} /></div>
-                <select name="patient_type" value={formData.patient_type} onChange={handleInputChange}
-                  className={`w-full px-2 py-1 text-xs outline-none bg-white cursor-pointer ${formData.patient_type === "" ? "text-gray-500" : "text-black"}`}>
-                  <option value="">Select Patient Type</option>
+                <div className="pl-3 text-gray-500">
+                  <UserCheck size={15} />
+                </div>
+
+                <select
+                  name="patient_type"
+                  value={formData.patient_type}
+                  onChange={handlePatientTypeChange}
+                  className="w-full px-2 py-1 text-xs outline-none bg-white"
+                >
                   <option value="1">New Patient</option>
                   <option value="0">Old Patient</option>
                 </select>
@@ -849,7 +745,11 @@ function Form({ onBookingSuccess }) {
                               : "hover:bg-blue-600 hover:text-white text-black cursor-pointer"}`}
                             onClick={() => {
                               if (slot.available !== 0) {
-                                setFormData({ ...formData, appointment_time: slot.time || slot.slot_time });
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  appointment_time: slot.time || slot.slot_time,
+                                }));
+                                if (errorField === "appointment_time") clearError();
                                 setIsTimeOpen(false);
                               }
                             }}
@@ -882,7 +782,7 @@ function Form({ onBookingSuccess }) {
                 </div>
                 <div className="flex-1">
                   <select name="gender" value={formData.gender} onChange={handleInputChange}
-                    className={`w-full px-2 py-1 text-xs border border-gray-300 bg-white h-[30px] ${formData.gender ? "text-black" : "text-gray-500"}`}>
+                    className={`w-full px-2 py-1 text-xs border bg-white h-[30px] ${formData.gender ? "text-black" : "text-gray-500"} ${errorField === "gender" ? "border-red-500 ring-2 ring-red-200" : "border-gray-300"}`}>
                     <option value="">Gender</option>
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
@@ -894,8 +794,8 @@ function Form({ onBookingSuccess }) {
               {/* Occupation, Education, City — each has an Add (+) and Edit (pencil) button */}
               {[
                 { name: "occupation", value: formData.occupation, placeholder: "Select Occupation", options: occupationsList },
-                { name: "education",  value: formData.education,  placeholder: "Select Education",  options: educationList  },
-                { name: "city",       value: formData.city,       placeholder: "Select City",        options: cityList       },
+                { name: "education", value: formData.education, placeholder: "Select Education", options: educationList },
+                { name: "city", value: formData.city, placeholder: "Select City", options: cityList },
               ].map((field) => (
                 <div key={field.name} className="relative flex items-center border border-gray-300 rounded bg-white h-9">
                   <input list={`${field.name}-list`} name={field.name} value={field.value}
@@ -908,10 +808,10 @@ function Form({ onBookingSuccess }) {
                       // Extract label — try all known field name patterns + generic fallbacks
                       const label =
                         opt.occupation_name ||
-                        opt.education_name  ||
-                        opt.city_name       ||
-                        opt.name            ||
-                        opt.title           ||
+                        opt.education_name ||
+                        opt.city_name ||
+                        opt.name ||
+                        opt.title ||
                         (typeof opt === "string" ? opt : "");
                       // Skip rendering if label couldn't be resolved
                       if (!label) return null;
@@ -923,8 +823,8 @@ function Form({ onBookingSuccess }) {
                     <button type="button" className="p-1 bg-orange-500 text-white rounded-sm"
                       onClick={() =>
                         field.name === "occupation" ? setShowAddOccupations(true) :
-                        field.name === "education"  ? setShowAddEducations(true)  :
-                        setShowAddCities(true)
+                          field.name === "education" ? setShowAddEducations(true) :
+                            setShowAddCities(true)
                       }>
                       <Plus size={12} />
                     </button>
@@ -932,8 +832,8 @@ function Form({ onBookingSuccess }) {
                     <button type="button" className="p-1 bg-blue-500 text-white rounded-sm"
                       onClick={() =>
                         field.name === "occupation" ? handleEditClick("occupation") :
-                        field.name === "education"  ? handleEditEducation()         :
-                        handleEditCity()
+                          field.name === "education" ? handleEditEducation() :
+                            handleEditCity()
                       }>
                       <Edit2 size={12} />
                     </button>
@@ -973,44 +873,32 @@ function Form({ onBookingSuccess }) {
                 {/* Button label and color change based on whether today's appointment exists:
                     green "Save & Print" = fresh booking
                     amber "Update Info"  = updating existing today's appointment */}
-                <button type="button" onClick={handleSave}
-                  className={`cursor-pointer text-white px-3 py-1.5 text-xs font-bold rounded-sm whitespace-nowrap flex items-center justify-center transition shadow-sm ${
-                    hasActiveDateAppointment ? "bg-amber-500" : "bg-[#22C55E]"
-                  }`}>
-                  {hasActiveDateAppointment ? "Update Info" : "Save & Print"}
+                <button type="button" onClick={handleSave} disabled={isSaving}
+                  className={`select-none cursor-pointer text-white px-3 py-1.5 text-xs font-bold rounded-sm whitespace-nowrap flex items-center justify-center transition shadow-sm ${hasActiveDateAppointment ? "bg-amber-500" : "bg-[#22C55E]"
+                    } ${isSaving ? "opacity-60 cursor-not-allowed" : ""}`}>
+                  {isSaving ? "Saving..." : hasActiveDateAppointment ? "Update Info" : "Save & Print"}
                 </button>
               </div>
             </div>
           </form>
         </div>
 
-        {/* Patient History table
-            - userID: fetches history for the selected patient
-            - refreshKey: incrementing this triggers a re-fetch (after booking/cancel)
-            - onHistoryLoaded: receives the loaded history list to check for today's active appointment
-            - onCancelSuccess: receives the updated list after a cancel, re-evaluates active status */}
         <div className="w-full mt-1">
           <PatientsHistory
             userID={selectedPatientId}
             refreshKey={historyRefreshKey}
-            onHistoryLoaded={(list) => {
-              setLoadedHistory(list);
-              setHasActiveDateAppointment(checkActiveForDate(list, formData.appointment_date));
-            }}
-            onCancelSuccess={(updatedList) => {
-              setLoadedHistory(updatedList);
-              setHasActiveDateAppointment(checkActiveForDate(updatedList, formData.appointment_date));
-            }}
+            onHistoryLoaded={setLoadedHistory}
+            onCancelSuccess={setLoadedHistory}
           />
         </div>
 
         {/* Modals for adding and editing Occupation, Education, and City list items */}
-        {showAddOccupations  && <AddOccupationPopup  onClose={() => setShowAddOccupations(false)}  onSuccess={fetchData} />}
+        {showAddOccupations && <AddOccupationPopup onClose={() => setShowAddOccupations(false)} onSuccess={fetchData} />}
         {showEditOccupations && <EditOccupationPopup initialData={selectedOccupation} onClose={() => setShowEditOccupations(false)} onSuccess={fetchData} />}
-        {showAddEducations   && <AddEducationPopup   onClose={() => setShowAddEducations(false)}   onSuccess={fetchData} />}
-        {showEditEducations  && <EditEducationPopup  initialData={selectedEducation}  onClose={() => setShowEditEducations(false)}  onSuccess={fetchData} />}
-        {showAddCities       && <AddCityPopup        onClose={() => setShowAddCities(false)}       onSuccess={fetchData} />}
-        {showEditCities      && <EditCityPopup       initialData={selectedCity}       onClose={() => setShowEditCities(false)}      onSuccess={fetchData} />}
+        {showAddEducations && <AddEducationPopup onClose={() => setShowAddEducations(false)} onSuccess={fetchData} />}
+        {showEditEducations && <EditEducationPopup initialData={selectedEducation} onClose={() => setShowEditEducations(false)} onSuccess={fetchData} />}
+        {showAddCities && <AddCityPopup onClose={() => setShowAddCities(false)} onSuccess={fetchData} />}
+        {showEditCities && <EditCityPopup initialData={selectedCity} onClose={() => setShowEditCities(false)} onSuccess={fetchData} />}
       </div>
     </div>
   );
